@@ -7,4 +7,223 @@ categories: []
 tags: []
 ---
 
-Hello world!
+```{r, include = FALSE}
+## Load the data
+
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+# setwd("~/Lab sessions/01-Intro (9/8)/Section data https://drive.google.com/drive/folders/1fOPjqzf6d4rVjewC0qP6HTgZKoQEsV47")
+getwd()
+
+library(tidyverse)
+require(tidyverse)
+require(ggplot2)
+require(sf)
+popvote_df <- read_csv("house nationwide vote and seat share by party 1948-2020.csv")
+```
+
+```{r}
+## Data exploration
+
+# Quick peek
+colnames(popvote_df)
+head(popvote_df[c("year", "winner_party", "winning_vote_margin")])
+
+# Modifying data and summary 
+# popvote_wide_df <- popvote_df %>%
+#   mutate(winner = case_when(D != "NA" ~ "Democrat", TRUE ~ "Republican"))
+# 
+# popvote_wide_df %>%
+#   group_by(winner) %>%
+#   summarise(races = n())
+
+# Subsetting data
+popvote_df %>%
+  filter(year == 2018) %>%
+  select(D_seats, D_majorvote_pct, winner_party)
+
+# Long format (unit of analysis: party-race)
+popvote_df %>%
+  select(year, winner_party, winning_vote_margin) %>%
+  filter(year %in% c(1948, 1952, 1956))
+
+# Long to wide format (unit of analysis: race)
+popvote_wide_df <- popvote_df %>%
+  select(year, winner_party, winning_vote_margin) %>%
+  spread(key = winner_party, value = winning_vote_margin)
+head(popvote_wide_df, 3)
+
+# Wide to long format (unit of analysis: candidate-race)
+popvote_wide_df %>% 
+  gather(key = "winner_party", value = "winning_vote_margin", D, R) %>%
+  filter(year %in% c(1948, 1952, 1956))
+```
+
+
+```{r}
+## Looking at midterm elections
+
+
+# start with 114th congress - 2014 election
+# load geographic data
+get_congress_map <- function(cong=114) {
+  tmp_file <- tempfile()
+  tmp_dir <- tempdir()
+  zp <- sprintf("https://cdmaps.polisci.ucla.edu/shp/districts114.zip",cong)
+  download.file(zp, tmp_file)
+  unzip(zipfile = tmp_file, exdir = tmp_dir)
+  fpath <- paste(tmp_dir, sprintf("districtShapes/districts114.shp",cong), sep = "/")
+  st_read(fpath)
+}
+# load 114th congress
+cd114 <- get_congress_map(114)
+
+# select specific state
+cd114_nj <- cd114 %>%
+  filter(STATENAME=="New Jersey") %>%
+  mutate(DISTRICT = as.character(DISTRICT))%>%
+  select(DISTRICT)
+
+# add data to plot - 2014 GOP party seat share
+# reload election data - h from previous exercise
+h <- read_csv("house party vote share by district 1948-2020.csv")
+# filter for 2014 election and state
+R_nj_2014 <- h %>%
+  filter(raceYear == 2014, State == "New Jersey") %>%
+  select(raceYear, State, district_num, RepVotesMajorPercent, DemVotesMajorPercent) %>%
+# summarize party vote share by district
+  group_by(district_num) %>%
+  summarise(Rep_votes_pct = RepVotesMajorPercent) %>%
+  # rename district variable name to match shapefile
+  rename(DISTRICT = district_num)
+# before joining dfs, check classes of variable to be merged on
+class(R_nj_2014$DISTRICT)
+
+# change class
+cd114_nj$DISTRICT <- as.numeric(cd114_nj$DISTRICT)
+# join election returns with shapefiles
+cd114_nj <- cd114_nj %>% left_join(R_nj_2014, by="DISTRICT")
+
+ggplot() + 
+  geom_sf(data=cd114_nj,aes(fill=Rep_votes_pct), inherit.aes=FALSE,alpha=0.9) +
+  scale_fill_gradient(low = "blue", high = "red", limits=c(10,80)) +
+  theme_void() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+R_2014 <- h %>%
+  filter(raceYear == 2014) %>%
+  select(raceYear, State, district_num, district_id, RepVotes, DemVotes) %>%
+# summarize party vote share by state
+  group_by(State) %>%
+# mutate Rep vote margin by state %>%
+  mutate(R_votemargin_st = (sum(RepVotes))/sum(RepVotes + DemVotes), D_votemargin_st = (sum(DemVotes))/sum(RepVotes + DemVotes)) %>%
+  rename(state = State)
+# load usmap
+install.packages('usmap')
+library(usmap)
+
+states_map <- usmap::us_map()
+
+```
+
+```{r}
+
+plot_usmap(data = R_2014, regions = "states", values = "R_votemargin_st") + scale_fill_gradient(low = "white", high = "red", name = "GOP two-party voteshare margin") + theme_void()
+
+R_all <- h %>%
+  select(raceYear, State, district_num, district_id, RepVotes, DemVotes) %>%
+# summarize party vote share by state
+  group_by(State) %>%
+# mutate Rep vote margin by state %>%
+  mutate(R_votemargin_st = (sum(RepVotes))/sum(RepVotes + DemVotes), D_votemargin_st = (sum(DemVotes))/ sum(RepVotes + DemVotes)) %>%
+  rename(state = State)
+# plot
+plot_usmap(data = R_all, regions = "states", values = "R_votemargin_st") + facet_wrap(facets = raceYear ~.) + scale_fill_gradient(low = "white", high = "red", name = "GOP two-party voteshare margin") + theme_void()
+
+```
+```{r}
+## Blog 1 - Extension of Lab 1
+
+# 2018 Data
+data_2018 <- h %>%
+  filter(raceYear == 2018) %>%
+  select(raceYear, State, DemVotes, RepVotes) %>%
+  group_by(State) %>%
+  mutate(D_votemargin_st = (sum(DemVotes))/sum(RepVotes + DemVotes)) %>%
+  rename(state = State)
+
+# 2020 Data
+data_2020 <- h %>%
+  filter(raceYear == 2020) %>%
+  select(raceYear, State, district_num, district_id, RepVotes, DemVotes) %>%
+  group_by(State) %>%
+  mutate(D_votemargin_st = (sum(DemVotes))/sum(RepVotes + DemVotes)) %>%
+  rename(state = State)
+
+
+```
+
+
+```{r}
+d18 = subset(h, raceYear == 2018, select = c("raceYear", "State", "DemVotes", "RepVotes"))
+states = unique(h$State)
+
+dVotes = rep(NA, length(states))
+rVotes = rep(NA, length(states))
+demShare = rep(NA, length(states))
+
+for (index in 1:length(states)) {
+  dVotes[index] = sum(subset(d18, State == states[index], select = "DemVotes"))
+  rVotes[index] = sum(subset(d18, State == states[index], select = "RepVotes"))
+  demShare[index] = dVotes[index] / (dVotes[index] + rVotes[index])
+}  
+
+d20 = subset(h, raceYear == 2020, select = c("raceYear", "State", "DemVotes", "RepVotes"))
+
+dVotes20 = rep(NA, length(states))
+rVotes20 = rep(NA, length(states))
+demShare20 = rep(NA, length(states))
+
+for (index in 1:length(states)) {
+  dVotes20[index] = sum(subset(d20, State == states[index], select = "DemVotes"))
+  rVotes20[index] = sum(subset(d20, State == states[index], select = "RepVotes"))
+  demShare20[index] = dVotes20[index] / (dVotes20[index] + rVotes20[index])
+}  
+
+swing = rep(NA, length(states))
+
+# Negative swing values means a loss of Dem vote share in 2020 compared to 2018
+for (index in 1:length(states)){
+  swing[index] = demShare20[index] - demShare[index]
+}
+
+swing
+
+```
+
+```{r}
+data_final <- subset(h, raceYear = 2020, select = "State")
+state = states
+r0= rbind(state, swing)
+
+rfinal = as.data.frame(t(as.data.frame(r0)))
+rfinal$swing <- as.numeric(rfinal$swing)
+```
+
+
+```{r}
+plot_usmap(data = rfinal, regions = "state", values = "swing") + 
+  scale_fill_gradientn(colours = c("firebrick4", "firebrick3", "firebrick2", "firebrick1", "ghostwhite", "royalblue2"), breaks = c(-0.3, -0.2, -0.1, -0.05, 0, 0.05), name = "Swing since 2018") + 
+  theme_void() + 
+  labs(title = "Democrat House Vote Share Swings between 2020 and 2018", subtitle = "Negative values represent declines in (D) House vote share since 2018.") + 
+  theme(panel.background = element_rect(color = "black", fill = "lightblue1"))
+
+rfinal
+
+```
+

@@ -1,0 +1,8 @@
+---
+title: Analzying 2020 House Vote Shares
+author: Vivian Nguyen
+date: '2022-09-15'
+slug: []
+categories: []
+tags: []
+---
