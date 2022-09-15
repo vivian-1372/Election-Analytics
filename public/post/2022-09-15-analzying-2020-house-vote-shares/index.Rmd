@@ -1,7 +1,7 @@
 ---
 title: Analyzing House Vote Share Swings of 2018 and 2020
 author: Vivian Nguyen
-date: 'September 15, 2022'
+date: '2022-09-15'
 slug: []
 categories: []
 tags: []
