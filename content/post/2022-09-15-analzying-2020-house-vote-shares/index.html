@@ -1,0 +1,25 @@
+---
+title: Analzying 2018 and 2020 House Vote Shares
+author: Vivian Nguyen
+date: 'September 15, 2022'
+slug: []
+categories: []
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p><em>This is blog post #1 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.</em></p>
+<p>Swing state map extension. Instead of plotting voteshare-margin maps for each year y where the
+color for a state is colored, plot a swing map for each year where each state is colored by the quantity RyDy+Ry−Ry−4Dy−4+Ry−4. Which states are/have been battleground states? Which are no longer?</p>
+<p>Over the next several weeks, I will be exploring previous U.S. elections data to analyze voter trends and behavior. This exploration will aide in my ultimate goal of forecasting the 2022 midterm election results. For this first blog, I focus on the House vote shares from 2016 to 2020 and how they changed over the course of Donald J. Trump’s term. I compare the results of 2016 House election, specifically the House Democratic Party vote share at the state level, to those of the 2018 midterm House election to see the extent to which the common theme of incumbent disadvantage applied to the House election results. I then compare the House Democratic vote share of the 2018 election to the 2020 House election, which saw the election of Joseph R. Biden. <strong>My hope is to identify the trends in House election swings in the Trump era. As we near the 2022 midterms, where the Democratic president’s party is campaigning hard to retain House control, it’ll be increasingly important to know which states have shown increased support for House Democrats in recent years</strong></p>
+<p>To answer this question, I pulled data about the House party vote shares for 2016, 2018, and 2020. I show 2018-2016 and 2020-2018 comparison maps, which consist of states colored by the quantity <span class="math inline">\(\frac{D_{y}}{D_{y} + R_{y}} - \frac{D_{y - 2}}{D_{y - 2} + R_{y - 2}}\)</span>. This quantity is a measure of state swing in Democratic Party vote share for that House election, since the previous one. Below is the 2018-2016 swing map - negative (red) values show a decline in (D) House vote share in a given state since 2016, positive (blue) values show the opposite, and near-zero (white) values represent no change in (D) House vote.</p>
+<pre><code>## Warning: package &#39;usmap&#39; was built under R version 4.0.5</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>My analysis confirms that the House elections of the 2018 midterms followed the traditional pattern of the president’s party performing rather poorly – With the exception of Connecticut, Hawaii, Massachusetts, Vermont, and Wyoming, the Democrats gained vote share in every state in comparison to the 2016 House elections. This pattern has been upheld at an incredibly high rate throughout the 20th and 21st century, and it is expected to hold in this year’s midterm elections.</p>
+<p>However, this swing against the incumbent party may reverse by the next House elections, and this was indeed true in 2020. Unlike the previous swing comparison, the 2020-2018 comparison reveals that most states saw a decline in (D) party vote share in the House elections of 2020. This is especially striking because the Democrats clinched the presidency by a decent margin whilst losing vote share in nearly state House election.</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<hr />
+<p><strong>References</strong></p>
+<p>[1] Campbell, J. (2018a). Introduction: Forecasting the 2018 US Midterm Elections. PS: Political Science &amp; Politics, 51(S1), 1-3. <a href="doi:10.1017/S1049096518001592" class="uri">doi:10.1017/S1049096518001592</a></p>
