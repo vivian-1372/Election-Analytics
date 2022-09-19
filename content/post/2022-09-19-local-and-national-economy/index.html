@@ -16,158 +16,55 @@ slug: []
 <p><strong>Blog Extension: Model Evaluation. Build multiple predictive models using national economic variables as predictors. Compare those models using the tools we learned today. How much is your 2022 prediction sensitive to the change of measure(s)? What does it tell us about the economic model of voting behavior?</strong></p>
 <p>Last week, my dive into the 2018 election results and swings confirmed that the president’s party often performs poorly in the midterms. By the 2020 House elections, the president’s party gained some of its vote share back.</p>
 <p>This week, I temporarily move away from cyclical election study to delve into one of the most promising ways to predict election outcomes – economics. Retrospective voting, a model of voting in which voters elect leaders based off of recent experiences and judgment of welfare under incumbent leadership, dictates that for many elections, the results largely rely on the state of the economy in the last quarter of the election cycle (Achen &amp; Bartels, 2017). For presidential elections, this means that national economic variables like GDP (gross domestic product), unemployment, and RDI (real disposable income) can account for a lot of the variation in incumbent candidate popularity. <strong>I explore this relationship between national economic variables and incumbent vote share, but for House races from 1948 to 2020. I want to know which variables accurately predict House incumbent party vote share, and build a model accordingly. Lastly, I will test my model with data from 2020 to see how well it would’ve predicted the last election.</strong></p>
-<p>To start identifying which national economic variables predict House incumbent vote share well, I investigated how Quarter 8 GDP growth (percentage), unemployment rate, and RDI change (percentage), individually, are related to incumbent party vote share.</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="100%" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-2.png" width="100%" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-3.png" width="100%" style="display: block; margin: auto;" /></p>
-<p>To answer this question, I pulled data about the House party vote shares for 2016, 2018, and 2020. I show 2018-2016 and 2020-2018 comparison maps, which consist of states colored by the quantity <span class="math inline">\(\frac{D_y}{D_y + R_y} - \frac{D_{y - 2}}{D_{y - 2} + R_{y - 2}}\)</span>. This quantity is a measure of state swing in Democratic Party vote share for that House election, since the previous one. Below is the 2018-2016 swing map - negative (red) values show a decline in (D) House vote share in a given state since 2016, positive (blue) values show the opposite, and near-zero (white) values represent no change in (D) House vote.</p>
-<p>My analysis confirms that the House elections of the 2018 midterms followed the traditional pattern of the president’s party performing rather poorly – With the exception of Connecticut, Hawaii, Massachusetts, Vermont, and Wyoming, the Democrats gained vote share in every state in comparison to the 2016 House elections. This pattern of president’s party disadvantage in midterms has been upheld at an incredibly high rate throughout the 20th and 21st century, and it is expected to hold in this year’s midterm elections.</p>
-<p>However, this swing against the executive party may reverse by the next House elections, and this was indeed true in 2020.</p>
-<p>Unlike the previous swing comparison, the 2020-2018 comparison reveals that most states saw a decline in (D) party vote share in the House elections of 2020. Florida, Georgia, North Carolina, Rhode Island, and Maine were the only states to not see a decline in (D) House vote share. Georgia was an anomaly, and huge victory for the Democrats, in the 2020 elections, where less than 13,000 popular votes (Politico) determined Biden’s victory in the electoral college and one House seat was flipped by the Democrats in district 7. Other than these 5 states, the Democrats lost vote share in nearly every state House election the Democrats but clinched the presidency by a decent margin (about 4 percentage points, Cook Political Report).</p>
-<p>My dive into the 2018 and 2020 House election results and swings has revealed several observations: (1) Because the president’s party has always been known to suffer during midterms, and this tradition remained true in the 2018 midterms, it should be expected that the Democrats see this same poor performance in November. (2) Looking beyond the midterms, Democrats may be relieved to hear that the president’s party does seem to get some of their vote share back in House elections by the next general election. We saw that in 2020, House vote shares declined for Democrats in nearly all states. (3) It is important to study swings and temporally relative party performance to see how voters move in preference over different House elections, but it is also very important to study the House elections move in absolute terms – although observation (2) recognized that the president’s party does gain a lot of its lost House vote share back by the general election, 2020 showed us that this gain was ultimately not enough, with the challenger party taking the House, the Senate (by a hair), and the presidency.</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="60%" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-2.png" width="60%" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-3.png" width="60%" style="display: block; margin: auto;" /></p>
-<div id="bivariate-correlation-of-gdp-and-pv" class="section level2">
-<h2>Bivariate correlation of GDP / and PV</h2>
-</div>
-<div id="economy-and-pv-fitting-a-model-step-1-2" class="section level2 build">
-<h2>Economy and PV: Fitting a model (STEP 1 &amp; 2)</h2>
+<p>To start identifying which national economic variables predict House incumbent vote share well, I first investigated how Quarter 8 GDP growth (percentage), RDI change (percentage), and unemployment rate, individually, are related to incumbent party vote share. I specifically choose Quarter 8 because voters often refer to the latest memory they have of the economy to judge how the economy has performed under their incumbent leader(s) (Achen &amp; Bartels, 2017. Healy &amp; Lenz, 2014).</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>As shown above, each variable, GDP growth, RDI change, and unemployment rate, respectively, are correlated to House incumbent vote share - as GDP growth percentage decreases, or RDI change percentage decreases, or unemployment rate grows, House incumbent vote share grows. These correlations are unintuitive, and suggest that voters do not accurately hold their leaders accountable according to national economic performance.</p>
+<p>That said, these correlations are not too explanatory by themselves and may be very susceptible to noise, with R-squared values of 0.081, 0.056, and 0.131. I moved on from univariate relationships between these national economic variables House incumbent vote share to multivariable relationships, hoping to find a model that incorporates multiple economic variables to predict incumbent vote share. In this multivariable model (which I call Model 1), I consider the predictors <code>GDP_growth_pct</code> (GDP growth %), <code>DSPIC_change_pct</code> (RDI change %), <code>GDP_growth_qt</code> (GDP growth), and <code>UNRATE</code> (unemployment rate) to investigate how they influence incumbent vote share in conjunction.</p>
 <pre class="r"><code>lm_GDP &lt;- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct, data = newdf)
 lm_RDI &lt;- lm(H_incumbent_party_majorvote_pct ~ DSPIC_change_pct, data = newdf)
 lm_UE &lt;- lm(H_incumbent_party_majorvote_pct ~ UNRATE, data = newdf)
-lm_model &lt;- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct + DSPIC_change_pct + GDP_growth_qt + UNRATE, data = newdf)
-lm_model_year &lt;- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct + DSPIC_change_pct + GDP_growth_qt + UNRATE + year, data = newdf)
-stargazer(lm_GDP, lm_RDI, lm_UE, lm_model, lm_model_year, title = &quot;Results&quot;, type = &quot;text&quot;)</code></pre>
+lm_model &lt;- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct + DSPIC_change_pct +  GDP_growth_qt + UNRATE, data = newdf)
+
+stargazer(lm_GDP, lm_RDI, lm_UE, lm_model, title = &quot;Results&quot;, type = &quot;text&quot;, column.labels = c(&quot;GDP&quot;, &quot;RDI&quot;, &quot;UE&quot;, &quot;Model 1&quot;))</code></pre>
 <pre><code>## 
 ## Results
-## ==========================================================================================================================
-##                                                              Dependent variable:                                          
-##                     ------------------------------------------------------------------------------------------------------
-##                                                        H_incumbent_party_majorvote_pct                                    
-##                             (1)                (2)                 (3)                  (4)                   (5)         
-## --------------------------------------------------------------------------------------------------------------------------
-## GDP_growth_pct            -0.912*                                                      2.903*                1.420        
-##                           (0.520)                                                     (1.565)               (1.331)       
-##                                                                                                                           
-## DSPIC_change_pct                              -0.796                                  -1.577**             -1.293**       
-##                                              (0.609)                                  (0.675)               (0.554)       
-##                                                                                                                           
-## GDP_growth_qt                                                                        -0.036***              -0.020*       
-##                                                                                       (0.013)               (0.011)       
-##                                                                                                                           
-## UNRATE                                                           0.747**               0.420                0.535*        
-##                                                                  (0.325)              (0.337)               (0.275)       
-##                                                                                                                           
-## year                                                                                                       -0.098***      
-##                                                                                                             (0.026)       
-##                                                                                                                           
-## Constant                 52.424***          52.578***           47.480***            51.179***            244.903***      
-##                           (0.656)            (0.760)             (1.940)              (2.205)              (51.200)       
-##                                                                                                                           
-## --------------------------------------------------------------------------------------------------------------------------
-## Observations                37                  31                  37                   31                   31          
-## R2                         0.081              0.056               0.131                0.386                 0.610        
-## Adjusted R2                0.054              0.023               0.106                0.292                 0.532        
-## Residual Std. Error   3.270 (df = 35)    3.400 (df = 29)     3.180 (df = 35)      2.895 (df = 26)       2.353 (df = 25)   
-## F Statistic         3.071* (df = 1; 35) 1.713 (df = 1; 29) 5.263** (df = 1; 35) 4.094** (df = 4; 26) 7.822*** (df = 5; 25)
-## ==========================================================================================================================
-## Note:                                                                                          *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
-</div>
-<div id="economy-and-pv-fitting-a-model-step-1-2-1" class="section level2">
-<h2>Economy and PV: Fitting a model (STEP 1 &amp; 2)</h2>
-</div>
-<div id="how-to-evaluate-your-model-step-3" class="section level1">
-<h1>How to evaluate your model (STEP 3)</h1>
-<div id="model-fit-r2" class="section level2">
-<h2>Model Fit: <span class="math inline">\(R^2\)</span></h2>
-<pre><code>## [1] 0.08067517</code></pre>
-<pre><code>## [1] 0.05576812</code></pre>
-<pre><code>## [1] 0.1307167</code></pre>
-<pre><code>## [1] 0.386466</code></pre>
-</div>
-<div id="model-fit-in-sample-error-and-mse" class="section level2">
-<h2>Model Fit: in-sample error and MSE</h2>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="30%" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-2.png" width="30%" style="display: block; margin: auto;" /></p>
-</div>
-<div id="model-fit-in-sample-error-and-mse-1" class="section level2">
-<h2>Model Fit: in-sample error and MSE</h2>
-<p>We can plot the in-sample error via , which capture the difference between each observed value (<span class="math inline">\(y_i\)</span>) and predicted value (<span class="math inline">\(\widehat{y}_i = \hat{A} + \widehat{B}x_i\)</span>):</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="70%" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-2.png" width="70%" style="display: block; margin: auto;" /></p>
-</div>
-<div id="model-fit-in-sample-error-and-mse-2" class="section level2">
-<h2>Model Fit: in-sample error and MSE</h2>
-<p>We can summarise the error a single number, such as the :</p>
-<pre><code>## UE: 3.092707</code></pre>
-<pre><code>## 
-## GDP: 3.180479</code></pre>
-<pre><code>## 
-## RDI: 3.288667</code></pre>
-<pre><code>## 
-## My model: 2.65094</code></pre>
-<p></p>
-</div>
-<div id="model-testing" class="section level2">
-<h2>Model Testing</h2>
-<p>Checking in-sample model predictions is a good baseline evaluation, but it feels a bit like “cheating” <span class="math inline">\(\rightsquigarrow\)</span> can we take away the model’s “answer key”? </p>
-<!--the best test of a model's predictive score -- simulate out-of-sample 
-    prediction and check performance against ground-truth; in-sample is sort of 
-    easy because it's double dipping the data, this is a harder test!-->
-<p>We can simulate (also called out-of-sample testing) by withholding some observation, e.g. <span class="math inline">\(X_{2018}\)</span>, before fitting: </p>
-<p>and see how well the model predicts the true <span class="math inline">\(Y_{2018}\)</span> for the held-out observation <span class="math inline">\(X_{2018}\)</span>:</p>
-<pre><code>##        1 
-## 6.681196</code></pre>
-<p>Leaving a single observation out and testing the model against the ground truth is, you guessed it, called .</p>
-</div>
-<div id="model-testing-1" class="section level2">
-<h2>Model Testing</h2>
-<p>: withhold a <em>random subset</em> of the sample, fit model on rest of sample, and evaluate predictive performance on the held-out observations. </p>
-<!-- Me: predicts 2016 within 2 points..but ok 2016 was weird -->
-<pre><code>## [1] 0.01346007</code></pre>
-<p></p>
-</div>
-<div id="model-testing-2" class="section level2">
-<h2>Model Testing</h2>
-<p>Cross-validation involves repeatedly evaluating performance against many randomly held-out “out-of-sample” datasets:</p>
-<!-- we can do this many times and see how out-of-sample performance usually is -->
-</div>
-<div id="model-testing-3" class="section level2">
-<h2>Model Testing</h2>
-<p>Cross-validation involves repeatedly evaluating performance against many randomly held-out “out-of-sample” datasets:</p>
-</div>
-<div id="model-testing-4" class="section level2">
-<h2>Model Testing</h2>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<pre><code>## [1] 1.046135</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
-<pre><code>## 
-## ===================================================
-##                           Dependent variable:      
-##                     -------------------------------
-##                     H_incumbent_party_majorvote_pct
-## ---------------------------------------------------
-## GDP_growth_pct                  2.903*             
-##                                 (1.565)            
-##                                                    
-## DSPIC_change_pct               -1.577**            
-##                                 (0.675)            
-##                                                    
-## GDP_growth_qt                  -0.036***           
-##                                 (0.013)            
-##                                                    
-## UNRATE                           0.420             
-##                                 (0.337)            
-##                                                    
-## Constant                       51.179***           
-##                                 (2.205)            
-##                                                    
-## ---------------------------------------------------
-## Observations                      31               
-## R2                               0.386             
-## Adjusted R2                      0.292             
-## Residual Std. Error         2.895 (df = 26)        
-## F Statistic              4.094** (df = 4; 26)      
-## ===================================================
-## Note:                   *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
-</div>
-<div id="economy-and-pv-out-of-sample-prediction-step-4-5" class="section level2">
-<h2>Economy and PV: Out-of-sample prediction (STEP 4 &amp; 5)</h2>
+## ====================================================================================================
+##                                                   Dependent variable:                               
+##                     --------------------------------------------------------------------------------
+##                                             H_incumbent_party_majorvote_pct                         
+##                             GDP                RDI                  UE                Model 1       
+##                             (1)                (2)                 (3)                  (4)         
+## ----------------------------------------------------------------------------------------------------
+## GDP_growth_pct            -0.912*                                                      2.903*       
+##                           (0.520)                                                     (1.565)       
+##                                                                                                     
+## DSPIC_change_pct                              -0.796                                  -1.577**      
+##                                              (0.609)                                  (0.675)       
+##                                                                                                     
+## GDP_growth_qt                                                                        -0.036***      
+##                                                                                       (0.013)       
+##                                                                                                     
+## UNRATE                                                           0.747**               0.420        
+##                                                                  (0.325)              (0.337)       
+##                                                                                                     
+## Constant                 52.424***          52.578***           47.480***            51.179***      
+##                           (0.656)            (0.760)             (1.940)              (2.205)       
+##                                                                                                     
+## ----------------------------------------------------------------------------------------------------
+## Observations                37                  31                  37                   31         
+## R2                         0.081              0.056               0.131                0.386        
+## Adjusted R2                0.054              0.023               0.106                0.292        
+## Residual Std. Error   3.270 (df = 35)    3.400 (df = 29)     3.180 (df = 35)      2.895 (df = 26)   
+## F Statistic         3.071* (df = 1; 35) 1.713 (df = 1; 29) 5.263** (df = 1; 35) 4.094** (df = 4; 26)
+## ====================================================================================================
+## Note:                                                                    *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+<p>My development of Model 1 finds that GDP, RDI, and unemployment all influence House incumbent vote share, but in varying directions and with varying levels of statistical significance. For GDP growth (%), Model 1 anticipates that as it grows by 1, House incumbent vote share will too by 2.9, which makes more sense. However, for GDP growth (absolute) and unemployment rate, increases in these are still associated with decreases in incumbent vote share.</p>
+<p>These results are again fascinating, as they are counter-intuitive and don’t follow the traditional knowledge political scientists lean on concerning retrospective voting, economic performance, and incumbent success. That said, Model 1 has an R-squared value of 0.386, which is much higher than the univariate R-squared values previously found.</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="30%" style="display: block; margin: auto;" /></p>
+<p>To evaluate the performance of my model and choice of model, I check the residuals. As shown below, they are roughly normally distributed around a center point of 0. This tells me that the form of Model 1 (linear) is adequate.</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="70%" style="display: block; margin: auto;" />
+After checking that Model 1 performs well after being tested with 1,000 runs of cross-validation, with a mean-error of roughly 1, I move to applying Model 1 to the most recent Q8 data available for the national economic variables in the model. This data comes from 2020, where</p>
 <pre class="r"><code>GDP_new &lt;- GDPquarterly_df %&gt;%
     subset(year == 2020 &amp; quarter_cycle == 8) %&gt;%
     select(GDP_growth_pct)
@@ -191,11 +88,11 @@ newdf %&gt;%
 
 #Interpretation: This means that, according to our model, a year with these traits, on average, has a (stopping distance ranging between 51.83 and 62.44 ft)46, 54) H incumbent vote share</code></pre>
 <p>Though my model predicted the House popular vote share of 2020 well, even given the novel nature of the economics of that COVID-ridden election cycle, it still can be improved with wider purview into House incumbent seat share and totals. As discussion in Gov 1347: Election Analytics, for House races, it is often the actual seats in the House that matter to parties and party members. Due</p>
+<p>Wright wrote in 2012 that worsened (so, increased) unemployment affects Democrats differently than it does Republicans. I wonder if this finding holds when we focus specifically on House elections – this would be interesting to explore given more time.</p>
 <hr />
 <p><strong>References</strong></p>
 <p>[1] Achen, &amp; Bartels, L. M. (2017). Democracy for realists (REV - Revised). Princeton University Press.
 <a href="https://muse.jhu.edu/book/64646" class="uri">https://muse.jhu.edu/book/64646</a></p>
-<p>[2] Rakich, N., &amp; Mejia, E. (2022, March 31). The house map’s Republican bias will plummet in 2022 - because of gerrymandering. FiveThirtyEight. <a href="https://fivethirtyeight.com/features/the-house-maps-republican-bias-will-plummet-in-2022-because-of-gerrymandering/" class="uri">https://fivethirtyeight.com/features/the-house-maps-republican-bias-will-plummet-in-2022-because-of-gerrymandering/</a></p>
-<p>[3] Vestal, James Allan, et al. (2020). Georgia Results 2020. <a href="https://www.politico.com/2020-election/results/georgia/" class="uri">https://www.politico.com/2020-election/results/georgia/</a></p>
-</div>
-</div>
+<p>[2] Healy, &amp; Lenz, G. S. (2014). Substituting the End for the Whole: Why Voters Respond Primarily to the Election-Year Economy. American Journal of Political Science, 58(1), 31–47. <a href="https://doi.org/10.1111/ajps.12053" class="uri">https://doi.org/10.1111/ajps.12053</a></p>
+<p>[3] Wright. (2012). Unemployment and the Democratic Electoral Advantage. The American Political Science Review, 106(4), 685–702. <a href="https://doi.org/10.1017/S0003055412000330" class="uri">https://doi.org/10.1017/S0003055412000330</a></p>
+<p>[4] Rakich, N., &amp; Mejia, E. (2022, March 31). The house map’s Republican bias will plummet in 2022 - because of gerrymandering. FiveThirtyEight. <a href="https://fivethirtyeight.com/features/the-house-maps-republican-bias-will-plummet-in-2022-because-of-gerrymandering/" class="uri">https://fivethirtyeight.com/features/the-house-maps-republican-bias-will-plummet-in-2022-because-of-gerrymandering/</a></p>

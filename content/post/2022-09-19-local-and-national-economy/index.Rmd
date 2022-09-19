@@ -21,6 +21,7 @@ library(tidyverse)
 library(car)
 library(readr)
 library(stargazer)
+library(gridExtra)
 
 popvote_df <- read_csv('house_popvote_seats.csv') 
 GDPquarterly_df <- read_csv('GDP_quarterly.csv')
@@ -71,166 +72,76 @@ Last week, my dive into the 2018 election results and swings confirmed that the 
 
 This week, I temporarily move away from cyclical election study to delve into one of the most promising ways to predict election outcomes -- economics. Retrospective voting, a model of voting in which voters elect leaders based off of recent experiences and judgment of welfare under incumbent leadership, dictates that for many elections, the results largely rely on the state of the economy in the last quarter of the election cycle (Achen & Bartels, 2017). For presidential elections, this means that national economic variables like GDP (gross domestic product), unemployment, and RDI (real disposable income) can account for a lot of the variation in incumbent candidate popularity. **I explore this relationship between national economic variables and incumbent vote share, but for House races from 1948 to 2020. I want to know which variables accurately predict House incumbent party vote share, and build a model accordingly. Lastly, I will test my model with data from 2020 to see how well it would've predicted the last election.** 
 
-To start identifying which national economic variables predict House incumbent vote share well, I investigated how Quarter 8 GDP growth (percentage), unemployment rate, and RDI change (percentage), individually, are related to incumbent party vote share.
+To start identifying which national economic variables predict House incumbent vote share well, I first investigated how Quarter 8 GDP growth (percentage), RDI change (percentage), and unemployment rate, individually, are related to incumbent party vote share. I specifically choose Quarter 8 because voters often refer to the latest memory they have of the economy to judge how the economy has performed under their incumbent leader(s) (Achen & Bartels, 2017. Healy & Lenz, 2014).
 
 ```{r, echo=FALSE, fig.width = 8, fig.height=6, out.width = '100%', fig.align='center'}
+
+## Correlations
+
+GDP_cor <- paste("corr(GDP, Y) = ", round(cor(results_GDP$GDP_growth_pct, results_GDP$H_incumbent_party_majorvote_pct), 4))
+RDI_cor <- paste("corr(RDI, Y) = ", round(cor(results_RDI$DSPIC_change_pct, results_RDI$H_incumbent_party_majorvote_pct), 4))
+UE_cor <- paste("corr(UE, Y) = ", round(cor(results_UE$UNRATE, results_UE$H_incumbent_party_majorvote_pct), 4))
 
 ## Simple plots of univariable regressions for GDP, RDI, and UE
 
 # GDP plot
-newdf %>%
+g1 <- newdf %>%
   ggplot(aes(x=GDP_growth_pct, y=H_incumbent_party_majorvote_pct,
              label=year)) + 
-    geom_text(size = 8) +
+    geom_text() + geom_text(x=-1.2, y=44.7, label="Y = 52.42 - 0.9118 * X", color = 'red') + geom_text(x=2.3, y=44.7, label = GDP_cor, color = 'firebrick') +
     geom_smooth(method="lm", formula = y ~ x) +
     geom_hline(yintercept=50, lty=2) +
     geom_vline(xintercept=0.01, lty=2) + # median
     xlab("Q8-Q7 GDP growth percentage (X)") +
     ylab("Incumbent party PV (Y)") +
-    theme_bw() +
-    ggtitle("Y = 52.42 - 0.9118  * X") + 
-    theme(axis.text = element_text(size = 20),
-          axis.title = element_text(size = 24),
-          plot.title = element_text(size = 32))
+    theme_bw() + ylim(45, 58) +
+    ggtitle("GDP Growth %") 
 
 # RDI plot
-newdf %>%
+g2 <- newdf %>%
   ggplot(aes(x = DSPIC_change_pct, y = H_incumbent_party_majorvote_pct,
              label=year)) + 
-    geom_text(size = 8) +
+      geom_text() + geom_text(x=-1.1, y=44.7, label="Y = 52.58 - 0.7964 * X", color = 'red') + geom_text(x=2.7, y=44.7, label = RDI_cor, color = 'firebrick') +
     geom_smooth(method="lm", formula = y ~ x) +
     geom_hline(yintercept=50, lty=2) +
     geom_vline(xintercept=0.01, lty=2) + # median
     xlab("Q8-Q7 RDI change percentage (X)") +
     ylab("Incumbent party PV (Y)") +
-    theme_bw() +
-    ggtitle("Y = 52.58 - 0.7964  * X") + 
-    theme(axis.text = element_text(size = 20),
-          axis.title = element_text(size = 24),
-          plot.title = element_text(size = 32))
+    theme_bw() + ylim(45, 58) +
+    ggtitle("RDI Change %")
 
 # UE plot
-newdf %>%
+g3 <- newdf %>%
   ggplot(aes(x = UNRATE, y = H_incumbent_party_majorvote_pct,
-             label=year)) + 
-    geom_text(size = 8) +
+             label=year)) +
+      geom_text() + geom_text(x=3.8, y=44.7, label="Y = 47.48 + 0.7466  * X", color = 'red') + geom_text(x=7, y=44.7, label = UE_cor, color = 'firebrick') +
     geom_smooth(method="lm", formula = y ~ x) +
     geom_hline(yintercept=50, lty=2) +
     geom_vline(xintercept=0.01, lty=2) + # median
     xlab("Q8-Q7 Unemployment rate (X)") +
     ylab("Incumbent party PV (Y)") +
-    theme_bw() +
-    ggtitle("Y = 47.48 + 0.7466082  * X") + 
-    theme(axis.text = element_text(size = 20),
-          axis.title = element_text(size = 24),
-          plot.title = element_text(size = 32))
+    theme_bw() + xlim(2.7, 8) + ylim(45, 58) +
+    ggtitle("Unemployment Rate")
+
+grid.arrange(g1, g2, g3, ncol = 3)
 
 ```
 
+As shown above, each variable, GDP growth, RDI change, and unemployment rate, respectively, are correlated to House incumbent vote share - as GDP growth percentage decreases, or RDI change percentage decreases, or unemployment rate grows, House incumbent vote share grows. These correlations are unintuitive, and suggest that voters do not accurately hold their leaders accountable according to national economic performance. 
 
-
-To answer this question, I pulled data about the House party vote shares for 2016, 2018, and 2020. I show 2018-2016 and 2020-2018 comparison maps, which consist of states colored by the quantity $\frac{D_y}{D_y + R_y} - \frac{D_{y - 2}}{D_{y - 2} + R_{y - 2}}$. This quantity is a measure of state swing in Democratic Party vote share for that House election, since the previous one. Below is the 2018-2016 swing map - negative (red) values show a decline in (D) House vote share in a given state since 2016, positive (blue) values show the opposite, and near-zero (white) values represent no change in (D) House vote. 
-
-My analysis confirms that the House elections of the 2018 midterms followed the traditional pattern of the president's party performing rather poorly -- With the exception of Connecticut, Hawaii, Massachusetts, Vermont, and Wyoming, the Democrats gained vote share in every state in comparison to the 2016 House elections. This pattern of president's party disadvantage in midterms has been upheld at an incredibly high rate throughout the 20th and 21st century, and it is expected to hold in this year's midterm elections.
-
-However, this swing against the executive party may reverse by the next House elections, and this was indeed true in 2020.
-
-Unlike the previous swing comparison, the 2020-2018 comparison reveals that most states saw a decline in (D) party vote share in the House elections of 2020. Florida, Georgia, North Carolina, Rhode Island, and Maine were the only states to not see a decline in (D) House vote share. Georgia was an anomaly, and huge victory for the Democrats, in the 2020 elections, where less than 13,000 popular votes (Politico) determined Biden's victory in the electoral college and one House seat was flipped by the Democrats in district 7. Other than these 5 states, the Democrats lost vote share in nearly every state House election the Democrats but clinched the presidency by a decent margin (about 4 percentage points, Cook Political Report).
-
-My dive into the 2018 and 2020 House election results and swings has revealed several observations: (1) Because the president's party has always been known to suffer during midterms, and this tradition remained true in the 2018 midterms, it should be expected that the Democrats see this same poor performance in November. (2) Looking beyond the midterms, Democrats may be relieved to hear that the president's party does seem to get some of their vote share back in House elections by the next general election. We saw that in 2020, House vote shares declined for Democrats in nearly all states. (3) It is important to study swings and temporally relative party performance to see how voters move in preference over different House elections, but it is also very important to study the House elections move in absolute terms -- although observation (2) recognized that the president's party does gain a lot of its lost House vote share back by the general election, 2020 showed us that this gain was ultimately not enough, with the challenger party taking the House, the Senate (by a hair), and the presidency. 
-
-
-
-
-
-
-
-```{r, echo=FALSE, eval=TRUE, fig.width=5, fig.height=3, out.width = '60%', fig.align='center'}
-
-## Scatter plots
-
-# GDP vs. House Incumbent Vote Share
-results_GDP %>%
-  ggplot(aes(x=GDP_growth_pct, y=H_incumbent_party_majorvote_pct,
-             label=year)) + 
-    geom_text() +
-    geom_hline(yintercept=50, lty=2) +
-    geom_vline(xintercept=0.00, lty=2) + # median
-    xlab("Q8-Q7 GDP growth") +
-    ylab("Incumbent party PV") +
-    theme_bw() +
-    theme(axis.text = element_text(size = 10))
-
-# RDI vs. House Incumbent Vote Share
-results_RDI %>%
-  ggplot(aes(x=DSPIC_change_pct, y=H_incumbent_party_majorvote_pct,
-             label=year)) + 
-    geom_text() +
-    geom_hline(yintercept=50, lty=2) +
-    geom_vline(xintercept=0.00, lty=2) + # median
-    xlab("Q8-Q7 DSPIC growth") +
-    ylab("Incumbent party PV") +
-    theme_bw() +
-    theme(axis.text = element_text(size = 10))
-
-# UE vs. House Incumbent Vote Share
-results_UE %>%
-  ggplot(aes(x=UNRATE, y=H_incumbent_party_majorvote_pct,
-             label=year)) + 
-    geom_text() +
-    geom_hline(yintercept=50, lty=2) +
-    geom_vline(xintercept=0.00, lty=2) + # median
-    xlab("Q8-Q7 UE rate") +
-    ylab("Incumbent party PV") +
-    theme_bw() +
-    theme(axis.text = element_text(size = 10))
-
-```
-
-## Bivariate correlation of GDP /  and PV
-
-```{r, eval=FALSE}
-
-## Finding correlations
-
-cor(results_GDP$GDP_growth_pct, results_GDP$H_incumbent_party_majorvote_pct)
-cor(results_RDI$DSPIC_change_pct, results_RDI$H_incumbent_party_majorvote_pct)
-cor(results_UE$UNRATE, results_UE$H_incumbent_party_majorvote_pct)
-
-
-cor(results_UE$UNRATE, results_UE$year)
-cor(results_GDP$GDP_growth_pct, results_GDP$year)
-
-```
-
-## Economy and PV: Fitting a model (STEP 1 \& 2) {.build}
-
-
-
+That said, these correlations are not too explanatory by themselves and may be very susceptible to noise, with R-squared values of 0.081, 0.056, and 0.131. I moved on from univariate relationships between these national economic variables House incumbent vote share to multivariable relationships, hoping to find a model that incorporates multiple economic variables to predict incumbent vote share. In this multivariable model (which I call Model 1), I consider the predictors `GDP_growth_pct` (GDP growth %), `DSPIC_change_pct` (RDI change %), `GDP_growth_qt` (GDP growth), and `UNRATE` (unemployment rate) to investigate how they influence incumbent vote share in conjunction. 
 
 ```{r, echo=TRUE}
 
 lm_GDP <- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct, data = newdf)
 lm_RDI <- lm(H_incumbent_party_majorvote_pct ~ DSPIC_change_pct, data = newdf)
 lm_UE <- lm(H_incumbent_party_majorvote_pct ~ UNRATE, data = newdf)
-lm_model <- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct + DSPIC_change_pct + GDP_growth_qt + UNRATE, data = newdf)
-lm_model_year <- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct + DSPIC_change_pct + GDP_growth_qt + UNRATE + year, data = newdf)
-stargazer(lm_GDP, lm_RDI, lm_UE, lm_model, lm_model_year, title = "Results", type = "text")
+lm_model <- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct + DSPIC_change_pct +  GDP_growth_qt + UNRATE, data = newdf)
+
+stargazer(lm_GDP, lm_RDI, lm_UE, lm_model, title = "Results", type = "text", column.labels = c("GDP", "RDI", "UE", "Model 1"))
 
 ```
-
-
-## Economy and PV: Fitting a model (STEP 1 \& 2)
-
-
-
-
-
-# How to evaluate your model (STEP 3)
-
-## Model Fit: $R^2$
-
-```{r}
+```{r, include = FALSE}
 
 summary(lm_GDP)$r.squared
 summary(lm_RDI)$r.squared
@@ -238,119 +149,31 @@ summary(lm_UE)$r.squared
 summary(lm_model)$r.squared
 
 ```
+My development of Model 1 finds that GDP, RDI, and unemployment all influence House incumbent vote share, but in varying directions and with varying levels of statistical significance. For GDP growth (%), Model 1 anticipates that as it grows by 1, House incumbent vote share will too by 2.9, which makes more sense. However, for GDP growth (absolute) and unemployment rate, increases in these are still associated with decreases in incumbent vote share. 
 
-## Model Fit: in-sample error and MSE
-
+These results are again fascinating, as they are counter-intuitive and don't follow the traditional knowledge political scientists lean on concerning retrospective voting, economic performance, and incumbent success. That said, Model 1 has an R-squared value of 0.386, which is much higher than the univariate R-squared values previously found. 
 
 ```{r, fig.width=3, fig.height=2, out.width = '30%', fig.align='center'}
-# UE
-plot(newdf$year, newdf$H_incumbent_party_majorvote_pct, 
-     type="l",
-     main="true Y (line), predicted Y (dot) for each year")
-points(newdf$year, predict(lm_UE, newdf))
 
 # My model
 plot(newdf$year, newdf$H_incumbent_party_majorvote_pct, 
      type="l",
-     main="true Y (line), predicted Y (dot) for each year")
-points(newdf$year, predict(lm_model, newdf))
+     main="Model 1 Predictions",
+     sub = "True Y (line), Predicted Y (dot) for each year",
+     col.sub = "firebrick",
+     xlab = "Year",
+     ylab = "House Incumbent Party Vote Share")
+points(newdf$year, predict(lm_model, newdf), col = "red", pch = 18)
 
 ```
 
-## Model Fit: in-sample error and MSE
-
-We can plot the in-sample error via \textbf{residuals}, which capture the difference between each observed value ($y_i$) and predicted value ($\widehat{y}_i = \hat{A} + \widehat{B}x_i$):
+To evaluate the performance of my model and choice of model, I check the residuals. As shown below, they are roughly normally distributed around a center point of 0. This tells me that the form of Model 1 (linear) is adequate.
 
 ```{r, fig.width=6, fig.height=4, out.width = '70%', fig.align='center'}
-# UE
-hist(lm_UE$model$H_incumbent_party_majorvote_pct - lm_UE$fitted.values, 
-     main="histogram of true Y - predicted Y")
-# My model
+# Residual distribution of my model
 hist(lm_model$model$H_incumbent_party_majorvote_pct - lm_model$fitted.values,
-     main="histogram of true Y - predicted Y")
+     main="Histogram of Residuals (true Y - predicted Y)", xlab = "Residual")
 ```
-
-## Model Fit: in-sample error and MSE
-
-We can summarise the error a single number, such as the \textbf{mean-squared error (MSE)}:
-
-```{r}
-# GDP
-mse_UE <- mean((lm_UE$model$H_incumbent_party_majorvote_pct - lm_UE$fitted.values)^2)
-mse_GDP <- mean((lm_GDP$model$H_incumbent_party_majorvote_pct - lm_GDP$fitted.values)^2)
-mse_RDI <- mean((lm_RDI$model$H_incumbent_party_majorvote_pct - lm_RDI$fitted.values)^2)
-mse_model <- mean((lm_model$model$H_incumbent_party_majorvote_pct - lm_model$fitted.values)^2)
-
-cat("UE:", sqrt(mse_UE))
-cat("\nGDP:", sqrt(mse_GDP))
-cat("\nRDI:", sqrt(mse_RDI))
-cat("\nMy model:", sqrt(mse_model))
-
-```
-\textcolor{red}{This is hard to interpret on its own, more useful in comparison with other models.}
-
-## Model Testing
-\pause
-Checking in-sample model predictions is a good baseline evaluation, but it feels a bit like "cheating" \pause $\rightsquigarrow$ can we take away the model's "answer key"? \pause
-
-<!--the best test of a model's predictive score -- simulate out-of-sample 
-    prediction and check performance against ground-truth; in-sample is sort of 
-    easy because it's double dipping the data, this is a harder test!-->
-
-We can simulate \textbf{out-of-sample prediction} (also called out-of-sample testing) by withholding some observation, e.g. $X_{2018}$, before fitting: \pause
-
-```{r}
-#My model
-outsamp_mod1 <- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct,
-                    newdf[newdf$year != 2018,])
-outsamp_pred <- predict(outsamp_mod1,
-                        newdf[newdf$year == 2018,])
-outsamp_true <- newdf$H_incumbent_party_majorvote_pct[newdf$year == 2018]
-```
-\pause and see how well the model predicts the true $Y_{2018}$ for the held-out observation $X_{2018}$:
-```{r}
-outsamp_pred - outsamp_true
-```
-Leaving a single observation out and testing the model against the ground truth is, \pause you guessed it, called \textbf{leave-one-out validation}.
-
-## Model Testing
-
-\textbf{Cross-validation}: withhold a *random subset* of the sample, fit model on rest of sample, and evaluate predictive performance on the held-out observations. \pause
-
-<!-- Me: predicts 2016 within 2 points..but ok 2016 was weird -->
-
-
-```{r}
-# GDP
-years_outsamp <- sample(newdf$year, 8)
-mod <- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct,
-          newdf[!(newdf$year %in% years_outsamp),])
-outsamp_pred <- predict(mod,
-                newdata = newdf[newdf$year %in%
-                                 years_outsamp,])
-```
-\pause
-```{r}
-mean(outsamp_pred - newdf$H_incumbent_party_majorvote_pct[newdf$year %in% years_outsamp])
-```
-\pause \textcolor{red}{But we don't want to do this just once.}
-
-## Model Testing
-
-Cross-validation involves repeatedly evaluating performance against many randomly held-out "out-of-sample" datasets:
-
-<!-- we can do this many times and see how out-of-sample performance usually is -->
-```{r, eval=FALSE}
-years_outsamp <- sample(newdf$year, 8)
-outsamp_mod <- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct, newdf[!(newdf$year %in% years_outsamp),])
-outsamp_pred <- predict(outsamp_mod, newdata = newdf[newdf$year %in% years_outsamp,])
-outsamp_true <- newdf$H_incumbent_party_majorvote_pct[newdf$year %in% years_outsamp]
-mean(outsamp_pred - outsamp_true)
-```
-
-## Model Testing
-
-Cross-validation involves repeatedly evaluating performance against many randomly held-out "out-of-sample" datasets:
 
 ```{r}
 outsamp_errors <- sapply(1:1000, function(i){
@@ -366,30 +189,13 @@ outsamp_errors <- sapply(1:1000, function(i){
 })
 ```
 
-##  Model Testing
-
 ```{r, echo=FALSE, message=FALSE, fig.width=6, fig.height=3, out.width = '70%', fig.align='center'}
 hist(outsamp_errors,
      xlab = "",
-     main = "mean out-of-sample residual\n(1000 runs of cross-validation)")
+     main = "Mean Out-of-Sample Residual\n(1000 runs of cross-validation)")
 ```
+After checking that Model 1 performs well after being tested with 1,000 runs of cross-validation, with a mean-error of roughly 1, I move to applying Model 1 to the most recent Q8 data available for the national economic variables in the model. This data comes from 2020, where
 
-
-```{r}
-mean(abs(outsamp_errors))
-```
-
-```{r}
-
-# Residuals
-plot(fitted(lm_model), resid(lm_model))
-abline(0, 0)
-
-stargazer(lm_model, type = 'text')
-
-```
-
-## Economy and PV: Out-of-sample prediction (STEP 4 \& 5)
 
 ```{r, echo=TRUE, eval=FALSE}
 
@@ -418,7 +224,17 @@ newdf %>%
 
 ```
 
+
+
+
+
+
+
+
+
 Though my model predicted the House popular vote share of 2020 well, even given the novel nature of the economics of that COVID-ridden election cycle, it still can be improved with wider purview into House incumbent seat share and totals. As discussion in Gov 1347: Election Analytics, for House races, it is often the actual seats in the House that matter to parties and party members. Due 
+
+Wright wrote in 2012 that worsened (so, increased) unemployment affects Democrats differently than it does Republicans. I wonder if this finding holds when we focus specifically on House elections -- this would be interesting to explore given more time.
 
 
 
@@ -429,6 +245,8 @@ Though my model predicted the House popular vote share of 2020 well, even given 
 [1] Achen, & Bartels, L. M. (2017). Democracy for realists (REV - Revised). Princeton University Press.
 https://muse.jhu.edu/book/64646
 
-[2] Rakich, N., &amp; Mejia, E. (2022, March 31). The house map's Republican bias will plummet in 2022 - because of gerrymandering. FiveThirtyEight.  https://fivethirtyeight.com/features/the-house-maps-republican-bias-will-plummet-in-2022-because-of-gerrymandering/ 
+[2] Healy, & Lenz, G. S. (2014). Substituting the End for the Whole: Why Voters Respond Primarily to the Election-Year Economy. American Journal of Political Science, 58(1), 31–47. https://doi.org/10.1111/ajps.12053
 
-[3] Vestal, James Allan, et al. (2020). Georgia Results 2020. https://www.politico.com/2020-election/results/georgia/
+[3] Wright. (2012). Unemployment and the Democratic Electoral Advantage. The American Political Science Review, 106(4), 685–702. https://doi.org/10.1017/S0003055412000330
+
+[4] Rakich, N., & Mejia, E. (2022, March 31). The house map's Republican bias will plummet in 2022 - because of gerrymandering. FiveThirtyEight.  https://fivethirtyeight.com/features/the-house-maps-republican-bias-will-plummet-in-2022-because-of-gerrymandering/ 
