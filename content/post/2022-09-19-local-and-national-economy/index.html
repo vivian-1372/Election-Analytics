@@ -1,10 +1,11 @@
 ---
-title: Economic Predictors of House Incumbent Vote Share
-author: Vivian Nguyen
+title: "Economic Predictors of House Incumbent Vote Share"
+author: "Vivian Nguyen"
 date: '2022-09-19'
-slug: []
+output: pdf_document
 categories: []
 tags: []
+slug: []
 ---
 
 <script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
@@ -15,43 +16,19 @@ tags: []
 <p><strong>Blog Extension: Model Evaluation. Build multiple predictive models using national economic variables as predictors. Compare those models using the tools we learned today. How much is your 2022 prediction sensitive to the change of measure(s)? What does it tell us about the economic model of voting behavior?</strong></p>
 <p>Last week, my dive into the 2018 election results and swings confirmed that the president’s party often performs poorly in the midterms. By the 2020 House elections, the president’s party gained some of its vote share back.</p>
 <p>This week, I temporarily move away from cyclical election study to delve into one of the most promising ways to predict election outcomes – economics. Retrospective voting, a model of voting in which voters elect leaders based off of recent experiences and judgment of welfare under incumbent leadership, dictates that for many elections, the results largely rely on the state of the economy in the last quarter of the election cycle (Achen &amp; Bartels, 2017). For presidential elections, this means that national economic variables like GDP (gross domestic product), unemployment, and RDI (real disposable income) can account for a lot of the variation in incumbent candidate popularity. <strong>I explore this relationship between national economic variables and incumbent vote share, but for House races from 1948 to 2020. I want to know which variables accurately predict House incumbent party vote share, and build a model accordingly. Lastly, I will test my model with data from 2020 to see how well it would’ve predicted the last election.</strong></p>
+<p>To start identifying which national economic variables predict House incumbent vote share well, I investigated how Quarter 8 GDP growth (percentage), unemployment rate, and RDI change (percentage), individually, are related to incumbent party vote share.</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="100%" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-2.png" width="100%" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-3.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>To answer this question, I pulled data about the House party vote shares for 2016, 2018, and 2020. I show 2018-2016 and 2020-2018 comparison maps, which consist of states colored by the quantity <span class="math inline">\(\frac{D_y}{D_y + R_y} - \frac{D_{y - 2}}{D_{y - 2} + R_{y - 2}}\)</span>. This quantity is a measure of state swing in Democratic Party vote share for that House election, since the previous one. Below is the 2018-2016 swing map - negative (red) values show a decline in (D) House vote share in a given state since 2016, positive (blue) values show the opposite, and near-zero (white) values represent no change in (D) House vote.</p>
+<p>My analysis confirms that the House elections of the 2018 midterms followed the traditional pattern of the president’s party performing rather poorly – With the exception of Connecticut, Hawaii, Massachusetts, Vermont, and Wyoming, the Democrats gained vote share in every state in comparison to the 2016 House elections. This pattern of president’s party disadvantage in midterms has been upheld at an incredibly high rate throughout the 20th and 21st century, and it is expected to hold in this year’s midterm elections.</p>
+<p>However, this swing against the executive party may reverse by the next House elections, and this was indeed true in 2020.</p>
+<p>Unlike the previous swing comparison, the 2020-2018 comparison reveals that most states saw a decline in (D) party vote share in the House elections of 2020. Florida, Georgia, North Carolina, Rhode Island, and Maine were the only states to not see a decline in (D) House vote share. Georgia was an anomaly, and huge victory for the Democrats, in the 2020 elections, where less than 13,000 popular votes (Politico) determined Biden’s victory in the electoral college and one House seat was flipped by the Democrats in district 7. Other than these 5 states, the Democrats lost vote share in nearly every state House election the Democrats but clinched the presidency by a decent margin (about 4 percentage points, Cook Political Report).</p>
+<p>My dive into the 2018 and 2020 House election results and swings has revealed several observations: (1) Because the president’s party has always been known to suffer during midterms, and this tradition remained true in the 2018 midterms, it should be expected that the Democrats see this same poor performance in November. (2) Looking beyond the midterms, Democrats may be relieved to hear that the president’s party does seem to get some of their vote share back in House elections by the next general election. We saw that in 2020, House vote shares declined for Democrats in nearly all states. (3) It is important to study swings and temporally relative party performance to see how voters move in preference over different House elections, but it is also very important to study the House elections move in absolute terms – although observation (2) recognized that the president’s party does gain a lot of its lost House vote share back by the general election, 2020 showed us that this gain was ultimately not enough, with the challenger party taking the House, the Senate (by a hair), and the presidency.</p>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="60%" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-2.png" width="60%" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-3.png" width="60%" style="display: block; margin: auto;" /></p>
 <div id="bivariate-correlation-of-gdp-and-pv" class="section level2">
 <h2>Bivariate correlation of GDP / and PV</h2>
-<pre class="r"><code>## Finding correlations
-
-cor(results_GDP$GDP_growth_pct, results_GDP$H_incumbent_party_majorvote_pct)
-cor(results_RDI$DSPIC_change_pct, results_RDI$H_incumbent_party_majorvote_pct)
-cor(results_UE$UNRATE, results_UE$H_incumbent_party_majorvote_pct)
-
-
-cor(results_UE$UNRATE, results_UE$year)
-cor(results_GDP$GDP_growth_pct, results_GDP$year)</code></pre>
 </div>
 <div id="economy-and-pv-fitting-a-model-step-1-2" class="section level2 build">
 <h2>Economy and PV: Fitting a model (STEP 1 &amp; 2)</h2>
-<pre class="r"><code>newdf &lt;- left_join(results_UE, results_GDP, by = &#39;year&#39;)
-newdf &lt;-left_join (newdf, results_RDI, by = &#39;year&#39;) %&gt;%
-  select(&#39;year&#39;, &#39;winner_party.x&#39;, &#39;H_incumbent_party.x&#39;, &#39;H_incumbent_party_majorvote_pct.x&#39;, &#39;quarter_cycle.x&#39;, &#39;UNRATE&#39;, &#39;GDP_growth_pct&#39;, &#39;DSPIC_change_pct&#39;, &#39;unrate_qt_total&#39;, &#39;DSPIC_change_qt&#39;, &#39;GDP_growth_qt&#39;, &#39;UNRATE_change&#39;) %&gt;%
-  rename(&#39;winner_party&#39; = &#39;winner_party.x&#39;, &#39;H_incumbent_party_majorvote_pct&#39; = &#39;H_incumbent_party_majorvote_pct.x&#39;, &#39;quarter_cycle&#39; = &#39;quarter_cycle.x&#39;, &#39;H_incumbent_party&#39; = &#39;H_incumbent_party.x&#39;)
-
-newdf</code></pre>
-<pre><code>## # A tibble: 37 × 12
-##     year winner_party H_incumbent_party H_incumbent_party_… quarter_cycle UNRATE
-##    &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;                           &lt;dbl&gt;         &lt;dbl&gt;  &lt;dbl&gt;
-##  1  1948 D            R                                46.6             4    3.7
-##  2  1950 R            D                                49.7             4    4.2
-##  3  1952 D            R                                48.8             4    3  
-##  4  1954 D            D                                52.4             4    5.7
-##  5  1956 D            D                                51.2             4    3.9
-##  6  1958 D            D                                55.0             4    6.7
-##  7  1960 D            D                                54.4             4    6.1
-##  8  1962 D            D                                52.9             4    5.4
-##  9  1964 D            D                                57.3             4    5.1
-## 10  1966 D            D                                50.9             4    3.7
-## # … with 27 more rows, and 6 more variables: GDP_growth_pct &lt;dbl&gt;,
-## #   DSPIC_change_pct &lt;dbl&gt;, unrate_qt_total &lt;dbl&gt;, DSPIC_change_qt &lt;dbl&gt;,
-## #   GDP_growth_qt &lt;dbl&gt;, UNRATE_change &lt;dbl&gt;</code></pre>
 <pre class="r"><code>lm_GDP &lt;- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct, data = newdf)
 lm_RDI &lt;- lm(H_incumbent_party_majorvote_pct ~ DSPIC_change_pct, data = newdf)
 lm_UE &lt;- lm(H_incumbent_party_majorvote_pct ~ UNRATE, data = newdf)
@@ -95,76 +72,33 @@ stargazer(lm_GDP, lm_RDI, lm_UE, lm_model, lm_model_year, title = &quot;Results&
 </div>
 <div id="economy-and-pv-fitting-a-model-step-1-2-1" class="section level2">
 <h2>Economy and PV: Fitting a model (STEP 1 &amp; 2)</h2>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;" /></p>
-<pre><code>##                  Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)    52.4238447  0.6556942 79.951665 3.225920e-41
-## GDP_growth_pct -0.9118204  0.5202833 -1.752546 8.843719e-02</code></pre>
-<pre><code>##                    Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept)      52.5781452  0.7596862 69.210344 9.333092e-34
-## DSPIC_change_pct -0.7963923  0.6085193 -1.308738 2.009001e-01</code></pre>
-<pre><code>##               Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept) 47.4800112  1.9399759 24.474536 1.327535e-23
-## UNRATE       0.7466082  0.3254423  2.294134 2.789902e-02</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-2.png" width="100%" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-3.png" width="100%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="how-to-evaluate-your-model-step-3" class="section level1">
 <h1>How to evaluate your model (STEP 3)</h1>
 <div id="model-fit-r2" class="section level2">
 <h2>Model Fit: <span class="math inline">\(R^2\)</span></h2>
-<pre class="r"><code>summary(lm_GDP)$r.squared</code></pre>
 <pre><code>## [1] 0.08067517</code></pre>
-<pre class="r"><code>summary(lm_RDI)$r.squared</code></pre>
 <pre><code>## [1] 0.05576812</code></pre>
-<pre class="r"><code>summary(lm_UE)$r.squared</code></pre>
 <pre><code>## [1] 0.1307167</code></pre>
-<pre class="r"><code>summary(lm_model)$r.squared</code></pre>
 <pre><code>## [1] 0.386466</code></pre>
 </div>
 <div id="model-fit-in-sample-error-and-mse" class="section level2">
 <h2>Model Fit: in-sample error and MSE</h2>
-<pre class="r"><code># UE
-plot(newdf$year, newdf$H_incumbent_party_majorvote_pct, 
-     type=&quot;l&quot;,
-     main=&quot;true Y (line), predicted Y (dot) for each year&quot;)
-points(newdf$year, predict(lm_UE, newdf))</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="30%" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># My model
-plot(newdf$year, newdf$H_incumbent_party_majorvote_pct, 
-     type=&quot;l&quot;,
-     main=&quot;true Y (line), predicted Y (dot) for each year&quot;)
-points(newdf$year, predict(lm_model, newdf))</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-2.png" width="30%" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="30%" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-2.png" width="30%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="model-fit-in-sample-error-and-mse-1" class="section level2">
 <h2>Model Fit: in-sample error and MSE</h2>
 <p>We can plot the in-sample error via , which capture the difference between each observed value (<span class="math inline">\(y_i\)</span>) and predicted value (<span class="math inline">\(\widehat{y}_i = \hat{A} + \widehat{B}x_i\)</span>):</p>
-<pre class="r"><code># UE
-hist(lm_UE$model$H_incumbent_party_majorvote_pct - lm_UE$fitted.values, 
-     main=&quot;histogram of true Y - predicted Y&quot;)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># My model
-hist(lm_model$model$H_incumbent_party_majorvote_pct - lm_model$fitted.values,
-     main=&quot;histogram of true Y - predicted Y&quot;)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-2.png" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="70%" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-2.png" width="70%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="model-fit-in-sample-error-and-mse-2" class="section level2">
 <h2>Model Fit: in-sample error and MSE</h2>
 <p>We can summarise the error a single number, such as the :</p>
-<pre class="r"><code># GDP
-mse_UE &lt;- mean((lm_UE$model$H_incumbent_party_majorvote_pct - lm_UE$fitted.values)^2)
-mse_GDP &lt;- mean((lm_GDP$model$H_incumbent_party_majorvote_pct - lm_GDP$fitted.values)^2)
-mse_RDI &lt;- mean((lm_RDI$model$H_incumbent_party_majorvote_pct - lm_RDI$fitted.values)^2)
-mse_model &lt;- mean((lm_model$model$H_incumbent_party_majorvote_pct - lm_model$fitted.values)^2)
-
-cat(&quot;UE:&quot;, sqrt(mse_UE))</code></pre>
 <pre><code>## UE: 3.092707</code></pre>
-<pre class="r"><code>cat(&quot;\nGDP:&quot;, sqrt(mse_GDP))</code></pre>
 <pre><code>## 
 ## GDP: 3.180479</code></pre>
-<pre class="r"><code>cat(&quot;\nRDI:&quot;, sqrt(mse_RDI))</code></pre>
 <pre><code>## 
 ## RDI: 3.288667</code></pre>
-<pre class="r"><code>cat(&quot;\nMy model:&quot;, sqrt(mse_model))</code></pre>
 <pre><code>## 
 ## My model: 2.65094</code></pre>
 <p></p>
@@ -176,14 +110,7 @@ cat(&quot;UE:&quot;, sqrt(mse_UE))</code></pre>
     prediction and check performance against ground-truth; in-sample is sort of 
     easy because it's double dipping the data, this is a harder test!-->
 <p>We can simulate (also called out-of-sample testing) by withholding some observation, e.g. <span class="math inline">\(X_{2018}\)</span>, before fitting: </p>
-<pre class="r"><code>#My model
-outsamp_mod1 &lt;- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct,
-                    newdf[newdf$year != 2018,])
-outsamp_pred &lt;- predict(outsamp_mod1,
-                        newdf[newdf$year == 2018,])
-outsamp_true &lt;- newdf$H_incumbent_party_majorvote_pct[newdf$year == 2018]</code></pre>
 <p>and see how well the model predicts the true <span class="math inline">\(Y_{2018}\)</span> for the held-out observation <span class="math inline">\(X_{2018}\)</span>:</p>
-<pre class="r"><code>outsamp_pred - outsamp_true</code></pre>
 <pre><code>##        1 
 ## 6.681196</code></pre>
 <p>Leaving a single observation out and testing the model against the ground truth is, you guessed it, called .</p>
@@ -192,52 +119,23 @@ outsamp_true &lt;- newdf$H_incumbent_party_majorvote_pct[newdf$year == 2018]</co
 <h2>Model Testing</h2>
 <p>: withhold a <em>random subset</em> of the sample, fit model on rest of sample, and evaluate predictive performance on the held-out observations. </p>
 <!-- Me: predicts 2016 within 2 points..but ok 2016 was weird -->
-<pre class="r"><code># GDP
-years_outsamp &lt;- sample(newdf$year, 8)
-mod &lt;- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct,
-          newdf[!(newdf$year %in% years_outsamp),])
-outsamp_pred &lt;- predict(mod,
-                newdata = newdf[newdf$year %in%
-                                 years_outsamp,])</code></pre>
-<pre class="r"><code>mean(outsamp_pred - newdf$H_incumbent_party_majorvote_pct[newdf$year %in% years_outsamp])</code></pre>
-<pre><code>## [1] 0.7082</code></pre>
+<pre><code>## [1] 0.01346007</code></pre>
 <p></p>
 </div>
 <div id="model-testing-2" class="section level2">
 <h2>Model Testing</h2>
 <p>Cross-validation involves repeatedly evaluating performance against many randomly held-out “out-of-sample” datasets:</p>
 <!-- we can do this many times and see how out-of-sample performance usually is -->
-<pre class="r"><code>years_outsamp &lt;- sample(newdf$year, 8)
-outsamp_mod &lt;- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct, newdf[!(newdf$year %in% years_outsamp),])
-outsamp_pred &lt;- predict(outsamp_mod, newdata = newdf[newdf$year %in% years_outsamp,])
-outsamp_true &lt;- newdf$H_incumbent_party_majorvote_pct[newdf$year %in% years_outsamp]
-mean(outsamp_pred - outsamp_true)</code></pre>
 </div>
 <div id="model-testing-3" class="section level2">
 <h2>Model Testing</h2>
 <p>Cross-validation involves repeatedly evaluating performance against many randomly held-out “out-of-sample” datasets:</p>
-<pre class="r"><code>outsamp_errors &lt;- sapply(1:1000, function(i){
-    years_outsamp &lt;- sample(newdf$year, 8)
-  outsamp_mod &lt;- lm(H_incumbent_party_majorvote_pct ~
-                      GDP_growth_pct,
-                  newdf[!(newdf$year %in% years_outsamp),])
-  outsamp_pred &lt;- predict(outsamp_mod,
-                newdata = newdf[newdf$year %in% years_outsamp,])
-  outsamp_true &lt;- newdf$H_incumbent_party_majorvote_pct[newdf$year
-                                                       %in% years_outsamp]
-  mean(outsamp_pred - outsamp_true)
-})</code></pre>
 </div>
 <div id="model-testing-4" class="section level2">
 <h2>Model Testing</h2>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>mean(abs(outsamp_errors))</code></pre>
-<pre><code>## [1] 1.085705</code></pre>
-<pre class="r"><code># Residuals
-plot(fitted(lm_model), resid(lm_model))
-abline(0, 0)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
-<pre class="r"><code>stargazer(lm_model, type = &#39;text&#39;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<pre><code>## [1] 1.046135</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <pre><code>## 
 ## ===================================================
 ##                           Dependent variable:      
