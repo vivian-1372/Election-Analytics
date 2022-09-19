@@ -40,8 +40,6 @@ Last week, my dive into the 2018 election results and swings confirmed that the 
 This week, I temporarily move away from cyclical election study to delve into one of the most promising ways to predict election outcomes -- economics. Retrospective voting, a model of voting in which voters elect leaders based off of recent experiences and judgment of welfare under incumbent leadership, dictates that for many elections, the results largely rely on the state of the economy in the last quarter of the election cycle (Achen & Bartels, 2017). For presidential elections, this means that national economic variables like GDP (gross domestic product), unemployment, and RDI (real disposable income) can account for a lot of the variation in incumbent candidate popularity. **I explore this relationship between national economic variables and incumbent vote share, but for House races from 1948 to 2020. I want to know which variables accurately predict House incumbent party vote share, and build a model accordingly. Lastly, I will test my model with data from 2020 to see how well it would've predicted the last election.** 
 
 
-
-
 ```{r setup, include=FALSE}
 
 ## Set up

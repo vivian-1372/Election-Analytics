@@ -200,7 +200,7 @@ outsamp_pred &lt;- predict(mod,
                 newdata = newdf[newdf$year %in%
                                  years_outsamp,])</code></pre>
 <pre class="r"><code>mean(outsamp_pred - newdf$H_incumbent_party_majorvote_pct[newdf$year %in% years_outsamp])</code></pre>
-<pre><code>## [1] 0.4241447</code></pre>
+<pre><code>## [1] 0.7082</code></pre>
 <p></p>
 </div>
 <div id="model-testing-2" class="section level2">
@@ -232,7 +232,7 @@ mean(outsamp_pred - outsamp_true)</code></pre>
 <h2>Model Testing</h2>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>mean(abs(outsamp_errors))</code></pre>
-<pre><code>## [1] 1.04579</code></pre>
+<pre><code>## [1] 1.085705</code></pre>
 <pre class="r"><code># Residuals
 plot(fitted(lm_model), resid(lm_model))
 abline(0, 0)</code></pre>

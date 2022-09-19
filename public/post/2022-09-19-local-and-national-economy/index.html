@@ -255,7 +255,7 @@ outsamp_pred &lt;- predict(mod,
                 newdata = newdf[newdf$year %in%
                                  years_outsamp,])</code></pre>
 <pre class="r"><code>mean(outsamp_pred - newdf$H_incumbent_party_majorvote_pct[newdf$year %in% years_outsamp])</code></pre>
-<pre><code>## [1] 0.4241447</code></pre>
+<pre><code>## [1] 0.7082</code></pre>
 <p></p>
 </div>
 <div id="model-testing-2" class="section level2">
@@ -287,7 +287,7 @@ mean(outsamp_pred - outsamp_true)</code></pre>
 <h2>Model Testing</h2>
 <p><img src="http://example.org/post/2022-09-19-local-and-national-economy/index_files/figure-html/unnamed-chunk-18-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>mean(abs(outsamp_errors))</code></pre>
-<pre><code>## [1] 1.04579</code></pre>
+<pre><code>## [1] 1.085705</code></pre>
 <pre class="r"><code># Residuals
 plot(fitted(lm_model), resid(lm_model))
 abline(0, 0)</code></pre>
@@ -372,7 +372,7 @@ newdf %&gt;%
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-09-19 13:35:56.745171 -0400 EDT m=&#43;0.214160969">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-09-19 13:38:12.375975 -0400 EDT m=&#43;0.210882829">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 
