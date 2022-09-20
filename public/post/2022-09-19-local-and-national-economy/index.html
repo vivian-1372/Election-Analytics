@@ -77,72 +77,49 @@
 <pre class="r"><code>lm_GDP &lt;- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct, data = newdf)
 lm_RDI &lt;- lm(H_incumbent_party_majorvote_pct ~ DSPIC_change_pct, data = newdf)
 lm_UE &lt;- lm(H_incumbent_party_majorvote_pct ~ UNRATE, data = newdf)
-lm_model &lt;- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct + DSPIC_change_pct +  GDP_growth_qt + UNRATE, data = newdf)
+lm_model &lt;- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct + DSPIC_change_pct + UNRATE + GDP_growth_qt, data = newdf)
 
-stargazer(lm_GDP, lm_RDI, lm_UE, lm_model, title = &quot;Results&quot;, type = &quot;text&quot;, column.labels = c(&quot;GDP&quot;, &quot;RDI&quot;, &quot;UE&quot;, &quot;Model 1&quot;))</code></pre>
+stargazer(lm_GDP, lm_RDI, lm_UE, lm_model, title = &quot;Results&quot;, type = &quot;text&quot;, column.labels = c(&quot;GDP&quot;, &quot;RDI&quot;, &quot;UE&quot;, &quot;Model 1&quot;), covariate.labels = c(&quot;GDP Growth Percentage&quot;, &quot;RDI Change Percentage&quot;, &quot;Unemployment Rate&quot;, &quot;GDP Growth Absolute&quot;))</code></pre>
 <pre><code>## 
 ## Results
-## ====================================================================================================
-##                                                   Dependent variable:                               
-##                     --------------------------------------------------------------------------------
-##                                             H_incumbent_party_majorvote_pct                         
-##                             GDP                RDI                  UE                Model 1       
-##                             (1)                (2)                 (3)                  (4)         
-## ----------------------------------------------------------------------------------------------------
-## GDP_growth_pct            -0.912*                                                      2.903*       
-##                           (0.520)                                                     (1.565)       
-##                                                                                                     
-## DSPIC_change_pct                              -0.796                                  -1.577**      
-##                                              (0.609)                                  (0.675)       
-##                                                                                                     
-## GDP_growth_qt                                                                        -0.036***      
-##                                                                                       (0.013)       
-##                                                                                                     
-## UNRATE                                                           0.747**               0.420        
-##                                                                  (0.325)              (0.337)       
-##                                                                                                     
-## Constant                 52.424***          52.578***           47.480***            51.179***      
-##                           (0.656)            (0.760)             (1.940)              (2.205)       
-##                                                                                                     
-## ----------------------------------------------------------------------------------------------------
-## Observations                37                  31                  37                   31         
-## R2                         0.081              0.056               0.131                0.386        
-## Adjusted R2                0.054              0.023               0.106                0.292        
-## Residual Std. Error   3.270 (df = 35)    3.400 (df = 29)     3.180 (df = 35)      2.895 (df = 26)   
-## F Statistic         3.071* (df = 1; 35) 1.713 (df = 1; 29) 5.263** (df = 1; 35) 4.094** (df = 4; 26)
-## ====================================================================================================
-## Note:                                                                    *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+## ======================================================================================================
+##                                                     Dependent variable:                               
+##                       --------------------------------------------------------------------------------
+##                                               H_incumbent_party_majorvote_pct                         
+##                               GDP                RDI                  UE                Model 1       
+##                               (1)                (2)                 (3)                  (4)         
+## ------------------------------------------------------------------------------------------------------
+## GDP Growth Percentage       -0.912*                                                      2.903*       
+##                             (0.520)                                                     (1.565)       
+##                                                                                                       
+## RDI Change Percentage                           -0.796                                  -1.577**      
+##                                                (0.609)                                  (0.675)       
+##                                                                                                       
+## Unemployment Rate                                                  0.747**               0.420        
+##                                                                    (0.325)              (0.337)       
+##                                                                                                       
+## GDP Growth Absolute                                                                    -0.036***      
+##                                                                                         (0.013)       
+##                                                                                                       
+## Constant                   52.424***          52.578***           47.480***            51.179***      
+##                             (0.656)            (0.760)             (1.940)              (2.205)       
+##                                                                                                       
+## ------------------------------------------------------------------------------------------------------
+## Observations                  37                  31                  37                   31         
+## R2                           0.081              0.056               0.131                0.386        
+## Adjusted R2                  0.054              0.023               0.106                0.292        
+## Residual Std. Error     3.270 (df = 35)    3.400 (df = 29)     3.180 (df = 35)      2.895 (df = 26)   
+## F Statistic           3.071* (df = 1; 35) 1.713 (df = 1; 29) 5.263** (df = 1; 35) 4.094** (df = 4; 26)
+## ======================================================================================================
+## Note:                                                                      *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
 <p>My development of Model 1 finds that GDP, RDI, and unemployment all influence House incumbent vote share, but in varying directions and with varying levels of statistical significance. For GDP growth (%), Model 1 anticipates that as it grows by 1, House incumbent vote share will too by 2.9, which makes more sense. However, for GDP growth (absolute) and unemployment rate, increases in these are still associated with decreases in incumbent vote share.</p>
 <p>These results are again fascinating, as they are counter-intuitive and don’t follow the traditional knowledge political scientists lean on concerning retrospective voting, economic performance, and incumbent success. That said, Model 1 has an R-squared value of 0.386, which is much higher than the univariate R-squared values previously found.</p>
-<p><img src="http://example.org/post/2022-09-19-local-and-national-economy/index_files/figure-html/unnamed-chunk-5-1.png" width="30%" style="display: block; margin: auto;" /></p>
+<p><img src="http://example.org/post/2022-09-19-local-and-national-economy/index_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>To evaluate the performance of my model and choice of model, I check the residuals. As shown below, they are roughly normally distributed around a center point of 0. This tells me that the form of Model 1 (linear) is adequate.</p>
-<p><img src="http://example.org/post/2022-09-19-local-and-national-economy/index_files/figure-html/unnamed-chunk-6-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<p><img src="http://example.org/post/2022-09-19-local-and-national-economy/index_files/figure-html/unnamed-chunk-8-1.png" width="70%" style="display: block; margin: auto;" />
-After checking that Model 1 performs well after being tested with 1,000 runs of cross-validation, with a mean-error of roughly 1, I move to applying Model 1 to the most recent Q8 data available for the national economic variables in the model. This data comes from 2020, where</p>
-<pre class="r"><code>GDP_new &lt;- GDPquarterly_df %&gt;%
-    subset(year == 2020 &amp; quarter_cycle == 8) %&gt;%
-    select(GDP_growth_pct)
-UNRATE_new &lt;- UEquarterly_df %&gt;%
-    subset(year == 2020 &amp; quarter_cycle == 4) %&gt;%
-    select(UNRATE)
-DSPIC_new &lt;- RDIquarterly_df %&gt;%
-    subset(year == 2020 &amp; quarter_cycle == 8) %&gt;%
-    select(DSPIC_change_pct)
-GDP_qt_new &lt;- GDPquarterly_df %&gt;%
-    subset(year == 2020 &amp; quarter_cycle == 8) %&gt;%
-    select(GDP_growth_qt)
-
-new_data &lt;- data.frame(GDP_new, DSPIC_new, GDP_qt_new, UNRATE_new)
-
-predict(lm_model, new_data, interval=&quot;confidence&quot;)
-
-newdf %&gt;%
-  filter(year == 2020) %&gt;%
-  summarise(actual = H_incumbent_party_majorvote_pct)
-
-#Interpretation: This means that, according to our model, a year with these traits, on average, has a (stopping distance ranging between 51.83 and 62.44 ft)46, 54) H incumbent vote share</code></pre>
-<p>Though my model predicted the House popular vote share of 2020 well, even given the novel nature of the economics of that COVID-ridden election cycle, it still can be improved with wider purview into House incumbent seat share and totals. As discussion in Gov 1347: Election Analytics, for House races, it is often the actual seats in the House that matter to parties and party members. Due</p>
-<p>Wright wrote in 2012 that worsened (so, increased) unemployment affects Democrats differently than it does Republicans. I wonder if this finding holds when we focus specifically on House elections – this would be interesting to explore given more time.</p>
+<p><img src="http://example.org/post/2022-09-19-local-and-national-economy/index_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="http://example.org/post/2022-09-19-local-and-national-economy/index_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" />
+After checking that Model 1 performs well after being tested with 1,000 runs of cross-validation, with a mean-error of roughly 0, I move to applying Model 1 to the most recent data available for the national economic variables in the model. This data comes from Q2 2022, which is equivalent to Q6 of the current House. The reports indicate that in Q2 (or Q6), there was a -0.6% change in GDP, -0.6% change in RDI, -28.453 absolute change in GDPC1 (Real GDP, measured in billions of chained 2012 Dollars), and 3.6 national unemployment rate. <strong>With these inputs, Model 1 predicts that the incumbent party in the House (the Democratic Party) will have a vote share of 52.92% (50.20, 55.64).</strong></p>
+<p>This prediction is probably an overestimate given the fact that Model 1 did not account for the negative incumbent-midterm effect. Additionally, Model 1 should be used again once Q8 (so, Q4 of 2022) data becomes available to maximize its predictive power. The model can also be improved with wider purview into House incumbent seat share and totals. Lastly, Wright found that worsened (so, increased) unemployment affects Democrats differently than it does Republicans. Given more time, I would expore if this finding holds when we focus specifically on House elections.</p>
 <hr />
 <p><strong>References</strong></p>
 <p>[1] Achen, &amp; Bartels, L. M. (2017). Democracy for realists (REV - Revised). Princeton University Press.
@@ -150,6 +127,10 @@ newdf %&gt;%
 <p>[2] Healy, &amp; Lenz, G. S. (2014). Substituting the End for the Whole: Why Voters Respond Primarily to the Election-Year Economy. American Journal of Political Science, 58(1), 31–47. <a href="https://doi.org/10.1111/ajps.12053" class="uri">https://doi.org/10.1111/ajps.12053</a></p>
 <p>[3] Wright. (2012). Unemployment and the Democratic Electoral Advantage. The American Political Science Review, 106(4), 685–702. <a href="https://doi.org/10.1017/S0003055412000330" class="uri">https://doi.org/10.1017/S0003055412000330</a></p>
 <p>[4] Rakich, N., &amp; Mejia, E. (2022, March 31). The house map’s Republican bias will plummet in 2022 - because of gerrymandering. FiveThirtyEight. <a href="https://fivethirtyeight.com/features/the-house-maps-republican-bias-will-plummet-in-2022-because-of-gerrymandering/" class="uri">https://fivethirtyeight.com/features/the-house-maps-republican-bias-will-plummet-in-2022-because-of-gerrymandering/</a></p>
+<p>[5] <a href="https://www.bea.gov/data/gdp/gross-domestic-product" class="uri">https://www.bea.gov/data/gdp/gross-domestic-product</a></p>
+<p>[6] <a href="https://www.bea.gov/news/2022/gross-domestic-product-second-quarter-2022-advance-estimate" class="uri">https://www.bea.gov/news/2022/gross-domestic-product-second-quarter-2022-advance-estimate</a></p>
+<p>[7] <a href="https://fred.stlouisfed.org/series/GDPC1" class="uri">https://fred.stlouisfed.org/series/GDPC1</a></p>
+<p>[8] <a href="https://tradingeconomics.com/united-states/unemployment-rate" class="uri">https://tradingeconomics.com/united-states/unemployment-rate</a></p>
 
 
 		
@@ -166,7 +147,7 @@ newdf %&gt;%
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-09-19 18:13:56.82618 -0400 EDT m=&#43;0.254873895">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-09-20 00:00:30.245231 -0400 EDT m=&#43;0.283950070">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 
