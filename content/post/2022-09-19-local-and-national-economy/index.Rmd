@@ -72,7 +72,7 @@ This week, I temporarily move away from cyclical election study to delve into on
 
 To start identifying which national economic variables predict House incumbent vote share well, I first investigated how Quarter 8 GDP growth (percentage), RDI change (percentage), and unemployment rate, individually, are related to incumbent party vote share. I specifically choose Quarter 8 because voters often refer to the latest memory they have of the economy to judge how the economy has performed under their incumbent leader(s) (Achen & Bartels, 2017. Healy & Lenz, 2014).
 
-```{r, echo=FALSE, fig.align='center'}
+```{r, echo=FALSE, fig.align='center', include = FALSE}
 
 ## Correlations
 
@@ -124,6 +124,7 @@ g3 <- newdf %>%
 grid.arrange(g1, g2, g3, ncol = 2)
 
 ```
+![scatter_plots](scatter_plots.png)
 
 As shown above, each variable, GDP growth, RDI change, and unemployment rate, respectively, are correlated to House incumbent vote share - as GDP growth percentage decreases, or RDI change percentage decreases, or unemployment rate grows, House incumbent vote share grows. These correlations are unintuitive, and suggest that voters do not accurately hold their leaders accountable according to national economic performance. 
 
@@ -149,6 +150,8 @@ summary(lm_UE)$r.squared
 summary(lm_model)$r.squared
 
 ```
+
+![Regression Stargazer.](regression_stargazer.png)
 
 My development of Model 1 finds that GDP, RDI, and unemployment all influence House incumbent vote share, but in varying directions and with varying levels of statistical significance. For GDP growth (%), Model 1 anticipates that as it grows by 1, House incumbent vote share will too by 2.9, which makes more sense. However, for GDP growth (absolute) and unemployment rate, increases in these are still associated with decreases in incumbent vote share. 
 
