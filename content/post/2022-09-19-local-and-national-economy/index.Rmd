@@ -66,15 +66,13 @@ newdf <-left_join (newdf, results_RDI, by = 'year') %>%
 
 ```
 
-**Blog Extension: Model Evaluation. Build multiple predictive models using national economic variables as predictors. Compare those models using the tools we learned today. How much is your 2022 prediction sensitive to the change of measure(s)? What does it tell us about the economic model of voting behavior?**
-
 Last week, my dive into the 2018 election results and swings confirmed that the president's party often performs poorly in the midterms. By the 2020 House elections, the president's party gained some of its vote share back. 
 
 This week, I temporarily move away from cyclical election study to delve into one of the most promising ways to predict election outcomes -- economics. Retrospective voting, a model of voting in which voters elect leaders based off of recent experiences and judgment of welfare under incumbent leadership, dictates that for many elections, the results largely rely on the state of the economy in the last quarter of the election cycle (Achen & Bartels, 2017). For presidential elections, this means that national economic variables like GDP (gross domestic product), unemployment, and RDI (real disposable income) can account for a lot of the variation in incumbent candidate popularity. **I explore this relationship between national economic variables and incumbent vote share, but for House races from 1948 to 2020. I want to know which variables accurately predict House incumbent party vote share, and build a model accordingly. Lastly, I will test my model with data from 2020 to see how well it would've predicted the last election.** 
 
 To start identifying which national economic variables predict House incumbent vote share well, I first investigated how Quarter 8 GDP growth (percentage), RDI change (percentage), and unemployment rate, individually, are related to incumbent party vote share. I specifically choose Quarter 8 because voters often refer to the latest memory they have of the economy to judge how the economy has performed under their incumbent leader(s) (Achen & Bartels, 2017. Healy & Lenz, 2014).
 
-```{r, echo=FALSE, fig.width = 8, fig.height=6, out.width = '100%', fig.align='center'}
+```{r, echo=FALSE, fig.align='center'}
 
 ## Correlations
 
@@ -131,7 +129,7 @@ As shown above, each variable, GDP growth, RDI change, and unemployment rate, re
 
 That said, these correlations are not too explanatory by themselves and may be very susceptible to noise, with R-squared values of 0.081, 0.056, and 0.131. I moved on from univariate relationships between these national economic variables House incumbent vote share to multivariable relationships, hoping to find a model that incorporates multiple economic variables to predict incumbent vote share. In this multivariable model (which I call Model 1), I consider the predictors `GDP_growth_pct` (GDP growth %), `DSPIC_change_pct` (RDI change %), `GDP_growth_qt` (GDP growth), and `UNRATE` (unemployment rate) to investigate how they influence incumbent vote share in conjunction. 
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, include = FALSE}
 
 lm_GDP <- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct, data = newdf)
 lm_RDI <- lm(H_incumbent_party_majorvote_pct ~ DSPIC_change_pct, data = newdf)

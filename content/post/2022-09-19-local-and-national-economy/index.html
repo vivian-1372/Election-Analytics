@@ -13,51 +13,12 @@ slug: []
 
 <p>This is blog post #2 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.</p>
 <hr />
-<p><strong>Blog Extension: Model Evaluation. Build multiple predictive models using national economic variables as predictors. Compare those models using the tools we learned today. How much is your 2022 prediction sensitive to the change of measure(s)? What does it tell us about the economic model of voting behavior?</strong></p>
 <p>Last week, my dive into the 2018 election results and swings confirmed that the president’s party often performs poorly in the midterms. By the 2020 House elections, the president’s party gained some of its vote share back.</p>
 <p>This week, I temporarily move away from cyclical election study to delve into one of the most promising ways to predict election outcomes – economics. Retrospective voting, a model of voting in which voters elect leaders based off of recent experiences and judgment of welfare under incumbent leadership, dictates that for many elections, the results largely rely on the state of the economy in the last quarter of the election cycle (Achen &amp; Bartels, 2017). For presidential elections, this means that national economic variables like GDP (gross domestic product), unemployment, and RDI (real disposable income) can account for a lot of the variation in incumbent candidate popularity. <strong>I explore this relationship between national economic variables and incumbent vote share, but for House races from 1948 to 2020. I want to know which variables accurately predict House incumbent party vote share, and build a model accordingly. Lastly, I will test my model with data from 2020 to see how well it would’ve predicted the last election.</strong></p>
 <p>To start identifying which national economic variables predict House incumbent vote share well, I first investigated how Quarter 8 GDP growth (percentage), RDI change (percentage), and unemployment rate, individually, are related to incumbent party vote share. I specifically choose Quarter 8 because voters often refer to the latest memory they have of the economy to judge how the economy has performed under their incumbent leader(s) (Achen &amp; Bartels, 2017. Healy &amp; Lenz, 2014).</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>As shown above, each variable, GDP growth, RDI change, and unemployment rate, respectively, are correlated to House incumbent vote share - as GDP growth percentage decreases, or RDI change percentage decreases, or unemployment rate grows, House incumbent vote share grows. These correlations are unintuitive, and suggest that voters do not accurately hold their leaders accountable according to national economic performance.</p>
 <p>That said, these correlations are not too explanatory by themselves and may be very susceptible to noise, with R-squared values of 0.081, 0.056, and 0.131. I moved on from univariate relationships between these national economic variables House incumbent vote share to multivariable relationships, hoping to find a model that incorporates multiple economic variables to predict incumbent vote share. In this multivariable model (which I call Model 1), I consider the predictors <code>GDP_growth_pct</code> (GDP growth %), <code>DSPIC_change_pct</code> (RDI change %), <code>GDP_growth_qt</code> (GDP growth), and <code>UNRATE</code> (unemployment rate) to investigate how they influence incumbent vote share in conjunction.</p>
-<pre class="r"><code>lm_GDP &lt;- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct, data = newdf)
-lm_RDI &lt;- lm(H_incumbent_party_majorvote_pct ~ DSPIC_change_pct, data = newdf)
-lm_UE &lt;- lm(H_incumbent_party_majorvote_pct ~ UNRATE, data = newdf)
-lm_model &lt;- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct + DSPIC_change_pct + UNRATE + GDP_growth_qt, data = newdf)
-
-stargazer(lm_GDP, lm_RDI, lm_UE, lm_model, title = &quot;Results&quot;, type = &quot;text&quot;, column.labels = c(&quot;GDP&quot;, &quot;RDI&quot;, &quot;UE&quot;, &quot;Model 1&quot;), covariate.labels = c(&quot;GDP Growth Percentage&quot;, &quot;RDI Change Percentage&quot;, &quot;Unemployment Rate&quot;, &quot;GDP Growth Absolute&quot;))</code></pre>
-<pre><code>## 
-## Results
-## ======================================================================================================
-##                                                     Dependent variable:                               
-##                       --------------------------------------------------------------------------------
-##                                               H_incumbent_party_majorvote_pct                         
-##                               GDP                RDI                  UE                Model 1       
-##                               (1)                (2)                 (3)                  (4)         
-## ------------------------------------------------------------------------------------------------------
-## GDP Growth Percentage       -0.912*                                                      2.903*       
-##                             (0.520)                                                     (1.565)       
-##                                                                                                       
-## RDI Change Percentage                           -0.796                                  -1.577**      
-##                                                (0.609)                                  (0.675)       
-##                                                                                                       
-## Unemployment Rate                                                  0.747**               0.420        
-##                                                                    (0.325)              (0.337)       
-##                                                                                                       
-## GDP Growth Absolute                                                                    -0.036***      
-##                                                                                         (0.013)       
-##                                                                                                       
-## Constant                   52.424***          52.578***           47.480***            51.179***      
-##                             (0.656)            (0.760)             (1.940)              (2.205)       
-##                                                                                                       
-## ------------------------------------------------------------------------------------------------------
-## Observations                  37                  31                  37                   31         
-## R2                           0.081              0.056               0.131                0.386        
-## Adjusted R2                  0.054              0.023               0.106                0.292        
-## Residual Std. Error     3.270 (df = 35)    3.400 (df = 29)     3.180 (df = 35)      2.895 (df = 26)   
-## F Statistic           3.071* (df = 1; 35) 1.713 (df = 1; 29) 5.263** (df = 1; 35) 4.094** (df = 4; 26)
-## ======================================================================================================
-## Note:                                                                      *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
 <p>My development of Model 1 finds that GDP, RDI, and unemployment all influence House incumbent vote share, but in varying directions and with varying levels of statistical significance. For GDP growth (%), Model 1 anticipates that as it grows by 1, House incumbent vote share will too by 2.9, which makes more sense. However, for GDP growth (absolute) and unemployment rate, increases in these are still associated with decreases in incumbent vote share.</p>
 <p>These results are again fascinating, as they are counter-intuitive and don’t follow the traditional knowledge political scientists lean on concerning retrospective voting, economic performance, and incumbent success. That said, Model 1 has an R-squared value of 0.386, which is much higher than the univariate R-squared values previously found.</p>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
