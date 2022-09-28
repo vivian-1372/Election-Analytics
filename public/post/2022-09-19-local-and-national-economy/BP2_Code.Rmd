@@ -14,6 +14,7 @@ library(tidyverse)
 library(car)
 library(readr)
 library(stargazer)
+library(dplyr)
 
 popvote_df <- read_csv('house_popvote_seats.csv') 
 GDPquarterly_df <- read_csv('GDP_quarterly.csv')
@@ -118,6 +119,7 @@ newdf <-left_join (newdf, results_RDI, by = 'year') %>%
   rename('winner_party' = 'winner_party.x', 'H_incumbent_party_majorvote_pct' = 'H_incumbent_party_majorvote_pct.x', 'quarter_cycle' = 'quarter_cycle.x', 'H_incumbent_party' = 'H_incumbent_party.x')
 
 newdf
+write.csv(newdf, "house_results_econ_vars.csv", row.names = TRUE)
 
 ```
 

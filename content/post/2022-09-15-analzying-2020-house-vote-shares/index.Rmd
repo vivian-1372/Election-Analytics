@@ -118,7 +118,6 @@ rfinal_20$swing <- as.numeric(rfinal_20$swing20_18)
 
 data_2018l <- subset(h, raceYear = 2018, select = "State")
 r0_18 = rbind(state, swing18_16)
-
 rfinal_18 = as.data.frame(t(as.data.frame(r0_18)))
 rfinal_18$swing <- as.numeric(rfinal_18$swing18_16)
 

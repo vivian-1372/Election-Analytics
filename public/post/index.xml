@@ -6,7 +6,17 @@
     <description>Recent content in Posts on Elections Analytics, 2022</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 19 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://example.org/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 23 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://example.org/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Polls and Pollsters</title>
+      <link>http://example.org/post/2022-09-23-bp3-code/</link>
+      <pubDate>Fri, 23 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/post/2022-09-23-bp3-code/</guid>
+      <description>This is blog post #3 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
+The Plan This Week So far, I’ve confirmed that the president’s party often performs poorly in the midterm House elections and that a combination of fundamental (Q8, national) economic variables, including GDP growth %, RDI change %, unemployment rate, and absolute GDP growth, are somewhat able to predict House incumbent party vote share.</description>
+    </item>
+    
     <item>
       <title>Economic Predictors of House Incumbent Vote Share</title>
       <link>http://example.org/post/2022-09-19-local-and-national-economy/</link>

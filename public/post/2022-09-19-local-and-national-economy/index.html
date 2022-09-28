@@ -72,7 +72,7 @@
 <p>To start identifying which national economic variables predict House incumbent vote share well, I first investigated how Quarter 8 GDP growth (percentage), RDI change (percentage), and unemployment rate, individually, are related to incumbent party vote share. I specifically choose Quarter 8 because voters often refer to the latest memory they have of the economy to judge how the economy has performed under their incumbent leader(s) (Achen &amp; Bartels, 2017. Healy &amp; Lenz, 2014).</p>
 <div class="figure">
 <img src="scatter_plots.png" alt="" />
-<p class="caption">scatter_plots</p>
+<p class="caption">Scatter Plots.</p>
 </div>
 <p>As shown above, each variable, GDP growth, RDI change, and unemployment rate, respectively, are correlated to House incumbent vote share - as GDP growth percentage decreases, or RDI change percentage decreases, or unemployment rate grows, House incumbent vote share grows. These correlations are unintuitive, and suggest that voters do not accurately hold their leaders accountable according to national economic performance.</p>
 <p>That said, these correlations are not too explanatory by themselves and may be very susceptible to noise, with R-squared values of 0.081, 0.056, and 0.131. I moved on from univariate relationships between these national economic variables House incumbent vote share to multivariable relationships, hoping to find a model that incorporates multiple economic variables to predict incumbent vote share. In this multivariable model (which I call Model 1), I consider the predictors <code>GDP_growth_pct</code> (GDP growth %), <code>DSPIC_change_pct</code> (RDI change %), <code>GDP_growth_qt</code> (GDP growth), and <code>UNRATE</code> (unemployment rate) to investigate how they influence incumbent vote share in conjunction.</p>
@@ -106,6 +106,7 @@ After checking that Model 1 performs well after being tested with 1,000 runs of 
 
 	<div class="pagination">
 		<a href="/post/2022-09-15-analzying-2020-house-vote-shares/" class="left arrow">&#8592;</a>
+		<a href="/post/2022-09-23-bp3-code/" class="right arrow">&#8594;</a>
 
 		<a href="#" class="top">Top</a>
 	</div>
@@ -115,7 +116,7 @@ After checking that Model 1 performs well after being tested with 1,000 runs of 
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-09-20 00:09:30.987441 -0400 EDT m=&#43;0.285036005">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-09-27 23:55:15.203169 -0400 EDT m=&#43;0.278481947">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

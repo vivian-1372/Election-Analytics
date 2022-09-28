@@ -124,7 +124,7 @@ g3 <- newdf %>%
 grid.arrange(g1, g2, g3, ncol = 2)
 
 ```
-![scatter_plots](scatter_plots.png)
+![Scatter Plots.](scatter_plots.png)
 
 As shown above, each variable, GDP growth, RDI change, and unemployment rate, respectively, are correlated to House incumbent vote share - as GDP growth percentage decreases, or RDI change percentage decreases, or unemployment rate grows, House incumbent vote share grows. These correlations are unintuitive, and suggest that voters do not accurately hold their leaders accountable according to national economic performance. 
 
