@@ -80,7 +80,7 @@ So far, I've confirmed that the president’s party often performs poorly in the
 # What Do Forecasters Do? 
 In general, election forecasters gather as much relevant data about elections as they can to predict the outcome of future ones. The prevailing question for them, and for students of government in Election Analytics, pertains to what data is relevant? 
 
-## The Econonmist
+## The Economist
 According to [The Economist's forecasting model report](https://www.economist.com/the-economist-explains/2022/09/09/how-does-the-economists-midterms-election-model-work) this year, polls are the best indicator for the outcome of House elections. Especially informative is the "generic ballot" question, which asks "If the elections for U.S. Congress were being held today, would you vote for the Republican Party’s candidate or the Democratic Party’s candidate for Congress in your district?" (Pew Research Center, 2002). As the countdown to Election Day dwindles, poll results are weighed more heavily, as they're believed to be more reflective of the electorate than previous polls. Additionally, pollster quality over the years is also considered to correct for past estimation errors. The models also account for a slew of other predictors, including president's party performance in special elections, the midterm-incumbent disadvantage, state-level partisan lean, and campaign finances.
 
 ## FiveThirtyEight
