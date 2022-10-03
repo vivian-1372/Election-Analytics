@@ -1,0 +1,288 @@
+---
+title: "Polling"
+author: "Kiara Hernandez"
+date: \today
+output:
+  beamer_presentation:
+    highlight: zenburn
+    incremental: no
+    keep_tex: yes
+    latex_engine: pdflatex
+    slide_level: 2
+    theme: metropolis
+  slidy_presentation:
+    highlight: zenburn
+    incremental: no
+classoption: "handout"
+institute: Harvard University
+header-includes: \setbeamercolor{frametitle}{bg=purple} \hypersetup{colorlinks,citecolor=orange,filecolor=red,linkcolor=brown,urlcolor=blue}
+subtitle: 'Gov 1347: Election Analytics'
+fontsize: 10pt
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="but-first-a-review-of-3-crucial-concepts" class="section level1">
+<h1>But first, a review of 3 crucial concepts</h1>
+<div id="multivariate-multiple-regression" class="section level2">
+<h2>Multivariate (multiple) regression</h2>
+<p>Univariate regression <span class="math inline">\((\underbrace{Y}_{PV}=\alpha + \beta \underbrace{X_{1}}_{GDP})\)</span> <span class="math inline">\(\rightsquigarrow\)</span>
+<span class="math inline">\((\underbrace{Y}_{PV}=\alpha + \beta_1 \underbrace{X_1}_{GDP} + \beta_2 \underbrace{X_2}_{approval})\)</span> </p>
+<ul>
+<li>assumption: between IVs (<span class="math inline">\(\beta_1 X_1 + \beta_2 X_2\)</span>) </li>
+<li>estimation: same procedure (minimizing the sum of squared errors) </li>
+<li>better in-sample fit metric: <span class="math inline">\(\underline{R^2_{adjusted}} = 1 - \frac{(1-R^2)(n-1)}{n - p - 1}\)</span> for <span class="math inline">\(p\)</span> IVs </li>
+<li>adding new IVs will
+<ul>
+<li>Intuitively, <span class="math inline">\(\beta_1\)</span> is the <code>unique</code> effect of <span class="math inline">\(X_1\)</span></li>
+<li>only two rare cases where <span class="math inline">\(\hat{\beta} = \hat{\beta_1}\)</span>: . <span class="math inline">\(\beta_2 = 0\)</span>
+<ol start="2" style="list-style-type: decimal">
+<li><span class="math inline">\(r_{X_1,X_2} = 0\)</span></li>
+</ol></li>
+<li>signs and magnitudes of correction <span class="math inline">\(\hat{\beta_2}\)</span> and <span class="math inline">\(r_{X_1,X_2}\)</span> <span class="math inline">\(\rightsquigarrow\)</span> signs and magnitudes of correction <span class="math inline">\(\hat{\beta_1} - \hat{\beta}\)</span></li>
+</ul></li>
+</ul>
+<!--  * adding a highly \textbf{multicollinear} variable ($r_{X_1,X_2} > 0.7$) is redundant and reduces model interpretability -->
+</div>
+<div id="interactions-of-ivs" class="section level2">
+<h2>Interactions of IVs</h2>
+<p>Sociopolitical outcomes (DVs) are often predicted by of IVs: </p>
+<ul>
+<li>intersectionality: ()
+<ul>
+<li>black women face more discrimination than black men and white women do combined </li>
+<li>the effect of <span class="math inline">\(X_1\)</span> (race) can vary depending on the value of <span class="math inline">\(X_2\)</span> (gender) </li>
+</ul></li>
+<li>extension 2:
+<ul>
+<li>()</li>
+<li>() </li>
+</ul></li>
+<li>extension 3: ()
+<ul>
+<li>in state <span class="math inline">\(s\)</span>, incumbent party benefits if Dem, hurt if Rep </li>
+</ul></li>
+</ul>
+</div>
+<div id="overfitting" class="section level2">
+<h2>Overfitting</h2>
+<p><a href="https://projects.economist.com/us-2020-forecast/house">(Morris 2020a)</a></p>
+<p>Explicit tension between (“close match to historical data”) and :</p>
+<ul>
+<li>Cross-validation</li>
+<li>Elastic-net regularisation: Parsimony of a model<span class="math inline">\(^{\star \star}\)</span> reduces out-of-sample error</li>
+<li>: an <span class="math inline">\(R^2 &gt; 0.9\)</span> might actually be for prediction!</li>
+</ul>
+</div>
+<div id="todays-agenda" class="section level2">
+<h2>Today’s agenda</h2>
+<blockquote>
+<p><strong>Can we predict election outcomes using polling data?</strong> </p>
+</blockquote>
+<ol style="list-style-type: decimal">
+<li><strong>A brief overview of polls and pollsters</strong>
+<ul>
+<li>How do polls work?</li>
+<li>Pros and cons </li>
+</ul></li>
+<li><strong>Quantitatively describing the polls:</strong>
+<ul>
+<li>How do polls across state, time, and year?</li>
+<li>How early can the polls predict election results? </li>
+</ul></li>
+<li><strong>Improve our 2020 forecast using polling data</strong>
+<ul>
+<li>How to resolve with fundamentals model(s) from last week?</li>
+</ul></li>
+</ol>
+</div>
+</div>
+<div id="polls-and-pollsters" class="section level1">
+<h1>Polls and Pollsters</h1>
+<div id="pollsters" class="section level2 build">
+<h2>Pollsters</h2>
+<p><strong>What do they do?</strong>
+<!-- Q: ask them about each step involved --></p>
+<p>Organizations that conduct public opinion research by: </p>
+<ol style="list-style-type: decimal">
+<li>Designing a questionnaire <!-- Q -->
+<ul>
+<li>vote choice</li>
+<li>generic ballot</li>
+<li>presidential approval</li>
+</ul></li>
+<li>Contacting a sample <!-- Q -->
+<ul>
+<li>phone vs. internet</li>
+<li>random vs. non-random</li>
+</ul></li>
+<li>Ask repeatedly over time
+<ul>
+<li>panel (rare)</li>
+<li>cross-section</li>
+</ul></li>
+<li>Weight responses to ``look like population’’
+<ul>
+<li>choice of variables</li>
+<li>choice of models</li>
+</ul></li>
+<li>Interpret and report </li>
+</ol>
+</div>
+<div id="some-pollsters-you-might-know" class="section level2">
+<h2>Some pollsters you might know</h2>
+<p><em>Live (live telephone interview, including cells), Live* (not including cells), Online (internet, text, app), IVR (interactive voice response)</em></p>
+<!--See the definition tab of [FiveThirtyeight](https://projects.fivethirtyeight.com/pollster-ratings/) if needed-->
+</div>
+<div id="why-shouldnt-we-trust-the-polls" class="section level2 build">
+<h2>Why shouldn’t we trust the polls?</h2>
+<ul>
+<li>Non-response
+<ul>
+<li>Ex: In 2016, ``less-educated’’ whites systematically opted out of polls </li>
+<li>Ex: Convention bounce, enthusiasm gap </li>
+</ul></li>
+<li>Respondent dishonesty
+<ul>
+<li>23% of the Harvard-hosted CES (CCES) takers lied about voting! </li>
+</ul></li>
+<li>Respondent confusion
+<ul>
+<li>“Do you [ / ] decision sending additional troops to Iraq?”</li>
+</ul></li>
+<li>Reponses not weighted ``correctly’’
+<ul>
+<li><a href="https://www.nytimes.com/interactive/2016/09/20/upshot/the-error-the-polling-world-rarely-talks-about.html">NYT: In 2016, four professional pollsters independently weighted a Florida poll. Only one predicted Trump would win (+1%).</a> </li>
+</ul></li>
+<li>Polls misinterpreted by pundits, commentators, voters (``madness of crowds’’)</li>
+</ul>
+</div>
+<div id="why-should-we-trust-the-polls" class="section level2 build">
+<h2>Why should we trust the polls?</h2>
+<!-- Q: ask the students this -->
+<ul>
+<li>Wisdom of crowds (Galton 1907)</li>
+<li>Wisdom of of crowds
+<ul>
+<li>Ex: FiveThirtyEight, Real Clear Politics, The Economist</li>
+</ul></li>
+<li>Can adjust averages across time and across polls (Silver 2016) # update this?</li>
+<li>Interpretation of vote-choice polls is straight-forward</li>
+<li>Predicts past elections </li>
+</ul>
+</div>
+</div>
+<div id="describing-the-relationship-between-polls-and-election-outcomes" class="section level1">
+<h1>Describing the relationship between polls and election outcomes</h1>
+<div id="how-do-polls-fluctuate-across-time" class="section level2 build">
+<h2>How do polls fluctuate across time?</h2>
+<p>Let’s visualize poll averages by party from the most recent midterm election: </p>
+<pre class="r"><code>library(tidyverse)
+poll_df &lt;- read_csv(&quot;polls_df.csv&quot;)</code></pre>
+<pre class="r"><code>poll_df %&gt;%
+  filter(year == 2018) %&gt;%
+  ggplot(aes(x = poll_date, y = support, color = party)) +
+    geom_point(size = 1) +
+    geom_line() +
+    scale_x_date(date_labels = &quot;%b, %Y&quot;) +
+    scale_color_manual(values = c(&quot;blue&quot;,&quot;red&quot;), name = &quot;&quot;) +
+    ylab(&quot;polling approval average on date&quot;) + xlab(&quot;&quot;) +
+    theme_bw()</code></pre>
+</div>
+<div id="how-do-polls-fluctuate-across-time-1" class="section level2 build">
+<h2>How do polls fluctuate across time?</h2>
+<p></p>
+<pre><code>## Warning: Removed 2 rows containing missing values (geom_point).</code></pre>
+<pre><code>## Warning: Removed 2 row(s) containing missing values (geom_path).</code></pre>
+<p><img src="/post/2022-09-26-polls-and-pollsters/GOV-1347-Section-3_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="how-do-polls-fluctuate-across-time-2" class="section level2 build">
+<h2>How do polls fluctuate across time?</h2>
+<p></p>
+<pre><code>## Warning: Removed 2 rows containing missing values (geom_point).</code></pre>
+<pre><code>## Warning: Removed 2 row(s) containing missing values (geom_path).</code></pre>
+<p><img src="/post/2022-09-26-polls-and-pollsters/GOV-1347-Section-3_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+<!-- Q: if you asked Gelman and King, what would they say about this? --></p>
+</div>
+<div id="how-do-polls-fluctuate-across-time-3" class="section level2">
+<h2>How do polls fluctuate across time?</h2>
+<!-- Q: so, is momentum a real thing? -->
+<ul>
+<li>Convention and debate bumps.</li>
+<li>Polls fluctuate after some “game-changers”.</li>
+<li>Polls fluctuate (or don’t) “game-changers”. </li>
+<li> is a phrase used <span class="math inline">\(\geq 60\)</span> times a day by media outlet in election season, but…
+<ul>
+<li><a href="https://www.sciencedirect.com/science/article/abs/pii/S0047272715001218">Denter and Sisak, (2015)</a>: in close races, poll equilibrium often shifts after a bump to one candidate</li>
+<li><a href="https://fivethirtyeight.blogs.nytimes.com/2010/10/20/the-misunderstanding-of-momentum/">FiveThirtyEight (2010)</a>: weak evidence of positive serial correlation in polls (some evidence of serial correlation!) </li>
+</ul></li>
+</ul>
+</div>
+<div id="does-the-november-poll-predict-the-election" class="section level2 build">
+<h2>Does the November poll predict the election?</h2>
+<p>Correlation between November poll margin and two-party PV margin is:</p>
+<p>0.1565681</p>
+</div>
+<div id="does-the-november-poll-predict-the-election-1" class="section level2 build">
+<h2>Does the November poll predict the election?</h2>
+<!--explain quadrant and values of correlation-->
+<p><img src="/post/2022-09-26-polls-and-pollsters/GOV-1347-Section-3_files/figure-html/unnamed-chunk-8-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<!--A:
+\textbf{Q}: What are the outliers?
+
+- What trends do we see here? 
+- Compare with the plot below that we saw in lecture
+-->
+</div>
+<div id="does-the-january-poll-predict-the-election" class="section level2 build">
+<h2>Does the January poll predict the election?</h2>
+<!-- Q. What about the earliest polls at the start of the race?  Do we know the result by then? -->
+<p><img src="/post/2022-09-26-polls-and-pollsters/GOV-1347-Section-3_files/figure-html/unnamed-chunk-9-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Correlation between January poll margin and two-party PV margin is: </p>
+<p>0.5912988</p>
+<!-- Q: ask them this -- 0.66 -->
+</div>
+<div id="do-polls-get-more-predictive-over-time" class="section level2">
+<h2>Do polls get more predictive over time?</h2>
+
+</div>
+</div>
+<div id="predicting-2020-using-polls" class="section level1">
+<h1>Predicting 2020 using polls</h1>
+<div id="predicting-2020-using-polls-1" class="section level2">
+<h2>Predicting 2020 using polls</h2>
+<p>What we’ve learned:</p>
+<ul>
+<li>One-sided model of incumbent <span class="math inline">\(\rightsquigarrow\)</span> two-sided model of incumbent and challenger
+<ul>
+<li>using usually means <span class="math inline">\(\hat{Y}_{inc} + \hat{Y}_{chl} &gt; 100\%\)</span></li>
+<li>can be fit in a single <code>lm</code> using interactions </li>
+</ul></li>
+<li> <span class="math inline">\(\frac{\text{number of correct predictions}}{\text{number of predictions}}\)</span> </li>
+<li>Multiple regression is useful, but not only way to combine IVs</li>
+<li> <span class="math inline">\(\rightsquigarrow\)</span> flexible to combine separate models, e.g.:
+<ul>
+<li>weight equally (Graefe 2020)</li>
+<li>weight on days til election (pollsters vs. Gelman <span class="math inline">\(\&amp;\)</span> King (1993))</li>
+<li>weight on <span class="math inline">\(R^{2}\)</span> (Silver 2022)</li>
+<li>weight on cross-validation error (this is called <a href="https://www.stat.berkeley.edu/users/laan/Class/Class_subpages/BASS_sec1_3.1.pdf">“Super Learning”</a>)</li>
+<li>weight on human priors </li>
+</ul></li>
+<li>The most cutting edge methods, to date, combine fundamentals and polls using probabilistic (Bayesian) models, e.g. <a href="https://votamatic.org/wp-content/uploads/2015/08/2015LauderdaleLinzerIJF.pdf">Lauderdale, Linzer (2015)</a>
+<span class="math inline">\(\rightsquigarrow\)</span> </li>
+</ul>
+</div>
+<div id="update-your-forecasting-model" class="section level2">
+<h2>Update your forecasting model</h2>
+<p>Moving forward, you will put out a forecast every week that builds on previous weeks. This week, add in polling data in whatever way you see fit (could be guided by the extensions). How does your model change? Is it a better model (as determined by in-sample and out-of-sample tests)? Worse? Next week, you can adjust your model again depending on what you find.</p>
+</div>
+<div id="blog-extensions" class="section level2">
+<h2>Blog Extensions</h2>
+<ol style="list-style-type: decimal">
+<li><p> Based on what you’ve learned about fundamentals and poll-based forecasts, (1) briefly summarize Silver (2022) and Morris (2020a): (<a href="https://projects.economist.com/us-2020-forecast/house" class="uri">https://projects.economist.com/us-2020-forecast/house</a>) and (2) compare and contrast their approaches. In your opinion, which of the two is the better approach?</p></li>
+<li><p> Consider <a href="https://github.com/fivethirtyeight/data/tree/master/pollster-ratings">2018/2020 pollster ratings (on )</a> from FiveThirtyEight. (1) How much variation is there in pollster quality? (2) Using tools and knowledge you’ve gained so far, build a model (possibly an ensemble) using individual polls from 2018 (<code>538_generic_2018.csv</code>) and 2022 (<code>538_generic_poll_2022.csv</code>). How does your model compare to the models this week in lab?</p></li>
+<li><p> How do district-level polls differ from national level polls? Using careful model evaluation techniques and considering possible choices of weighted ensembles, build a predictive model for 2022 using current cycle district-level polls. Remember that you can choose two-party voteshare or seatshare as your outcome variable. How you build the model is up to you. You can combine district and national-level polls. You can use only current cycle district-level polls as your predictor. You can combine historical national-level polls from past cycles with current cycle district-level polls. You can weight district and national-level differently.</p></li>
+</ol>
+</div>
+</div>
