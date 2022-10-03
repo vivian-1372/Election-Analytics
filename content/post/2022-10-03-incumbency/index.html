@@ -24,33 +24,34 @@ tags: []
 <h2>Actual Vote Share in 2018, by District</h2>
 <p>Below is the actual (D) vote share in the 2018 midterm elections at the district level.</p>
 <p><img src="actual_2018_results.png" alt="Actual 2018 (D) Vote Share." />
-Most of the map is either red or white, which seems to suggest that most district vote share results were in the Republican party’s favor or close between the two major parties. However, it is important to remember that for the House of Representatives, land is not proportional to representation, population is. Also, the president’s party often performs poorly in midterm years, as discussed in detail in the <a href="https://vivian-1372.github.io/Election-Analytics/post/2022-09-15-analzying-2020-house-vote-shares/">first blog post</a> of this series. Those two reminders considered, it then makes sense that the Democrats actually took the House in the 2018 midterms, with 235 seats going to Democrats and 199 going to Republicans.</p>
+Most of the map is either red or white, which seems to suggest that most district vote share results were in the Republican party’s favor or close between the two major parties. However, it is important to remember that for the House of Representatives, land is not proportional to representation, population is. Also, the president’s party often performs poorly in midterm years, as discussed in detail in the <a href="https://vivian-1372.github.io/Election-Analytics/post/2022-09-15-analzying-2020-house-vote-shares/">first blog post</a> of this series. Those two reminders considered, it then makes sense that the Democrats actually took the House in the 2018 midterms, with 235 seats going to Democrats and 199 going to Republicans (New York Times 2018).</p>
 </div>
 <div id="expert-predictions-for-vote-share-in-2018-by-district" class="section level2">
 <h2>Expert Predictions for Vote Share in 2018, by District</h2>
-<p>Below are the expert ratings for the 2018 midterms, which I call predictions because the ratings reflect what the experts believed would happen in each congressional district election.
+<p>Below are the expert ratings for the 2018 midterms, which I call predictions because the ratings reflect what the experts believed would happen in each congressional district election. Red areas represent high expert confidence that the region will go to Republicans, while blue areas represent high confidence that the region will go to Democrats.
 <img src="expert_ratings_2018.png" alt="Expert Ratings for 2018 Midterms." /></p>
 </div>
-<div id="comparison-and-insights" class="section level2">
-<h2>Comparison and Insights</h2>
+<div id="evaluation" class="section level2">
+<h2>Evaluation</h2>
+<p>For the most part, the predictions are pretty accurate via visual investigation. Most of the areas that actually had majority-Republican vote shares in the 2018 elections were predicted to be likely or solidly Republican by the experts on average. The blue districts of the 2018 midterms, like the ones along the west coast of Washington, Oregon, and California, in Arizona and New Mexico, in southern Texas, and scattered throughout the Rust Belt, were impressively predicted by the experts and their ratings, reflected in the standout blue coloring in the plot above. The experts were also able to pin down the close races, like the ones in southern New Mexico and in Maine. Overall, I think the average expert ratings predicted the congressional races at the district level very well, despite being just one predictor (that is a culmination of many predictors considered by the experts) in my model.</p>
 </div>
 </div>
 <div id="my-2022-model-and-forecast-updated" class="section level1">
 <h1>My 2022 Model and Forecast, Updated</h1>
 <div id="my-new-model" class="section level2">
 <h2>My New Model</h2>
-<p>My national model remains the same as it was last week, and I cannot fully extend my national model to the district level because it uses national variables like GDP change, as well as national responses to the generic ballot polls. That said, I can incorporate this week’s investigation into a district-level model that predicts the House races by district using the most recent expert ratings data I have access to. These district-level models are of course imperfect because they only use expert ratings, but over all of them, they have an average R-squared of 0.78.</p>
+<p>My national model remains the same as it was last week, and I cannot fully extend my national model to the district level because it uses national variables like GDP change, as well as national responses to the generic ballot polls. That said, I can incorporate this week’s investigation into a district-level model that predicts the House races by district using the most recent expert ratings data I have access to. These district-level models are of course imperfect because they only use expert ratings, but across all of them, they have an average R-squared of 0.78.</p>
 </div>
 <div id="my-new-forecast" class="section level2">
 <h2>My New Forecast</h2>
 <p>Below are my models’ predictions for the 94 congressional districts where the expert ratings were available.</p>
 <pre class="r"><code>export_table(pred_2022, format = &quot;html&quot;)</code></pre>
-<div id="bfjjxpimaq" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="qfemfanlby" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#bfjjxpimaq .gt_table {
+#qfemfanlby .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -75,7 +76,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   border-left-color: #D3D3D3;
 }
 
-#bfjjxpimaq .gt_heading {
+#qfemfanlby .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -87,7 +88,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   border-right-color: #D3D3D3;
 }
 
-#bfjjxpimaq .gt_title {
+#qfemfanlby .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -99,7 +100,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   border-bottom-width: 0;
 }
 
-#bfjjxpimaq .gt_subtitle {
+#qfemfanlby .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -111,13 +112,13 @@ Most of the map is either red or white, which seems to suggest that most distric
   border-top-width: 0;
 }
 
-#bfjjxpimaq .gt_bottom_border {
+#qfemfanlby .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#bfjjxpimaq .gt_col_headings {
+#qfemfanlby .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -132,7 +133,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   border-right-color: #D3D3D3;
 }
 
-#bfjjxpimaq .gt_col_heading {
+#qfemfanlby .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -152,7 +153,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   overflow-x: hidden;
 }
 
-#bfjjxpimaq .gt_column_spanner_outer {
+#qfemfanlby .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -164,15 +165,15 @@ Most of the map is either red or white, which seems to suggest that most distric
   padding-right: 4px;
 }
 
-#bfjjxpimaq .gt_column_spanner_outer:first-child {
+#qfemfanlby .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#bfjjxpimaq .gt_column_spanner_outer:last-child {
+#qfemfanlby .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#bfjjxpimaq .gt_column_spanner {
+#qfemfanlby .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -184,7 +185,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   width: 100%;
 }
 
-#bfjjxpimaq .gt_group_heading {
+#qfemfanlby .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -209,7 +210,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   vertical-align: middle;
 }
 
-#bfjjxpimaq .gt_empty_group_heading {
+#qfemfanlby .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -224,15 +225,15 @@ Most of the map is either red or white, which seems to suggest that most distric
   vertical-align: middle;
 }
 
-#bfjjxpimaq .gt_from_md > :first-child {
+#qfemfanlby .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#bfjjxpimaq .gt_from_md > :last-child {
+#qfemfanlby .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#bfjjxpimaq .gt_row {
+#qfemfanlby .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -251,7 +252,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   overflow-x: hidden;
 }
 
-#bfjjxpimaq .gt_stub {
+#qfemfanlby .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -264,7 +265,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   padding-right: 5px;
 }
 
-#bfjjxpimaq .gt_stub_row_group {
+#qfemfanlby .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -278,11 +279,11 @@ Most of the map is either red or white, which seems to suggest that most distric
   vertical-align: top;
 }
 
-#bfjjxpimaq .gt_row_group_first td {
+#qfemfanlby .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#bfjjxpimaq .gt_summary_row {
+#qfemfanlby .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -292,16 +293,16 @@ Most of the map is either red or white, which seems to suggest that most distric
   padding-right: 5px;
 }
 
-#bfjjxpimaq .gt_first_summary_row {
+#qfemfanlby .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#bfjjxpimaq .gt_first_summary_row.thick {
+#qfemfanlby .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#bfjjxpimaq .gt_last_summary_row {
+#qfemfanlby .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -311,7 +312,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   border-bottom-color: #D3D3D3;
 }
 
-#bfjjxpimaq .gt_grand_summary_row {
+#qfemfanlby .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -321,7 +322,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   padding-right: 5px;
 }
 
-#bfjjxpimaq .gt_first_grand_summary_row {
+#qfemfanlby .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -331,11 +332,11 @@ Most of the map is either red or white, which seems to suggest that most distric
   border-top-color: #D3D3D3;
 }
 
-#bfjjxpimaq .gt_striped {
+#qfemfanlby .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#bfjjxpimaq .gt_table_body {
+#qfemfanlby .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -344,7 +345,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   border-bottom-color: #D3D3D3;
 }
 
-#bfjjxpimaq .gt_footnotes {
+#qfemfanlby .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -358,7 +359,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   border-right-color: #D3D3D3;
 }
 
-#bfjjxpimaq .gt_footnote {
+#qfemfanlby .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -367,7 +368,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   padding-right: 5px;
 }
 
-#bfjjxpimaq .gt_sourcenotes {
+#qfemfanlby .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -381,7 +382,7 @@ Most of the map is either red or white, which seems to suggest that most distric
   border-right-color: #D3D3D3;
 }
 
-#bfjjxpimaq .gt_sourcenote {
+#qfemfanlby .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -389,64 +390,64 @@ Most of the map is either red or white, which seems to suggest that most distric
   padding-right: 5px;
 }
 
-#bfjjxpimaq .gt_left {
+#qfemfanlby .gt_left {
   text-align: left;
 }
 
-#bfjjxpimaq .gt_center {
+#qfemfanlby .gt_center {
   text-align: center;
 }
 
-#bfjjxpimaq .gt_right {
+#qfemfanlby .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#bfjjxpimaq .gt_font_normal {
+#qfemfanlby .gt_font_normal {
   font-weight: normal;
 }
 
-#bfjjxpimaq .gt_font_bold {
+#qfemfanlby .gt_font_bold {
   font-weight: bold;
 }
 
-#bfjjxpimaq .gt_font_italic {
+#qfemfanlby .gt_font_italic {
   font-style: italic;
 }
 
-#bfjjxpimaq .gt_super {
+#qfemfanlby .gt_super {
   font-size: 65%;
 }
 
-#bfjjxpimaq .gt_footnote_marks {
+#qfemfanlby .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-#bfjjxpimaq .gt_asterisk {
+#qfemfanlby .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#bfjjxpimaq .gt_indent_1 {
+#qfemfanlby .gt_indent_1 {
   text-indent: 5px;
 }
 
-#bfjjxpimaq .gt_indent_2 {
+#qfemfanlby .gt_indent_2 {
   text-indent: 10px;
 }
 
-#bfjjxpimaq .gt_indent_3 {
+#qfemfanlby .gt_indent_3 {
   text-indent: 15px;
 }
 
-#bfjjxpimaq .gt_indent_4 {
+#qfemfanlby .gt_indent_4 {
   text-indent: 20px;
 }
 
-#bfjjxpimaq .gt_indent_5 {
+#qfemfanlby .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -754,9 +755,9 @@ Most of the map is either red or white, which seems to suggest that most distric
 <hr />
 <p><strong>References</strong></p>
 <p>[1] Ballotpedia. (2022). <a href="https://ballotpedia.org/Main_Page" class="uri">https://ballotpedia.org/Main_Page</a></p>
-<p>[2] Pew Research Center. (2002). Why the generic ballot test? Pew Research Center - U.S. Politics &amp; Policy. <a href="https://www.pewresearch.org/politics/2002/10/01/why-the-generic-ballot-test/" class="uri">https://www.pewresearch.org/politics/2002/10/01/why-the-generic-ballot-test/</a></p>
-<p>[3] Silver, Nate. (2022). How fivethirtyeight’s house, senate and governor models work. <a href="https://fivethirtyeight.com/methodology/how-fivethirtyeights-house-and-senate-models-work/" class="uri">https://fivethirtyeight.com/methodology/how-fivethirtyeights-house-and-senate-models-work/</a></p>
-<p>[4] Galton. (1907). Vox Populi. Nature (London), 75(1949), 450–451. <a href="https://doi.org/10.1038/075450a0" class="uri">https://doi.org/10.1038/075450a0</a></p>
-<p>[5] Gelman, &amp; King, G. (1993). Why Are American Presidential Election Campaign Polls So Variable When Votes Are So Predictable? British Journal of Political Science, 23(4), 409–451. <a href="https://doi.org/10.1017/S0007123400006682" class="uri">https://doi.org/10.1017/S0007123400006682</a></p>
+<p>[2] Cook Political Report. (2002). House Race Ratings. <a href="https://www.cookpolitical.com/ratings/house-race-ratings" class="uri">https://www.cookpolitical.com/ratings/house-race-ratings</a></p>
+<p>[3] Inside Elections. (2022). House Ratings. <a href="https://insideelections.com/ratings/house" class="uri">https://insideelections.com/ratings/house</a></p>
+<p>[4] Sabato’s Crystal Ball. (2022). House Race Ratings. <a href="https://centerforpolitics.org/crystalball/2022-house/" class="uri">https://centerforpolitics.org/crystalball/2022-house/</a></p>
+<p>[5] The New York Times. (2018, November 6). U.S. House election results 2018. The New York Times. <a href="https://www.nytimes.com/interactive/2018/11/06/us/elections/results-house-elections.html" class="uri">https://www.nytimes.com/interactive/2018/11/06/us/elections/results-house-elections.html</a></p>
 </div>
 </div>
