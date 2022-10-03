@@ -11,7 +11,7 @@ This is blog post #4 in a series of analytical posts in lieu of the 2022 midterm
 
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 
 # Set up
 knitr::opts_chunk$set(echo = TRUE)
@@ -22,35 +22,37 @@ library(stargazer)
 library(usmap)
 library(rmapshaper)
 library(sf)
+library(insight)
 
 # Load in expert ratings and district polls
 expert_ratings <- read_csv("expert_rating.csv")
 exratings <- read_csv("2018_ratings_share.csv")
-dist_polls_2018_2022 <- read_csv("dist_polls_2018-2022.csv") %>% clean_names()
 
 ```
 
 ```{r cleaning district voting history, include = FALSE}
 
 # Two results dataframes
-incumb_dist_1948_2022 <- read_csv("incumb_dist_1948-2022.csv") %>% clean_names()
-historical_results <- read_csv("house party vote share by district 1948-2020.csv") %>% clean_names()
+incumb_dist_1948_2022 <- as.data.frame(read_csv("incumb_dist_1948-2022.csv", show_col_types = FALSE))
+# clean_names(incumb_dist_1948_2022)
+historical_results <- read_csv("house party vote share by district 1948-2020.csv", show_col_types = FALSE) 
+# %>% clean_names()
 
 incumb_dist_1948_2022 <- incumb_dist_1948_2022 %>%
   rename("district" = "district_num") %>%
-  select(-c("office", "x1", "winner_candidate"), -contains("candidate"), -contains("st_"))
+  select(-c("office", "...1", "winner_candidate"), -contains("candidate"), -contains("st_"))
 
 historical_results <- historical_results %>% 
-  rename("year" = "race_year") %>% 
-  separate(area, into = c("area", "district"), sep = " ") %>% 
-  select(-area, -office, -census_pop, -district_num, -cd, -contains("third"), -contains("plurality"), -contains("candidate"), -contains("st_"), -race_notes, -plurality_party, -state_abb, -r_vote_margin, -other_votes) %>% 
+  rename("year" = "raceYear", 'state' = 'State', 'rep_votes_major_percent' = RepVotesMajorPercent, dem_votes_major_percent = 'DemVotesMajorPercent') %>% 
+  separate(Area, into = c("area", "district"), sep = " ") %>% 
+  select(-area, -Office, -CensusPop, -district_num, -CD, -contains("Third"), -contains("PluralityParty"), -contains("candidate"), -contains("st_"), -raceNotes, -PluralityVotes, -state_abb, -R_vote_margin, -OtherVotes) %>% 
   mutate(district = case_when(district == "Large" ~ "AL", TRUE ~ district))
 
 # Compare dataframes to see which columns I want to keep
 compare_df_cols(incumb_dist_1948_2022, historical_results)
 
 # Final district results dataframe
-district_results_48_22 <- full_join(historical_results, incumb_dist_1948_2022)
+district_results_48_22 <- full_join(historical_results, incumb_dist_1948_2022) 
 
 ```
 
@@ -103,63 +105,18 @@ newdf
 #   rename(avg_rating = 'avg_rating.x')
 ```
 
-```{r cleaning the data}
-# Selecting columns
-avg_ratings <- expert_ratings %>% 
-  select(year, state, district, avg_rating)
-
-# dem_results <- historical_results %>% 
-#   select(year, state, dem_votes_major_percent) %>%
-#   separate(area, into = c("area", "district"), sep = " ") %>% 
-#   select(-area) %>% 
-#   mutate(district = case_when(district == "Large" ~ "AL", TRUE ~ district))
-
-# Joining the data and nesting by state and district
-train_data <- avg_ratings %>% 
-  filter(year != 2022) %>% 
-  # left join as there aren't ratings for every district
-  left_join(historical_results, by = c("year", "state", "district")) %>% 
-  group_by(state, district) %>% 
-  filter(n() > 1) %>% # Filtering out single data rows
-  group_nest() %>% 
-  mutate(data = map(data, ~unnest(., cols = c())))
-
-test_data <- avg_ratings %>% 
-  filter(year == 2022) %>% 
-  group_by(state, district) %>% 
-  group_nest() %>% 
-  mutate(data = map(data, ~unnest(., cols = c())))
-```
-
-```{r models}
-# Building TERRIBLE models
-models <- train_data %>% 
-  mutate(model = map(data, ~lm(dem_votes_major_percent ~ avg_rating, 
-                                  data = .x))) %>% 
-  select(-data)
-
-# Extracting TERRIBLE model results
-model_results <- models %>% 
-  mutate(r_squared = map_dbl(model, ~summary(.x)$r.squared))
-
-# Predicting 2022 with a TERRIBLE model
-pred_2022 <- test_data %>%
-  # inner join as there may not be historical models for some districts
-  inner_join(models, by = c("state", "district")) %>% 
-  mutate(pred = map_dbl(.x = model, .y = data, ~predict(object = .x, newdata = as.data.frame(.y)))) %>%
-  select(state, district, pred)
-```
-
 # The Plan This Week
 Last week, I took a close look at The Economist's and FiveThirtyEight's House forecast models and their methodology, and compared them. With these models in mind, I updated my own 2022 midterm forecast and model to include national economic conditions (Gross Domestic Product, Real Disposable Income, and unemployment), generic ballot polls (partisan preference), and the midterm-president's-party effect. 
 
-One of the most interesting differences between the two models was that  FiveThirtyEight explicitly mentions their use of expert forecasts ([Cook Political Report](https://www.cookpolitical.com/ratings/house-race-ratings), [Inside Elections](https://insideelections.com/ratings/house), and [Sabato's Crystal Ball](https://centerforpolitics.org/crystalball/2022-house/)). This is intuitively a strong predictor of the race outcomes, as they are predictions coming from elections experts. This week, I wanted to investigate how accurate these predictions really are.
+One of the most interesting differences between the two models was that  FiveThirtyEight explicitly mentions their use of expert forecasts ([Cook Political Report](https://www.cookpolitical.com/ratings/house-race-ratings), [Inside Elections](https://insideelections.com/ratings/house), and [Sabato's Crystal Ball](https://centerforpolitics.org/crystalball/2022-house/)) to predict future elections. Expert forecasts are intuitively a strong predictor of the race outcomes, as they are the best predictions elections experts have given all they data they gathered. This week, I wanted to investigate how accurate these expert predictions really are, specifically for the 2018 midterms.
 
 # How Accurate Are Expert Predictions?
-Below, I compare the actual results of the 2018 midterm elections to the average predictions of experts. The 2018 results shown below are Democrat vote shares in each district   
+To conduct this week's investigation, I compare the actual results of the 2018 midterm elections to the average election ratings of experts. The 2018 results shown below are Democrat vote shares in each district. The 2018 expert election ratings come from [Ballotpedia](https://ballotpedia.org/Main_Page), with the election ratings taking on integer values 1 through 7 -- 1 represents a Solid/Safe Democrat prediction and 7 represents a Solid/Safe Republican average expert prediction for each district.
 
 ## Actual Vote Share in 2018, by District
-```{r}
+
+Below is the actual (D) vote share in the 2018 midterm elections at the district level.
+```{r plotting actual 2018 vote share results, include = FALSE}
 
 require(tidyverse)
 require(ggplot2)
@@ -178,12 +135,8 @@ get_congress_map <- function(cong=114) {
 # load 114th congress
 cd114 <- get_congress_map(114)
 
-
-
 # vote data
 h <- district_results_48_22
-
-
 
 R_2014 <- h %>%
   filter(year == 2018) %>%  
@@ -203,12 +156,10 @@ head(cd114$Dem_votes_pct)
 # plot with simplify
 districts_simp <- rmapshaper::ms_simplify(cd114, keep = 0.01)
 
-
-
 ggplot() + 
   geom_sf(data=districts_simp,aes(fill=Dem_votes_pct),
           inherit.aes=FALSE,alpha=0.9) + 
-  scale_fill_gradient2(low = "red", high = "blue", midpoint = 50, limits=c(0,100)) +
+  scale_fill_gradient2(low = "red", high = "blue", midpoint = 50, limits=c(0,100), name = "Democrat Major Vote Share") +
   coord_sf(xlim = c(-172.27, -66.57), ylim = c(18.55, 71.23), expand = FALSE) +  
   theme_void() +
   theme(axis.title.x=element_blank(),
@@ -216,14 +167,15 @@ ggplot() +
         axis.ticks.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        axis.ticks.y=element_blank()) + ggtitle("Actual (D) Vote Share in 2018 Midterm Elections") 
+        axis.ticks.y=element_blank()) + ggtitle("Actual (D) Vote Share in 2018 Midterm Elections")  
 
 
 ```
-According to [The Economist's forecasting model report](https://www.economist.com/the-economist-explains/2022/09/09/how-does-the-economists-midterms-election-model-work) this year, polls are the best indicator for the outcome of House elections. Especially informative is the "generic ballot" question, which asks "If the elections for U.S. Congress were being held today, would you vote for the Republican Party’s candidate or the Democratic Party’s candidate for Congress in your district?" (Pew Research Center, 2002). As the countdown to Election Day dwindles, poll results are weighed more heavily, as they're believed to be more reflective of the electorate than previous polls. Additionally, pollster quality over the years is also considered to correct for past estimation errors. The models also account for a slew of other predictors, including president's party performance in special elections, the midterm-incumbent disadvantage, state-level partisan lean, and campaign finances.
+![Actual 2018 (D) Vote Share.](actual_2018_results.png)
+Most of the map is either red or white, which seems to suggest that most district vote share results were in the Republican party's favor or close between the two major parties. However, it is important to remember that for the House of Representatives, land is not proportional to representation, population is. Also, the president's party often performs poorly in midterm years, as discussed in detail in the [first blog post](https://vivian-1372.github.io/Election-Analytics/post/2022-09-15-analzying-2020-house-vote-shares/) of this series. Those two reminders considered, it then makes sense that the Democrats actually took the House in the 2018 midterms, with 235 seats going to Democrats and 199 going to Republicans (New York Times 2018). 
 
 ## Expert Predictions for Vote Share in 2018, by District
-```{r, include=FALSE, eval=TRUE, fig.width=5, fig.height=3, out.width = '60%', fig.align='center'}
+```{r plotting expert predictions for 2018 midterms, include=FALSE}
 
 
 require(tidyverse)
@@ -278,7 +230,7 @@ districts_simp <- rmapshaper::ms_simplify(cd114, keep = 0.01)
 ggplot() + 
   geom_sf(data=districts_simp, aes(fill = avg_rating),
           inherit.aes=FALSE,alpha=0.9) + 
-  scale_fill_gradient2(low = "blue", high = "red", midpoint = 3.5, limits=c(0,7)) +
+  scale_fill_gradient2(low = "blue", high = "firebrick3", midpoint = 3.5, limits=c(0,7), name = "Expert Rating") +
   coord_sf(xlim = c(-172.27, -66.57), ylim = c(18.55, 71.23), expand = FALSE) +  
   theme_void() +
   theme(axis.title.x=element_blank(),
@@ -286,54 +238,84 @@ ggplot() +
         axis.ticks.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        axis.ticks.y=element_blank())
+        axis.ticks.y=element_blank()) + ggtitle("Expert Ratings for 2018 Midterm Elections")
 
 
 #map of expert predictions at the district-level... wheres ALASKA???
 
-print(cd114)
-
 
 ```
-FiveThirtyEight has become a renowned forecasting site, and is transparent about its [methodology](https://fivethirtyeight.com/methodology/how-fivethirtyeights-house-and-senate-models-work/). In all versions of their House forecast, they consider thousands of polls (district-level), each weighted with pollster rating and quality in mind. For districts with low or no polling, they use the CANTOR system, which "infers results ... from comparable districts that do have polling." More complex versions of their modeling include the fundamentals (such as economics, fundraising, past elections results), and expert forecasts ([Cook Political Report](https://www.cookpolitical.com/ratings/house-race-ratings), [Inside Elections](https://insideelections.com/ratings/house), and [Sabato's Crystal Ball](https://centerforpolitics.org/crystalball/2022-house/)). 
+Below are the expert ratings for the 2018 midterms, which I call predictions because the ratings reflect what the experts believed would happen in each congressional district election. Red areas represent high 
+![Expert Ratings for 2018 Midterms.](expert_ratings_2018.png)
 
 ## Comparison and Insights
-For the most part, The Economist and FiveThirtyEight methodologies appear to be similar. On a high level, they share many predictors: polls (weighted according to recency, pollster quality), previous election results, campaign finances, and other fundamentals, like the midterm-incumbent effect. Some small, but important, differences lie in the specifics of each predictor - for example, The Economist relies more on generic ballot polling data, while FiveThirtyEight utilizes district-level candidate polls. FiveThirtyEight includes expert ratings and forecasts in their model, which The Economist does not. 
-
-I personally prefer the FiveThirtyEight model due to its inclusion of expert ratings. Though it seems initially a bit circular to build a predictive model based, in part, on others' predictions, it ultimately makes sense -- other experts have made their best guesses for election results, and on average, they probably are onto something. This idea is reminiscent of Galton's (1907) "wisdom of the crowds," but the crowds consist of pollsters and election forecasters here.  
+  
 
 # My 2022 Model and Forecast, Updated
-I take inspiration from the aforementioned models and update my own, incorporating national economic variables, the midterm-incumbent effect, and generic ballot polling data in order to predict the House incumbent party vote share for the upcoming election. 
-
-The economic variables are the exact same as the ones from last week; see [here](https://vivian-1372.github.io/Election-Analytics/post/2022-09-19-local-and-national-economy/) for more information. The `PresParty-HouseInc-Midterm` variable is meant to capture the midterm-incumbent effect, taking a value of: `1` for election years when there is a midterm election *and* the House incumbent party is the president's party, `0` otherwise. In these years, we'd expect the House incumbent party to suffer in vote share, as it's known that the president's party, which is the same as the House incumbent party, performs poorly in midterm years. The generic ballot poll responses are taken into account via the `Generic Ballot Average Support` variable, which averages the generic ballot responses for each election year with respect to weighting that boost polls closer to Election Day, and dampen those farther out (Gelman and King, 1993). 
-
-Below is a regression table of several model editions I considered. 
-
-
-![My Updated Model.](bp3_regression.png)
-The "National Econ" Model comes from last week, and only considers the national economic variables of Gross Domestic Product growth (percentage and absolute), unemployment rate, and Real Disposable Income (RDI) change %. The adjusted R-squared is only 0.292, and few variables are clearly predictive of vote share. 
-
-Next, I consider a model using only the midterm-incumbent effect and generic ballot support. Impressively, these two variables alone have an adjusted R-squared of 0.552. 
-
-The next two models consider economic variables and either polls, or the midterm-incumbent effect, but not both. It appears that the generic ballot polls provide more predictive power to my model than the midterm effect alone. 
 
 ## My New Model
-My national model remains the same as it was last week, and I cannot fully extend my national model to the district level because it uses national variables like GDP change, as well as national responses to the generic ballot polls. That said, I can incorporate this week's investigation into a district-level model that predicts the House races by district using the most recent expert ratings data I have access to.
+My national model remains the same as it was last week, and I cannot fully extend my national model to the district level because it uses national variables like GDP change, as well as national responses to the generic ballot polls. That said, I can incorporate this week's investigation into a district-level model that predicts the House races by district using the most recent expert ratings data I have access to. These district-level models are of course imperfect because they only use expert ratings, but over all of them, they have an average R-squared of 0.78.  
+
+```{r 2022 prediction data cleaning, include = FALSE}
+# Selecting columns
+avg_ratings <- expert_ratings %>% 
+  select(year, state, district, avg_rating)
+
+# Joining the data and nesting by state and district
+train_data <- avg_ratings %>% 
+  filter(year != 2022) %>% 
+  # left join as there aren't ratings for every district
+  left_join(historical_results, by = c("year", "state", "district")) %>% 
+  group_by(state, district) %>% 
+  filter(n() > 1) %>% # Filtering out single data rows
+  group_nest() %>% 
+  mutate(data = map(data, ~unnest(., cols = c())))
+
+test_data <- avg_ratings %>% 
+  filter(year == 2022) %>% 
+  group_by(state, district) %>% 
+  group_nest() %>% 
+  mutate(data = map(data, ~unnest(., cols = c())))
+```
+
+```{r prediction models, include = FALSE}
+# Building TERRIBLE models
+models <- train_data %>% 
+  mutate(model = map(data, ~lm(dem_votes_major_percent ~ avg_rating, 
+                                  data = .x))) %>% 
+  select(-data)
+
+# Extracting TERRIBLE model results
+model_results <- models %>% 
+  mutate(r_squared = map_dbl(model, ~summary(.x)$r.squared))
+
+# Predicting 2022 with a TERRIBLE model
+pred_2022 <- test_data %>%
+  # inner join as there may not be historical models for some districts
+  inner_join(models, by = c("state", "district")) %>% 
+  mutate(pred = map_dbl(.x = model, .y = data, ~predict(object = .x, newdata = as.data.frame(.y)))) %>%
+  select(state, district, pred)
+```
 
 ## My New Forecast
+Below are my models' predictions for the 94 congressional districts where the expert ratings were available.
 
+```{r forecast printout, include = TRUE}
 
+export_table(pred_2022, format = "html")
+
+```
 
 ---
 
 **References**
 
-[1] The Economist Newspaper. (2022). How does the Economist's midterms election model work? The Economist. https://www.economist.com/the-economist-explains/2022/09/09/how-does-the-economists-midterms-election-model-work 
+[1] Ballotpedia. (2022). https://ballotpedia.org/Main_Page 
 
-[2] Pew Research Center. (2002). Why the generic ballot test? Pew Research Center - U.S. Politics & Policy. https://www.pewresearch.org/politics/2002/10/01/why-the-generic-ballot-test/ 
+[2] Cook Political Report. (2002). House Race Ratings. https://www.cookpolitical.com/ratings/house-race-ratings
 
-[3] Silver, Nate. (2022). How fivethirtyeight’s house, senate and governor models work. https://fivethirtyeight.com/methodology/how-fivethirtyeights-house-and-senate-models-work/
+[3] Inside Elections. (2022). House Ratings. https://insideelections.com/ratings/house
 
-[4] Galton. (1907). Vox Populi. Nature (London), 75(1949), 450–451. https://doi.org/10.1038/075450a0
+[4] Sabato's Crystal Ball. (2022). House Race Ratings. https://centerforpolitics.org/crystalball/2022-house/
 
-[5] Gelman, & King, G. (1993). Why Are American Presidential Election Campaign Polls So Variable When Votes Are So Predictable? British Journal of Political Science, 23(4), 409–451. https://doi.org/10.1017/S0007123400006682
+[5] The New York Times. (2018, November 6). U.S. House election results 2018. The New York Times. https://www.nytimes.com/interactive/2018/11/06/us/elections/results-house-elections.html 
