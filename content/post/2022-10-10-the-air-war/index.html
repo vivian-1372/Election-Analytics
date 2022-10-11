@@ -1,0 +1,51 @@
+---
+title: The Air War
+author: Vivian Nguyen
+date: '2022-10-10'
+slug: []
+categories: []
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>This is blog post #5 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.</p>
+<hr />
+<div id="the-plan-this-week" class="section level1">
+<h1>The Plan This Week</h1>
+<p>We are about 4 weeks out from Election Day, and thus far I’ve created a national forecasting model that incorporates national economic conditions (Gross Domestic Product, Real Disposable Income, and unemployment), generic ballot polls (partisan preference), and the midterm-president’s-party effect. I’ve also created a simple district-level forecasting model based on expert ratings (<a href="https://www.cookpolitical.com/ratings/house-race-ratings">Cook Political Report</a>, <a href="https://insideelections.com/ratings/house">Inside Elections</a>, and <a href="https://centerforpolitics.org/crystalball/2022-house/">Sabato’s Crystal Ball</a>).</p>
+<p>This week I plan to explore the impact of advertisements on the outcomes of congressional races. After evaluating the historical impact of “the Air War” on elections, I plan to update my simple district-level model from last week.</p>
+</div>
+<div id="are-advertisements-impactful" class="section level1">
+<h1>Are Advertisements Impactful?</h1>
+<p>To conduct this week’s investigation, I compare the actual results of the 2018 midterm elections to the average election ratings of experts. The 2018 results shown below are Democrat vote shares in each district. The 2018 expert election ratings come from <a href="https://ballotpedia.org/Main_Page">Ballotpedia</a>, with the election ratings taking on integer values 1 through 7 – 1 represents a Solid/Safe Democrat prediction and 7 represents a Solid/Safe Republican average expert prediction for each district.</p>
+<p>NO EFFECT ?????????????</p>
+<div id="actual-vote-share-in-2018-by-district" class="section level2">
+<h2>Actual Vote Share in 2018, by District</h2>
+<p>Below is the actual (D) vote share in the 2018 midterm elections at the district level.</p>
+<p>Most of the map is either red or white, which seems to suggest that most district vote share results were in the Republican party’s favor or close between the two major parties. However, it is important to remember that for the House of Representatives, land is not proportional to representation, population is. Also, the president’s party often performs poorly in midterm years, as discussed in detail in the <a href="https://vivian-1372.github.io/Election-Analytics/post/2022-09-15-analzying-2020-house-vote-shares/">first blog post</a> of this series. Those two reminders considered, it then makes sense that the Democrats actually took the House in the 2018 midterms, with 235 seats going to Democrats and 199 going to Republicans (New York Times 2018).</p>
+</div>
+<div id="expert-predictions-for-vote-share-in-2018-by-district" class="section level2">
+<h2>Expert Predictions for Vote Share in 2018, by District</h2>
+<p>Below are the expert ratings for the 2018 midterms, which I call predictions because the ratings reflect what the experts believed would happen in each congressional district election. Red areas represent high expert confidence that the region will go to Republicans, while blue areas represent high confidence that the region will go to Democrats.</p>
+</div>
+<div id="evaluation" class="section level2">
+<h2>Evaluation</h2>
+<p>For the most part, the predictions are pretty accurate via visual investigation. Most of the areas that actually had majority-Republican vote shares in the 2018 elections were predicted to be likely or solidly Republican by the experts on average. The blue districts of the 2018 midterms, like the ones along the west coast of Washington, Oregon, and California, in Arizona and New Mexico, in southern Texas, and scattered throughout the Rust Belt, were impressively predicted by the experts and their ratings, reflected in the standout blue coloring in the plot above. The experts were also able to pin down the close races, like the ones in southern New Mexico and in Maine. Overall, I think the average expert ratings predicted the congressional races at the district level very well, despite being just one predictor (that is a culmination of many predictors considered by the experts) in my model.</p>
+</div>
+</div>
+<div id="my-2022-model-and-forecast-updated" class="section level1">
+<h1>My 2022 Model and Forecast, Updated</h1>
+<div id="my-new-model" class="section level2">
+<h2>My New Model</h2>
+</div>
+<div id="my-new-forecast" class="section level2">
+<h2>My New Forecast</h2>
+<hr />
+<p><strong>References</strong></p>
+<p>[1] Cook Political Report. (2002). House Race Ratings. <a href="https://www.cookpolitical.com/ratings/house-race-ratings" class="uri">https://www.cookpolitical.com/ratings/house-race-ratings</a></p>
+<p>[2] Inside Elections. (2022). House Ratings. <a href="https://insideelections.com/ratings/house" class="uri">https://insideelections.com/ratings/house</a></p>
+<p>[3] Sabato’s Crystal Ball. (2022). House Race Ratings. <a href="https://centerforpolitics.org/crystalball/2022-house/" class="uri">https://centerforpolitics.org/crystalball/2022-house/</a></p>
+</div>
+</div>

@@ -6,7 +6,27 @@
     <description>Recent content in Posts on Elections Analytics, 2022</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 26 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://example.org/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 10 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://example.org/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Air War</title>
+      <link>http://example.org/post/2022-10-10-the-air-war/</link>
+      <pubDate>Mon, 10 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/post/2022-10-10-the-air-war/</guid>
+      <description>This is blog post #5 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
+The Plan This Week We are about 4 weeks out from Election Day, and thus far I’ve created a national forecasting model that incorporates national economic conditions (Gross Domestic Product, Real Disposable Income, and unemployment), generic ballot polls (partisan preference), and the midterm-president’s-party effect.</description>
+    </item>
+    
+    <item>
+      <title>Expert Predictions</title>
+      <link>http://example.org/post/2022-10-03-incumbency/</link>
+      <pubDate>Mon, 03 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/post/2022-10-03-incumbency/</guid>
+      <description>This is blog post #4 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
+The Plan This Week Last week, I took a close look at The Economist’s and FiveThirtyEight’s House forecast models and their methodology, and compared them. With these models in mind, I updated my own 2022 midterm forecast and model to include national economic conditions (Gross Domestic Product, Real Disposable Income, and unemployment), generic ballot polls (partisan preference), and the midterm-president’s-party effect.</description>
+    </item>
+    
     <item>
       <title>Polls and Pollsters</title>
       <link>http://example.org/post/2022-09-26-polls-and-pollsters/</link>
@@ -15,16 +35,6 @@
       <guid>http://example.org/post/2022-09-26-polls-and-pollsters/</guid>
       <description>This is blog post #3 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
 The Plan This Week So far, I’ve confirmed that the president’s party often performs poorly in the midterm House elections and that a combination of fundamental (Q8, national) economic variables, including GDP growth %, RDI change %, unemployment rate, and absolute GDP growth, are somewhat able to predict House incumbent party vote share.</description>
-    </item>
-    
-    <item>
-      <title>Polls and Pollsters</title>
-      <link>http://example.org/post/2022-09-23-bp3-code/</link>
-      <pubDate>Fri, 23 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>http://example.org/post/2022-09-23-bp3-code/</guid>
-      <description>This is blog post #3 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
-detailedvotes &amp;lt;- read_csv(&amp;quot;inc_pop_vote_df.csv&amp;quot;) ## New names: ## Rows: 74 Columns: 12 ## ── Column specification ## ──────────────────────────────────────────────────────── Delimiter: &amp;quot;,&amp;quot; chr ## (4): party, winner_party.x, president_party, H_incumbent_party dbl (7): ...1, ## year, seats, Other_seats.x, votes, total_votes.</description>
     </item>
     
     <item>

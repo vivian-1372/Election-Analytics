@@ -45,7 +45,7 @@ polls <- poll_df %>%
   select(year, emonth, eday, dem, rep, days_until_election, sample_size, type) %>%
   rename(dem_poll = dem, rep_poll = rep) %>%
   # add weights
-  mutate(recency = (365 - days_until_election)/100, size = (sample_size/30)/100, weight100 = recency + size)
+  mutate(recency = (365 - days_until_election)/100, size = (sample_size / 30)/100, weight100 = 2 * recency + size)
 ```
 
 ```{r weigh polls, include = FALSE}
@@ -72,6 +72,9 @@ df <- df %>%
                      (year %% 4 == 2) & (H_incumbent_party == president_party) ~ TRUE,
                      (year %% 4 == 2) & (H_incumbent_party != president_party) ~ FALSE),
          H_incumbent_party_majorseat_pct = seats/(435 - Other_seats))
+
+write.csv(df, "econ_mid_genball_results.csv", row.names = TRUE)
+
 ```
 
 # The Plan This Week
