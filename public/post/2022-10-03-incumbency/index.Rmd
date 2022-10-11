@@ -134,10 +134,14 @@ require(sf)
 # }
 
 # load 114th congress
+# <<<<<<< HEAD
 # cd114 <- get_congress_map(114)
 
 cd114 <- st_read("districtShapes/districts114.shp")
-
+# =======
+# cd114 <- get_congress_map(114)
+# >>>>>>> 1b982eea6f0ad653c5f59e4ecc0201948c3d7c00
+# 
 # vote data
 h <- district_results_48_22
 
@@ -203,17 +207,9 @@ cd114 <- st_read("districtShapes/districts114.shp")
 
 
 # vote data
-h <- newdf2
-
-hh <- as.data.frame(h)
+hh <- as.data.frame(newdf2)
 hh["state" == "Alaska"]["district"] <- "0" 
 hh["state" == "Montana"]["district"] <- "0" 
-
-
-hh
-
-
-
 
 R_2014 <- hh %>%
   select(state, district, avg_rating) %>%
