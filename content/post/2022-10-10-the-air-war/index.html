@@ -12,40 +12,32 @@ tags: []
 
 <p>This is blog post #5 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.</p>
 <hr />
-<div id="the-plan-this-week" class="section level1">
-<h1>The Plan This Week</h1>
-<p>We are about 4 weeks out from Election Day, and thus far I’ve created a national forecasting model that incorporates national economic conditions (Gross Domestic Product, Real Disposable Income, and unemployment), generic ballot polls (partisan preference), and the midterm-president’s-party effect. I’ve also created a simple district-level forecasting model based on expert ratings (<a href="https://www.cookpolitical.com/ratings/house-race-ratings">Cook Political Report</a>, <a href="https://insideelections.com/ratings/house">Inside Elections</a>, and <a href="https://centerforpolitics.org/crystalball/2022-house/">Sabato’s Crystal Ball</a>).</p>
-<p>This week I plan to explore the impact of advertisements on the outcomes of congressional races. After evaluating the historical impact of “the Air War” on elections, I plan to update my simple district-level model from last week.</p>
+<div id="the-plan-this-week" class="section level2">
+<h2>The Plan This Week</h2>
+<p>We are about 4 weeks out from Election Day, and thus far I’ve created a national forecasting model that incorporates national economic conditions (Gross Domestic Product, Real Disposable Income, and unemployment), generic ballot polling (partisan preference), and the midterm-president’s-party effect. I’ve also created a simple district-level forecasting model based on expert ratings (<a href="https://www.cookpolitical.com/ratings/house-race%20-ratings">Cook Political Report</a>, <a href="https://insideelections.com/ratings/house">Inside Elections</a>, and <a href="https://centerforpolitics.org/crystalball/2022-house/">Sabato’s Crystal Ball</a>).<br />
+This week I plan to explore the impact of advertisements (volume, cost) on the outcomes of congressional races. After evaluating the historical impact of “the Air War” on elections, I plan to update my simple district-level model from last week.</p>
 </div>
-<div id="are-advertisements-impactful" class="section level1">
-<h1>Are Advertisements Impactful?</h1>
-<p>To conduct this week’s investigation, I compare the actual results of the 2018 midterm elections to the average election ratings of experts. The 2018 results shown below are Democrat vote shares in each district. The 2018 expert election ratings come from <a href="https://ballotpedia.org/Main_Page">Ballotpedia</a>, with the election ratings taking on integer values 1 through 7 – 1 represents a Solid/Safe Democrat prediction and 7 represents a Solid/Safe Republican average expert prediction for each district.</p>
-<p>NO EFFECT ?????????????</p>
-<div id="actual-vote-share-in-2018-by-district" class="section level2">
-<h2>Actual Vote Share in 2018, by District</h2>
-<p>Below is the actual (D) vote share in the 2018 midterm elections at the district level.</p>
-<p>Most of the map is either red or white, which seems to suggest that most district vote share results were in the Republican party’s favor or close between the two major parties. However, it is important to remember that for the House of Representatives, land is not proportional to representation, population is. Also, the president’s party often performs poorly in midterm years, as discussed in detail in the <a href="https://vivian-1372.github.io/Election-Analytics/post/2022-09-15-analzying-2020-house-vote-shares/">first blog post</a> of this series. Those two reminders considered, it then makes sense that the Democrats actually took the House in the 2018 midterms, with 235 seats going to Democrats and 199 going to Republicans (New York Times 2018).</p>
+<div id="are-advertisements-impactful" class="section level2">
+<h2>Are Advertisements Impactful?</h2>
+<p>To explore this week’s central question, I took a look at data from the <a href="https://mediaproject.wesleyan.edu/">Wesleyan Media Project</a> about political campaign advertisements for campaigns from 2006 through 2018.</p>
+<p>I first wanted to visually inspect the relationship between advertisement volume and party major vote share at the district level for House races, and found unpromising results.
+<img src="rep_ads.png" alt="Republican Ad Volume vs. Vote Share." />
+<img src="dem_ads.png" alt="Democrat Ad Volume vs. Vote Share." /></p>
+<p>As shown in the above 2 plots, there’s no clear correlation between the number of partisan advertisements run and the party’s major vote share in a given district. As the number of advertisements run for each party increases, the party’s major vote share doesn’t increase or decrease.</p>
+<p>Though there’s no positive or negative correlation that immediately jumps out from these plots, there are still valuable insights to note. For one, there’s great variability in party vote share when there are a low number of advertisements run in that district - with close to 0 ads run for the Democrat candidate in a district, the candidate can have anywhere from 25% to 100% of the vote share. The same is true for Republican candidates and lack of Republican advertisements. As the numbers of advertisement run increases, towards the magnitudes of 15,000 and beyond, the races become much more competitive, with each party securing about 50% of the major party vote share. This finding is intuitive, in a way, because we could imagine the reason these districts were sites of unprecedented advertisement war was because their races were highly competitive and anticipated.</p>
+<p>I was also curious about spending on advertisements versus the promoted candidate’s vote share. Below is the plot of the total estimated cost of advertisements promoting a Democratic candidate against the amount of money spent on their advertising campaign. The same trends from above apply here – at the lower end of advertisement campaign strength and cost, the Democrat major vote share varies widely across different House races. At the higher end of spending, the races remain competitive, with Democrats just edging out their competitors with vote shares hovering slightly above 50%.<br />
+<img src="ads_spending.png" alt="(D) Advertisement Spending vs. (D) Vote Share." /></p>
+<p>To formally check the relationship between advertisement volume and party major vote share in a district, I ran linear regressions across the districts with available data, predicting Democrat major vote share on the ratio of Democrat:Republican advertisements ran in that cycle.
+<img src="ads_regression.png" alt="Advertisement Volume vs. (D) Vote Share." />
+The results are interesting. The first observation is that the ratio of partisan advertisement volume alone is a poor predictor of Democrat vote share – my model only has an adjusted R-squared of 0.054. Another is that when the ratio of Democrat:Republican advertisements moves from 0 to 1, the Democrat vote share increases by ~6.2 percentage points.</p>
 </div>
-<div id="expert-predictions-for-vote-share-in-2018-by-district" class="section level2">
-<h2>Expert Predictions for Vote Share in 2018, by District</h2>
-<p>Below are the expert ratings for the 2018 midterms, which I call predictions because the ratings reflect what the experts believed would happen in each congressional district election. Red areas represent high expert confidence that the region will go to Republicans, while blue areas represent high confidence that the region will go to Democrats.</p>
-</div>
-<div id="evaluation" class="section level2">
-<h2>Evaluation</h2>
-<p>For the most part, the predictions are pretty accurate via visual investigation. Most of the areas that actually had majority-Republican vote shares in the 2018 elections were predicted to be likely or solidly Republican by the experts on average. The blue districts of the 2018 midterms, like the ones along the west coast of Washington, Oregon, and California, in Arizona and New Mexico, in southern Texas, and scattered throughout the Rust Belt, were impressively predicted by the experts and their ratings, reflected in the standout blue coloring in the plot above. The experts were also able to pin down the close races, like the ones in southern New Mexico and in Maine. Overall, I think the average expert ratings predicted the congressional races at the district level very well, despite being just one predictor (that is a culmination of many predictors considered by the experts) in my model.</p>
-</div>
-</div>
-<div id="my-2022-model-and-forecast-updated" class="section level1">
-<h1>My 2022 Model and Forecast, Updated</h1>
-<div id="my-new-model" class="section level2">
-<h2>My New Model</h2>
-</div>
-<div id="my-new-forecast" class="section level2">
-<h2>My New Forecast</h2>
+<div id="evaluation-and-looking-forward" class="section level2">
+<h2>Evaluation and Looking Forward</h2>
+<p>6.2 is, of course, a huge increase in major vote share, but the way I built my model hinders interpretability and generalization because I can only make the +6.2 p.p. claim when the advertisement situation goes from no Democrat advertisements to all Democrat advertisements in a district. All things considered, I plan to rethink the way I evaluate advertisement data as a predictor of historical races before incorporating it into my district-level model. Right now, I hesitate to add it to my model in addition to expert ratings because it may be better to scrap the variable altogether, considering the low predictive power advertisement volume has as a feature in my model. For now, I will refrain from making changes to my national and district-level models from last week, and I look forward to perhaps incorporating advertisement data in tandem with district-level candidate incumbency, or with other forms of candidate campaigning, like the ground game and its field offices, volunteers, rallies, and person-to-person contacts in the future. This week’s exploration has revealed to me that the “Air War” is very real, but it’s unclear how impactful it really is on candidate success in House races.</p>
 <hr />
 <p><strong>References</strong></p>
 <p>[1] Cook Political Report. (2002). House Race Ratings. <a href="https://www.cookpolitical.com/ratings/house-race-ratings" class="uri">https://www.cookpolitical.com/ratings/house-race-ratings</a></p>
 <p>[2] Inside Elections. (2022). House Ratings. <a href="https://insideelections.com/ratings/house" class="uri">https://insideelections.com/ratings/house</a></p>
 <p>[3] Sabato’s Crystal Ball. (2022). House Race Ratings. <a href="https://centerforpolitics.org/crystalball/2022-house/" class="uri">https://centerforpolitics.org/crystalball/2022-house/</a></p>
-</div>
+<p>[4] Wesleyan Media Project. <a href="https://mediaproject.wesleyan.edu/" class="uri">https://mediaproject.wesleyan.edu/</a></p>
 </div>
