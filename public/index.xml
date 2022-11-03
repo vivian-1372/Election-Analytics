@@ -2,11 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Elections Analytics, 2022</title>
-    <link>https://vivian-1372.github.io/Election-Analytics/</link>
+    <link>http://example.org/</link>
     <description>Recent content on Elections Analytics, 2022</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 17 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 24 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Shocks</title>
+      <link>http://example.org/post/2022-10-24-shocks/</link>
+      <pubDate>Mon, 24 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/post/2022-10-24-shocks/</guid>
+      <description>This is blog post #7 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
+The Plan This Week Discuss previous weeks’ work. Then, introduce shocks. Consider adding shocks to the model. Update the district-level model (pooled? Or not)
+Other Subtitle My 2022 Model and Forecast, Updated -Update national model?</description>
+    </item>
+    
     <item>
       <title>The Ground Game</title>
       <link>http://example.org/post/2022-10-17-the-ground-game/</link>

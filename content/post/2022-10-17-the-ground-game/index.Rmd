@@ -11,7 +11,6 @@ This is blog post #6 in a series of analytical posts in lieu of the 2022 midterm
 
 ---
 ```{r setup, include = FALSE, message = FALSE}
-
 # Set up
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -24,7 +23,7 @@ library(sf)
 library(insight)
 library(scales)
 
-# Load in expert ratings and district polls
+# Incumbency and turnout district model data
 incumb <- read_csv("incumb_dist_1948-2020.csv") %>%
   janitor::clean_names()
 house_polls <- read_csv("house_polls_long.csv") %>%
@@ -36,7 +35,13 @@ house_cands_22 <- read_csv("house_cands_2022.csv") %>%
 cvap <- read_csv("cvap_district_2012-2020.csv") %>%
   janitor::clean_names()
 df <- read_csv("turnout_2012_2020.csv")
+expert_ratings <- read_csv("expert_rating.csv") %>%
+  select(year, state, district, avg_rating)
 
+# National model data
+nat_model_data <- read_csv("econ_mid_genball_results.csv")
+nat_turnout <- read_csv("national_turnout.csv") %>%
+  rename('year' = Year, 'turnout' = `Turnout %`)
 ```
 # The Plan This Week
 Last week, I investigated the impact of television advertisements on party success at the district level, and found a small, arguably negligible, effect. This week, I delve into the other major side of campaign activities – “the ground game.” Do the phone banks, text banks, rallies, door knockers, and more matter? I will incorporate these findings and retroactive ones (expert predictions from [week 4](https://vivian-1372.github.io/Election-Analytics/post/2022-10-03-incumbency)) to make updates to my district-level model, newly featuring the effect of the ground game, expert predictions, and candidate incumbency. This will produce new district-level predictions for the races finalizing in the next 3 weeks!    
@@ -49,24 +54,116 @@ The consensus from the literature and pundit commentary is that the ground game 
 These findings suggest that successful ground campaigns increase turnout. In the remainder of my blog post this week, I want to explore the question of how increased turnout at the district level affects the parties’ respective vote shares, if at all? Does higher Democrat turnout correlate with better Democrat major vote share – which is rather intuitive –, or no – maybe higher Democrat turnout occurs with more Republican turnout, so there’s a “cancel-out” effect?  
 
 # My 2022 Model and Forecast, Updated
-```{r 435 models, include = FALSE}
 
-models = unique(house_cands_22$st_cd_fips)
+My previous district-level model was basic, relying on only average expert predictions. Though the predictions themselves consider many important electoral predictors, their aggregation and then averaging render them basic. This week, I aim to Incorporate turnout, incumbency and the generic ballot into my district-level model of Democratic major vote share.
 
-for (stcdfip in models){
-  model = lm()
-  models <- c(models, model)
-  print(stcdfip)
+
+## My New Models
+I took two shots at redesigning my district-level model: one incorporated candidate incumbency, district-level turnout, and generic ballot support (Model A: `DemVoteShare ~ incumbency + turnout + support`), and the other incorporated the aforementioned with the exception of turnout (Model B: `DemVoteShare ~ incumbency + support`). I also prioritized producing 435 models, so that limited my data to only 2012-present day data, but I aim to reconsider this in the next blog post as I grapple with the decision of including expert predictions in my district-level models. 
+
+Below is a histogram of the adjusted R-squareds of Model A. 
+![Model A R-squareds.](histA.png)
+As shown, there's generally a lot of room for improvement, with many R-squareds being 0 or even negative. Considering turnout, the generic ballot, and incumbency is at times worse than just using the mean Democratic vote share to predict the race outcomes! 
+
+I was curious if the turnout variable, which is this week's proxy for the effect of the ground game, had significant predictive power. To test this quickly, I removed turnout as a predictor variable and developed a new set of 435 models. Below is the histogram of the adjusted R-squareds of Model B. 
+![Model B R-squareds.](histB.png)
+
+This histogram, again, demonstrates the models have much room for improvement. Interestingly, removing the turnout predictor has not greatly reduced our R-squareds, with the average adjusted R-squared for Model B actually being higher than that of Model A. This one rudimentary test seems to suggest that turnout is not a great predictor of Democrat vote share; changes in turnout are not highly correlated with better or worse Democrat performance. 
+
+```{r district models, incumbency, turnout, and generic ballot, include = FALSE}
+expert_ratings$district <- as.numeric(expert_ratings$district)
+df$district_num <- as.numeric(df$district_num)
+df <- df %>%
+  rename(district = district_num)
+
+district_data <- expert_ratings %>% 
+  filter(year != 2022) 
+
+newdf <- left_join(df, expert_ratings, by = c("year", "state", "district"))
+newdf <- drop_na(newdf)
+
+sds = unique(df$st_cd_fips)
+models <- list()
+models2 <- list()
+r2 <- c()
+r22 <- c()
+preds <- c()
+for (sd in sds){
+  temp <- df %>%
+    filter(st_cd_fips == sd)
+  
+  if (nrow(temp) > 0)
+  {
+    m <- lm(DemVotesMajorPercent ~ average_support + incumb + turnout, data = temp)
+    models[[length(models)+1]] <- m
+    
+    m2 <- lm(DemVotesMajorPercent ~ average_support + incumb, data = temp)
+    models2[[length(models) + 1]] <- m2
+  
+    r2 <- c(r2, summary(m)$adj.r.squared)
+    r22 <- c(r22, summary(m2)$adj.r.squared)
+  }
+  #Make a 2022 prediction and append to list
+  # preds <- c(preds, predict(m2, 2022data))
 }
 
+# newdf %>%
+#   filter(st_cd_fips ==  3601)
 ```
-My previous district-level model was basic, relying on only average expert predictions. Though the predictions themselves consider many important electoral predictors, their aggregation and then averaging render them basic. This week, I aim to Incorporate turnout, incumbency and expert predictions into my district-level model of two-party major vote share.
 
-## My New Model
-Reflect on new models 
+```{r comparing models, include = FALSE}
+hist(r2, breaks = 50, main = "R-squareds of Generic Ballot + Incumbency + Turnout Models")
+abline(v = mean(r2, na.rm = TRUE))
+text(x = mean(r2, na.rm = TRUE) + 0.33, y = 50, paste0("Mean: ", round(mean(r2, na.rm = TRUE), 3)))
+
+hist(r22, breaks = 50,  main = "R-squareds of Generic Ballot + Incumbency Models")
+abline(v = mean(r22, na.rm = TRUE))
+text(x = mean(r22) + 0.23, y = 26, paste0("Mean: ", round(mean(r22), 3)))
+
+print(models2[420])
+print(models2[3])
+```
+
+I also tried to incorporate turnout into my national model. Below is the Stargazer table showing my regression outputs. On the left is the previous national model I developed in [week 3](https://vivian-1372.github.io/Election-Analytics/post/2022-09-26-polls-and-pollsters/), the middle is the new model with turnout incorporated, and on the right is the final national model I chose to come away from this week with. 
+
+![National Regression Models](natmodels.png)
+
+The upside of my national models regression is that 3 models is much easier to interpret and compare than 435. The first two columns show the coefficients for the old model, and the old model with turnout. As shown, adding turnout does not significantly change the adjusted R-squared of the model; in fact, adding turnout drives up the residual standard error. Additionally, turnout does not appear to be a significant predictor (0 stars) of House incumbent party (Democrats) vote share. I took these findings, as well as the observation that unemployment appears to be another poor predictor of vote share, to form my newest national model, which predicts House vote share for the incumbent House party using GDP growth %, RDI change %, GDP absolute growth %, the president's-party-midterm interaction, and generic ballot support. 
+
+```{r national model, include = FALSE}
+# Creating final national model data
+nat_model_data2 <- left_join(nat_model_data, nat_turnout, by = "year")
+
+# National models 
+nat_model_old <- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct + UNRATE + DSPIC_change_pct + GDP_growth_qt + 
+               pp_generic_ballot + midterm_pres_party_inc_party, data = nat_model_data)
+nat_model_new <- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct + UNRATE + DSPIC_change_pct + GDP_growth_qt + 
+               pp_generic_ballot + midterm_pres_party_inc_party + turnout, data = nat_model_data2)
+nat_model_updated <- lm(H_incumbent_party_majorvote_pct ~ GDP_growth_pct + DSPIC_change_pct + GDP_growth_qt + 
+               pp_generic_ballot + midterm_pres_party_inc_party, data = nat_model_data)
+nat_model_updated_seats <- lm(seats ~ GDP_growth_pct + DSPIC_change_pct + GDP_growth_qt + 
+               pp_generic_ballot + midterm_pres_party_inc_party, data = nat_model_data)
+
+# Displaying national model results
+stargazer(nat_model_old, nat_model_new, nat_model_updated, type = "text",
+          title = "Week 6/7 National Model",
+          dep.var.labels = "House Incumbent Party Vote Share",
+          covariate.labels = c('GDP Growth %', 'Unemployment Rate', 'RDI Change %', 'GDP Absolute Growth', 'Generic Ballot Average Support', 'President\'s-Party-Midterm', 'Turnout %'),
+          column.labels = c("Old National Model", "Old Model + Turnout", "Updated Model: -Turnout, -UE"), model.numbers = FALSE)
+
+# Prediction
+data2022 <- data.frame(0.6, 0.6, 126, 43.70099, TRUE)
+colnames(data2022) <- c("GDP_growth_pct", "DSPIC_change_pct", "GDP_growth_qt", "pp_generic_ballot", "midterm_pres_party_inc_party")
+
+predict(nat_model_updated, data2022, interval = "confidence")
+predict(nat_model_updated_seats, data2022, interval = "confidence")
+
+```
 
 ## My New Forecast
-Present my predictions for the districts this year using 2022 data. 
+Next week, I hope to improve my district-level models by re-incorporating expert predictions. After some final touch-ups, I will produce new district-level predictions in time for Election Day.  
+
+As for the national model, I was able to come up with new predictions using the newest iteration of my national model and the newest economic and generic ballot support data available online. The Democrats, as the incumbent majority party of the House, is expected to win 47.35% of the two-party major vote share, with 95% confidence interval (46.01, 48.68). I also built a model to predict incumbent seats using the same exact predictor variables, and predict taht the Democrats will win ~203 seats in a few weeks' time, with a confidence interval of (193, 213). 
 
 ---
 **References**
@@ -80,5 +177,3 @@ Present my predictions for the districts this year using 2022 data.
 [4] Masket, Seth E. (2009). Did Obama’s Ground Game Matter? The Influence of Local Field Offices During the 2008 Presidential Election, Public Opinion Quarterly, 73(5), 1023–1039. https://doi.org/10.1093/poq/nfp077
 
 [5] Darr, & Levendusky, M. S. (2014). Relying on the Ground Game. American Politics Research, 42(3), 529–548. https://doi.org/10.1177/1532673X13500520
-
-

@@ -73,7 +73,7 @@ df <- df %>%
                      (year %% 4 == 2) & (H_incumbent_party != president_party) ~ FALSE),
          H_incumbent_party_majorseat_pct = seats/(435 - Other_seats))
 
-write.csv(df, "econ_mid_genball_results.csv", row.names = TRUE)
+# write.csv(df, "econ_mid_genball_results.csv", row.names = TRUE)
 
 ```
 

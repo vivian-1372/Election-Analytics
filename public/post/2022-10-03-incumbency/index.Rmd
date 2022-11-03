@@ -296,6 +296,8 @@ pred_2022 <- test_data %>%
   inner_join(models, by = c("state", "district")) %>% 
   mutate(pred = map_dbl(.x = model, .y = data, ~predict(object = .x, newdata = as.data.frame(.y)))) %>%
   select(state, district, pred)
+
+hist(model_results$r_squared)
 ```
 
 ## My New Forecast
