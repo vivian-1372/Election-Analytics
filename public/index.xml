@@ -6,7 +6,17 @@
     <description>Recent content on Elections Analytics, 2022</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 24 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 07 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Final Prediction</title>
+      <link>http://example.org/post/2022-11-07-final-prediction/</link>
+      <pubDate>Mon, 07 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/post/2022-11-07-final-prediction/</guid>
+      <description>This is blog post #8 (the final one!) in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
+Overview Welcome to the final election forecasting update of this election cycle! It’s been a long journey, but alas, we are one day out from Election Day. In today’s blog post, I’m going to present my final predictions in detail, which will involve model formulas, model descriptions, model cofficients, model interpretations, model validation, prediction confidence intervals, and visualizations.</description>
+    </item>
+    
     <item>
       <title>Shocks</title>
       <link>http://example.org/post/2022-10-24-shocks/</link>
@@ -14,8 +24,7 @@
       
       <guid>http://example.org/post/2022-10-24-shocks/</guid>
       <description>This is blog post #7 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
-The Plan This Week Discuss previous weeks’ work. Then, introduce shocks. Consider adding shocks to the model. Update the district-level model (pooled? Or not)
-Other Subtitle My 2022 Model and Forecast, Updated -Update national model?</description>
+The Plan This Week Election Day is about two weeks out! So far, I’ve investigated the fundamentals (president’s-party-midterm effect, the economy, incumbency), the campaigns (air war, ground game), and experts (their forecasts) as predictors of election outcomes to determine if I should incorporate them as variables in my own election model.</description>
     </item>
     
     <item>
@@ -36,16 +45,6 @@ The Plan This Week Last week, I investigated the impact of television advertisem
       <guid>http://example.org/post/2022-10-10-the-air-war/</guid>
       <description>This is blog post #5 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
 The Plan This Week We are about 4 weeks out from Election Day, and thus far I’ve created a national forecasting model that incorporates national economic conditions (Gross Domestic Product, Real Disposable Income, and unemployment), generic ballot polling (partisan preference), and the midterm-president’s-party effect.</description>
-    </item>
-    
-    <item>
-      <title>Expert Predictions</title>
-      <link>http://example.org/post/2022-10-03-incumbency/</link>
-      <pubDate>Mon, 03 Oct 2022 00:00:00 +0000</pubDate>
-      
-      <guid>http://example.org/post/2022-10-03-incumbency/</guid>
-      <description>This is blog post #4 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
-The Plan This Week Last week, I took a close look at The Economist’s and FiveThirtyEight’s House forecast models and their methodology, and compared them. With these models in mind, I updated my own 2022 midterm forecast and model to include national economic conditions (Gross Domestic Product, Real Disposable Income, and unemployment), generic ballot polls (partisan preference), and the midterm-president’s-party effect.</description>
     </item>
     
     <item>

@@ -69,28 +69,1041 @@
 <hr />
 <div id="the-plan-this-week" class="section level1">
 <h1>The Plan This Week</h1>
-<p>Discuss previous weeks’ work. Then, introduce shocks. Consider adding shocks to the model. Update the district-level model (pooled? Or not)</p>
+<p>Election Day is about two weeks out! So far, I’ve investigated the fundamentals (president’s-party-midterm effect, the economy, incumbency), the campaigns (air war, ground game), and experts (their forecasts) as predictors of election outcomes to determine if I should incorporate them as variables in my own election model. I’ve found each group to be predictive, not very predictive, and impressively predictive, respectively, and have updated my model and forecasts accordingly. This week, I will briefly examine the academic research regarding the factor that, by definition, is overlooked by all of the aforementioned typical election variables – shocks. After that, I will update my district-level and national models, and present my newest predictions.</p>
 </div>
-<div id="other-subtitle" class="section level1">
-<h1>Other Subtitle</h1>
+<div id="shocks" class="section level1">
+<h1>Shocks</h1>
+<p>In 2016, Achen and Bartels argued that voters are retrospective, but not with adequate levels of nuance. When they perceive downturn or misfortune, they punish incumbents – regardless of the incumbents’ actual ability to prevent or control the hardship. Their argument in Chapter 5 of “Democracy for Realists” features several infamous examples of electoral shocks, such as the shark attacks of 1916 in New Jersey, as well as 20th Century droughts and floods. The latter “seem to rule out the possibility that [voters] were reacting to subpar <em>handling</em> of misfortunes rather than to the misfortunes themselves.” They go on to argue that this type of “blind retrospection,” in which voters punish incumbents for negative shocks, is a bad sign for voter competence, thus, bad for democracy.</p>
+<p><img src="sharksnj.png" alt="The Philadelphia Inquirer Reports on the Shark Attacks in Ocean County, NJ." />
+In 2018, Harvard Government graduate students Fowler and Hall re-examined the prominent claims made by Achen and Bartels. Interestingly, they find that there is “no systematic evidence that shark attacks affect elections.” If there is any such effect, it is essentially negligible. The most important part of their research for me was their commentary on the difficulty of studying of shocks and irrational behavior: “We have no way of knowing how many other irrelevant factors were examined and found to have no effect.” In my own attempts to understand the correlation between specific shocks and voter registration rates, or electoral outcomes, I have found myself wondering what marks the difference between my own hypothesis about one shock and the innumerable variations of it, or of other shocks, within the same election cycle. There are so many “shocks” every election cycle that it would be a shock in and of itself to have none. So to study them, and try to determine which one, if any, has been the game-changer moment of an election has turned out to be an incredibly hard task.</p>
+<p>Aviña and Sevi were able to study perhaps the biggest shock of the 2020 race – COVID-19 – and found that Trump’s vote share decreased because some voters punished him for their exposure to the virus, but “there is no evidence suggested that Joe Biden loses the election when no voter reports exposure to coronavirus cases and deaths.” The researchers dub the effect of COVID-19 exposure negligible, stating that “our counterfactual analysis shows that the presidential two-party vote is virtually unchanged when no voter contracts the disease” (2021). Previous studies found voters supported Trump more, comparatively, in areas most negatively affected by the pandemic (McMinn and Stein, 2020), giving credence to the idea that while some shocks may push voters one way, other factors push them or other voters back. In tandem, these forces make the effects of individual shocks hard to isolate, and appear generally negligible.</p>
+<p>The above has led me to decide to use shocks as an expectation-setter, but not as a formal variable in my model. For many Democrats, the Supreme Court’s ruling on the Dobbs case in late June was a shock that ran antithetical to the party’s reproductive rights platform and reinvigorated their fight for congressional control. As discussed, it would be difficult and time-inefficient to try to isolate the effect of the Dobbs ruling on this election’s outcomes. Instead, that case, and the other “shocks” of this election cycle, give us a sense of what to expect voters to react to. To incorporate these reactions into my model, I opt to consider more solid measures that encapsulate shocks, such as the generic ballot in my national model, which reflects the electoral mood of voters, all things considered. For my district-level model for the House, I move from using just expert predictions (which consider shocks already) to including incumbency as well, as it’s known that incumbents win re-election in the House at an incredibly high rate, shocks or not.</p>
 </div>
 <div id="my-2022-model-and-forecast-updated" class="section level1">
 <h1>My 2022 Model and Forecast, Updated</h1>
-<p>-Update national model? Maybe averaged (very) expert prediction + ratio of ads for each party<br />
--Def update district-level model, pooling the IVs of similar districts to get all 435 predictions out of the model</p>
-<div id="new-model" class="section level2">
-<h2>New Model</h2>
+<p>There are many updates to be made to my national and district-level models. I decided to not do any pooled models because I wanted to try an ensembling idea instead - have models for competitive districts (expert predictions + incumbency) and non-competitive ones (just incumbency + perhaps just a few experts’ predictions since not all of them predict the less competitive races).
+## Models</p>
+<div id="new-district-models" class="section level3">
+<h3>New District Models</h3>
+<p>The first iteration of my district-level modeling was a recreation of <a href="https://itsyaoyu.com/blog/">Yao’s</a> work, which made use of the averaged expert predictions across subsets of the Cook, Inside Elections, CQ Politics, Sabato’s Crystal Ball, Real Clear Politics, FiveThirtyEight, Politico, The Economist, Elections Daily, The Hill, NY Times, Daily Kos, and Decision Desk HQ reports, to predict House race outcomes at the district level. The idea is that these experts all have the time and resources to gain a good feel of the elections, and their wisdom, on average, can help us call elections long before Election Day. This week, I strengthened these base models with an incumbent variable. Because my models are built to predict Democratic major vote share in each district, I encoded the incumbent variable to be 1 when the candidate is both Democrat and the incumbent.</p>
+<p>The result of this variable addition across the 94 models of competitive districts is that the average R-squared jumps from 0.78 to 0.88. The average adjusted R-squared is 0.49. The model is still imperfect, but it’s been much improved since its the first version! Hopefully, I can build models for the remaining 341 “non-competitive” districts as well, in time for November 8.</p>
 </div>
-<div id="new-forecast" class="section level2">
-<h2>New Forecast</h2>
-<p>Include confidence intervals for predictions !!</p>
+<div id="new-national-model" class="section level3">
+<h3>New National Model</h3>
+<p>I have also changed my national models a bit this week. I wanted to congressional approval polling data, as I believe that the electorate’s opinion of the current Congress is a good indicator of whether or not members of that class will be supported in the upcoming round of elections. To do this, I used <a href="https://news.gallup.com/poll/1600/congress-public.aspx">Gallup’s congressional approval polls</a> dating back to 1980. Below are my regression results for the old national model I had, a new one with congressional approval, and two final options one, with (finally) one of the GDP variables thrown out, and the other with RDI % also thrown out.</p>
+<p><img src="voteshare_reg.png" alt="House Incumbent Vote Share Models." />
+As shown by the difference in adjusted R-squared between the first and second models, adding the congressional approval polls considerably improves the performance of my national model. Though I initially thought that congressional approval was a very similar metric to the generic ballot, it turns out their correlation is only about 0.08, and they separately account for variation in House incumbent vote share. Lastly, I was able to eliminate one of the two GDP variables, which had previously been confusing to interpret. Now, absolute GDP change remains, and its coefficient is negative. My hypothesis is that for GDP, voters respond to levels rather than relative change, so they slightly punish incumbents when growth is not “large enough.” Lastly, I now get to decide whether or not to keep the RDI% change variable, considering its exclusion from the model left the model large the same.</p>
+<p><img src="seats_reg.png" alt="House Set Models." />
+The seats model is largely the same as the vote share one, and here, it is more apparent that excluding the RDI % variable is a good decision, decreasing the complexity of the regression whilst keeping its performance high.</p>
+</div>
+<div id="forecasts" class="section level2">
+<h2>Forecasts</h2>
+<p>See below for my new district-level and national predictions.
+### New District Forecasts
+The 94 most competitive districts I had election expert ratings for:</p>
+<div id="lwtdqgdtcm" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#lwtdqgdtcm .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#lwtdqgdtcm .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lwtdqgdtcm .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#lwtdqgdtcm .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#lwtdqgdtcm .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lwtdqgdtcm .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lwtdqgdtcm .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#lwtdqgdtcm .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#lwtdqgdtcm .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#lwtdqgdtcm .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#lwtdqgdtcm .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#lwtdqgdtcm .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#lwtdqgdtcm .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#lwtdqgdtcm .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#lwtdqgdtcm .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#lwtdqgdtcm .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#lwtdqgdtcm .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwtdqgdtcm .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#lwtdqgdtcm .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#lwtdqgdtcm .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwtdqgdtcm .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#lwtdqgdtcm .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#lwtdqgdtcm .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lwtdqgdtcm .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwtdqgdtcm .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#lwtdqgdtcm .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#lwtdqgdtcm .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lwtdqgdtcm .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lwtdqgdtcm .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwtdqgdtcm .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lwtdqgdtcm .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwtdqgdtcm .gt_left {
+  text-align: left;
+}
+
+#lwtdqgdtcm .gt_center {
+  text-align: center;
+}
+
+#lwtdqgdtcm .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#lwtdqgdtcm .gt_font_normal {
+  font-weight: normal;
+}
+
+#lwtdqgdtcm .gt_font_bold {
+  font-weight: bold;
+}
+
+#lwtdqgdtcm .gt_font_italic {
+  font-style: italic;
+}
+
+#lwtdqgdtcm .gt_super {
+  font-size: 65%;
+}
+
+#lwtdqgdtcm .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#lwtdqgdtcm .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#lwtdqgdtcm .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#lwtdqgdtcm .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#lwtdqgdtcm .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#lwtdqgdtcm .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#lwtdqgdtcm .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col">state</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col">district</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col">prediction</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col">lower</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col">upper</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col">winner</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_left">Alaska</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">48.03</td>
+<td class="gt_row gt_center">30.48</td>
+<td class="gt_row gt_center">65.58</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Arizona</td>
+<td class="gt_row gt_center">1</td>
+<td class="gt_row gt_center">50.69</td>
+<td class="gt_row gt_center">47.25</td>
+<td class="gt_row gt_center">54.12</td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Arizona</td>
+<td class="gt_row gt_center">2</td>
+<td class="gt_row gt_center">48.63</td>
+<td class="gt_row gt_center">44.82</td>
+<td class="gt_row gt_center">52.45</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Arizona</td>
+<td class="gt_row gt_center">6</td>
+<td class="gt_row gt_center">48.19</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">California</td>
+<td class="gt_row gt_center">3</td>
+<td class="gt_row gt_center">63.11</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">California</td>
+<td class="gt_row gt_center">9</td>
+<td class="gt_row gt_center">56.05</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">California</td>
+<td class="gt_row gt_center">21</td>
+<td class="gt_row gt_center">50.42</td>
+<td class="gt_row gt_center">28.74</td>
+<td class="gt_row gt_center">72.10</td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">California</td>
+<td class="gt_row gt_center">22</td>
+<td class="gt_row gt_center">60.08</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">California</td>
+<td class="gt_row gt_center">25</td>
+<td class="gt_row gt_center">58.31</td>
+<td class="gt_row gt_center">47.19</td>
+<td class="gt_row gt_center">69.44</td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">California</td>
+<td class="gt_row gt_center">26</td>
+<td class="gt_row gt_center">54.77</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">California</td>
+<td class="gt_row gt_center">45</td>
+<td class="gt_row gt_center">51.94</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">California</td>
+<td class="gt_row gt_center">47</td>
+<td class="gt_row gt_center">58.68</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">California</td>
+<td class="gt_row gt_center">49</td>
+<td class="gt_row gt_center">50.06</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Colorado</td>
+<td class="gt_row gt_center">3</td>
+<td class="gt_row gt_center">49.12</td>
+<td class="gt_row gt_center">38.45</td>
+<td class="gt_row gt_center">59.79</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Colorado</td>
+<td class="gt_row gt_center">7</td>
+<td class="gt_row gt_center">55.14</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Connecticut</td>
+<td class="gt_row gt_center">4</td>
+<td class="gt_row gt_center">49.58</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Connecticut</td>
+<td class="gt_row gt_center">5</td>
+<td class="gt_row gt_center">54.31</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Florida</td>
+<td class="gt_row gt_center">2</td>
+<td class="gt_row gt_center">53.01</td>
+<td class="gt_row gt_center">-47.42</td>
+<td class="gt_row gt_center">153.43</td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Florida</td>
+<td class="gt_row gt_center">7</td>
+<td class="gt_row gt_center">60.77</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Florida</td>
+<td class="gt_row gt_center">13</td>
+<td class="gt_row gt_center">48.43</td>
+<td class="gt_row gt_center">-0.51</td>
+<td class="gt_row gt_center">97.36</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Florida</td>
+<td class="gt_row gt_center">15</td>
+<td class="gt_row gt_center">48.92</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Florida</td>
+<td class="gt_row gt_center">16</td>
+<td class="gt_row gt_center">42.36</td>
+<td class="gt_row gt_center">-132.38</td>
+<td class="gt_row gt_center">217.09</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Florida</td>
+<td class="gt_row gt_center">22</td>
+<td class="gt_row gt_center">47.55</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Florida</td>
+<td class="gt_row gt_center">27</td>
+<td class="gt_row gt_center">44.33</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Georgia</td>
+<td class="gt_row gt_center">6</td>
+<td class="gt_row gt_center">52.09</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Georgia</td>
+<td class="gt_row gt_center">12</td>
+<td class="gt_row gt_center">53.79</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Illinois</td>
+<td class="gt_row gt_center">6</td>
+<td class="gt_row gt_center">53.55</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Illinois</td>
+<td class="gt_row gt_center">8</td>
+<td class="gt_row gt_center">30.01</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Illinois</td>
+<td class="gt_row gt_center">11</td>
+<td class="gt_row gt_center">47.95</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Illinois</td>
+<td class="gt_row gt_center">13</td>
+<td class="gt_row gt_center">49.98</td>
+<td class="gt_row gt_center">37.36</td>
+<td class="gt_row gt_center">62.61</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Illinois</td>
+<td class="gt_row gt_center">14</td>
+<td class="gt_row gt_center">47.81</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Illinois</td>
+<td class="gt_row gt_center">17</td>
+<td class="gt_row gt_center">48.01</td>
+<td class="gt_row gt_center">10.21</td>
+<td class="gt_row gt_center">85.80</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Iowa</td>
+<td class="gt_row gt_center">1</td>
+<td class="gt_row gt_center">45.37</td>
+<td class="gt_row gt_center">40.98</td>
+<td class="gt_row gt_center">49.76</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Iowa</td>
+<td class="gt_row gt_center">2</td>
+<td class="gt_row gt_center">50.21</td>
+<td class="gt_row gt_center">41.51</td>
+<td class="gt_row gt_center">58.91</td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Iowa</td>
+<td class="gt_row gt_center">3</td>
+<td class="gt_row gt_center">44.55</td>
+<td class="gt_row gt_center">37.75</td>
+<td class="gt_row gt_center">51.35</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Kansas</td>
+<td class="gt_row gt_center">3</td>
+<td class="gt_row gt_center">43.95</td>
+<td class="gt_row gt_center">38.65</td>
+<td class="gt_row gt_center">49.25</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Maine</td>
+<td class="gt_row gt_center">2</td>
+<td class="gt_row gt_center">52.23</td>
+<td class="gt_row gt_center">34.09</td>
+<td class="gt_row gt_center">70.37</td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Maryland</td>
+<td class="gt_row gt_center">6</td>
+<td class="gt_row gt_center">-34.28</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Michigan</td>
+<td class="gt_row gt_center">3</td>
+<td class="gt_row gt_center">47.56</td>
+<td class="gt_row gt_center">39.32</td>
+<td class="gt_row gt_center">55.80</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Michigan</td>
+<td class="gt_row gt_center">7</td>
+<td class="gt_row gt_center">45.56</td>
+<td class="gt_row gt_center">33.12</td>
+<td class="gt_row gt_center">57.99</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Michigan</td>
+<td class="gt_row gt_center">8</td>
+<td class="gt_row gt_center">46.25</td>
+<td class="gt_row gt_center">3.99</td>
+<td class="gt_row gt_center">88.50</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Michigan</td>
+<td class="gt_row gt_center">11</td>
+<td class="gt_row gt_center">46.06</td>
+<td class="gt_row gt_center">41.03</td>
+<td class="gt_row gt_center">51.10</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Minnesota</td>
+<td class="gt_row gt_center">1</td>
+<td class="gt_row gt_center">51.53</td>
+<td class="gt_row gt_center">33.85</td>
+<td class="gt_row gt_center">69.21</td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Minnesota</td>
+<td class="gt_row gt_center">2</td>
+<td class="gt_row gt_center">48.04</td>
+<td class="gt_row gt_center">14.08</td>
+<td class="gt_row gt_center">82.00</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Minnesota</td>
+<td class="gt_row gt_center">3</td>
+<td class="gt_row gt_center">40.77</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Minnesota</td>
+<td class="gt_row gt_center">8</td>
+<td class="gt_row gt_center">48.83</td>
+<td class="gt_row gt_center">43.38</td>
+<td class="gt_row gt_center">54.28</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Missouri</td>
+<td class="gt_row gt_center">2</td>
+<td class="gt_row gt_center">46.53</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Nebraska</td>
+<td class="gt_row gt_center">2</td>
+<td class="gt_row gt_center">48.86</td>
+<td class="gt_row gt_center">34.88</td>
+<td class="gt_row gt_center">62.85</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Nevada</td>
+<td class="gt_row gt_center">3</td>
+<td class="gt_row gt_center">50.52</td>
+<td class="gt_row gt_center">43.45</td>
+<td class="gt_row gt_center">57.59</td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Nevada</td>
+<td class="gt_row gt_center">4</td>
+<td class="gt_row gt_center">47.87</td>
+<td class="gt_row gt_center">33.76</td>
+<td class="gt_row gt_center">61.97</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New Hampshire</td>
+<td class="gt_row gt_center">1</td>
+<td class="gt_row gt_center">48.43</td>
+<td class="gt_row gt_center">44.86</td>
+<td class="gt_row gt_center">52.00</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New Hampshire</td>
+<td class="gt_row gt_center">2</td>
+<td class="gt_row gt_center">53.41</td>
+<td class="gt_row gt_center">44.83</td>
+<td class="gt_row gt_center">61.99</td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">New Jersey</td>
+<td class="gt_row gt_center">2</td>
+<td class="gt_row gt_center">46.43</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New Jersey</td>
+<td class="gt_row gt_center">3</td>
+<td class="gt_row gt_center">49.81</td>
+<td class="gt_row gt_center">45.82</td>
+<td class="gt_row gt_center">53.81</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New Jersey</td>
+<td class="gt_row gt_center">5</td>
+<td class="gt_row gt_center">49.09</td>
+<td class="gt_row gt_center">37.25</td>
+<td class="gt_row gt_center">60.93</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New Jersey</td>
+<td class="gt_row gt_center">7</td>
+<td class="gt_row gt_center">46.93</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New Jersey</td>
+<td class="gt_row gt_center">11</td>
+<td class="gt_row gt_center">60.44</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">New Mexico</td>
+<td class="gt_row gt_center">1</td>
+<td class="gt_row gt_center">48.06</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New Mexico</td>
+<td class="gt_row gt_center">2</td>
+<td class="gt_row gt_center">46.11</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New York</td>
+<td class="gt_row gt_center">1</td>
+<td class="gt_row gt_center">49.26</td>
+<td class="gt_row gt_center">42.01</td>
+<td class="gt_row gt_center">56.51</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New York</td>
+<td class="gt_row gt_center">2</td>
+<td class="gt_row gt_center">46.52</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New York</td>
+<td class="gt_row gt_center">3</td>
+<td class="gt_row gt_center">46.90</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New York</td>
+<td class="gt_row gt_center">4</td>
+<td class="gt_row gt_center">53.62</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">New York</td>
+<td class="gt_row gt_center">11</td>
+<td class="gt_row gt_center">46.78</td>
+<td class="gt_row gt_center">-20.27</td>
+<td class="gt_row gt_center">113.83</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New York</td>
+<td class="gt_row gt_center">18</td>
+<td class="gt_row gt_center">49.85</td>
+<td class="gt_row gt_center">39.18</td>
+<td class="gt_row gt_center">60.51</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New York</td>
+<td class="gt_row gt_center">19</td>
+<td class="gt_row gt_center">47.34</td>
+<td class="gt_row gt_center">40.03</td>
+<td class="gt_row gt_center">54.64</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New York</td>
+<td class="gt_row gt_center">22</td>
+<td class="gt_row gt_center">47.50</td>
+<td class="gt_row gt_center">43.39</td>
+<td class="gt_row gt_center">51.61</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">New York</td>
+<td class="gt_row gt_center">25</td>
+<td class="gt_row gt_center">49.11</td>
+<td class="gt_row gt_center">-117.25</td>
+<td class="gt_row gt_center">215.46</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">North Carolina</td>
+<td class="gt_row gt_center">6</td>
+<td class="gt_row gt_center">53.43</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">North Carolina</td>
+<td class="gt_row gt_center">7</td>
+<td class="gt_row gt_center">50.56</td>
+<td class="gt_row gt_center">8.09</td>
+<td class="gt_row gt_center">93.03</td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">North Carolina</td>
+<td class="gt_row gt_center">9</td>
+<td class="gt_row gt_center">49.77</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">North Carolina</td>
+<td class="gt_row gt_center">13</td>
+<td class="gt_row gt_center">48.93</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Ohio</td>
+<td class="gt_row gt_center">1</td>
+<td class="gt_row gt_center">46.03</td>
+<td class="gt_row gt_center">34.50</td>
+<td class="gt_row gt_center">57.56</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Ohio</td>
+<td class="gt_row gt_center">7</td>
+<td class="gt_row gt_center">62.47</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Ohio</td>
+<td class="gt_row gt_center">10</td>
+<td class="gt_row gt_center">20.01</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Ohio</td>
+<td class="gt_row gt_center">13</td>
+<td class="gt_row gt_center">58.82</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Ohio</td>
+<td class="gt_row gt_center">15</td>
+<td class="gt_row gt_center">47.43</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Oregon</td>
+<td class="gt_row gt_center">5</td>
+<td class="gt_row gt_center">52.66</td>
+<td class="gt_row gt_center">43.26</td>
+<td class="gt_row gt_center">62.06</td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Pennsylvania</td>
+<td class="gt_row gt_center">1</td>
+<td class="gt_row gt_center">50.84</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Pennsylvania</td>
+<td class="gt_row gt_center">6</td>
+<td class="gt_row gt_center">51.10</td>
+<td class="gt_row gt_center">49.63</td>
+<td class="gt_row gt_center">52.57</td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Pennsylvania</td>
+<td class="gt_row gt_center">7</td>
+<td class="gt_row gt_center">43.89</td>
+<td class="gt_row gt_center">-4.12</td>
+<td class="gt_row gt_center">91.90</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Pennsylvania</td>
+<td class="gt_row gt_center">8</td>
+<td class="gt_row gt_center">49.88</td>
+<td class="gt_row gt_center">41.37</td>
+<td class="gt_row gt_center">58.39</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Pennsylvania</td>
+<td class="gt_row gt_center">10</td>
+<td class="gt_row gt_center">43.75</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Pennsylvania</td>
+<td class="gt_row gt_center">12</td>
+<td class="gt_row gt_center">48.24</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Pennsylvania</td>
+<td class="gt_row gt_center">17</td>
+<td class="gt_row gt_center">41.72</td>
+<td class="gt_row gt_center">-7.48</td>
+<td class="gt_row gt_center">90.92</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">South Carolina</td>
+<td class="gt_row gt_center">1</td>
+<td class="gt_row gt_center">49.78</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Texas</td>
+<td class="gt_row gt_center">23</td>
+<td class="gt_row gt_center">48.19</td>
+<td class="gt_row gt_center">43.67</td>
+<td class="gt_row gt_center">52.71</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Virginia</td>
+<td class="gt_row gt_center">2</td>
+<td class="gt_row gt_center">48.85</td>
+<td class="gt_row gt_center">46.02</td>
+<td class="gt_row gt_center">51.69</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Virginia</td>
+<td class="gt_row gt_center">5</td>
+<td class="gt_row gt_center">49.62</td>
+<td class="gt_row gt_center">39.97</td>
+<td class="gt_row gt_center">59.28</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Virginia</td>
+<td class="gt_row gt_center">7</td>
+<td class="gt_row gt_center">50.98</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Virginia</td>
+<td class="gt_row gt_center">10</td>
+<td class="gt_row gt_center">37.52</td>
+<td class="gt_row gt_center">6.25</td>
+<td class="gt_row gt_center">68.79</td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Washington</td>
+<td class="gt_row gt_center">3</td>
+<td class="gt_row gt_center">50.43</td>
+<td class="gt_row gt_center">41.75</td>
+<td class="gt_row gt_center">59.11</td>
+<td class="gt_row gt_center">Democrat</td></tr>
+    <tr><td class="gt_row gt_left">Washington</td>
+<td class="gt_row gt_center">8</td>
+<td class="gt_row gt_center">47.24</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">Republican</td></tr>
+    <tr><td class="gt_row gt_left">Wisconsin</td>
+<td class="gt_row gt_center">3</td>
+<td class="gt_row gt_center">44.73</td>
+<td class="gt_row gt_center">-20.97</td>
+<td class="gt_row gt_center">110.43</td>
+<td class="gt_row gt_center">Republican</td></tr>
+  </tbody>
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" colspan="6"></td>
+    </tr>
+  </tfoot>
+  
+</table>
+</div>
+<div id="new-national-forecast" class="section level3">
+<h3>New National Forecast</h3>
+<p><img src="nat_formulas.png" alt="National Regression Formulas." />
+I elect to exclude RDI % as a variable for my national models now, so these predictions are made using the newest GDP, generic ballot, and congressional approval data.</p>
+<p>House Incumbent (Democratic Party) Two-Party Vote Share: <strong>48.56</strong> (47.36, 49.83)
+House Incumbent (Democratic Party) Seats: <strong>209</strong> (198, 221)</p>
 <hr />
 <p><strong>References</strong></p>
-<p>[1] Kalla, &amp; Broockman, D. E. (2018). The Minimal Persuasive Effects of Campaign Contact in General Elections: Evidence from 49 Field Experiments. The American Political Science Review, 112(1), 148–166. <a href="https://doi.org/10.1017/S0003055417000363" class="uri">https://doi.org/10.1017/S0003055417000363</a></p>
-<p>[2] Ball, M. (2012, October 25). Obama’s edge: The ground game that could put him over the top. The Atlantic. <a href="https://www.theatlantic.com/politics/archive/2012/10/obamas-edge-the-ground-game-that-could-put-him-over-the-top/264031/" class="uri">https://www.theatlantic.com/politics/archive/2012/10/obamas-edge-the-ground-game-that-could-put-him-over-the-top/264031/</a>)</p>
-<p>[3] Enos, &amp; Fowler, A. (2018). Aggregate Effects of Large-Scale Campaigns on Voter Turnout. Political Science Research and Methods, 6(4), 733–751. <a href="https://doi.org/10.1017/psrm.2016.21" class="uri">https://doi.org/10.1017/psrm.2016.21</a></p>
-<p>[4] Masket, Seth E. (2009). Did Obama’s Ground Game Matter? The Influence of Local Field Offices During the 2008 Presidential Election, Public Opinion Quarterly, 73(5), 1023–1039. <a href="https://doi.org/10.1093/poq/nfp077" class="uri">https://doi.org/10.1093/poq/nfp077</a></p>
-<p>[5] Darr, &amp; Levendusky, M. S. (2014). Relying on the Ground Game. American Politics Research, 42(3), 529–548. <a href="https://doi.org/10.1177/1532673X13500520" class="uri">https://doi.org/10.1177/1532673X13500520</a></p>
+<p>[1] Achen, &amp; Bartels, L. M. (2016). Democracy for Realists: Why Elections do not Produce Responsive Government. Princeton University Press.</p>
+<p>[2] Fowler, &amp; Hall, A. B. (2018). Do Shark Attacks Influence Presidential Elections? Reassessing a Prominent Finding on Voter Competence. The Journal of Politics, 80(4), 1423–1437. <a href="https://doi.org/10.1086/699244" class="uri">https://doi.org/10.1086/699244</a></p>
+<p>[3] Mendoza Aviña, &amp; Sevi, S. (2021). Did exposure to COVID-19 affect vote choice in the 2020 presidential election? Research &amp; Politics, 8(3), 205316802110415. <a href="https://doi.org/10.1177/20531680211041505" class="uri">https://doi.org/10.1177/20531680211041505</a></p>
+</div>
 </div>
 </div>
 
@@ -100,6 +1113,7 @@
 
 	<div class="pagination">
 		<a href="/post/2022-10-19-the-ground-game/" class="left arrow">&#8592;</a>
+		<a href="/post/2022-11-07-final-prediction/" class="right arrow">&#8594;</a>
 
 		<a href="#" class="top">Top</a>
 	</div>
@@ -109,7 +1123,7 @@
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-11-03 10:34:19.055483 -0400 EDT m=&#43;0.348908010">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-11-07 16:06:23.29849 -0500 EST m=&#43;0.450852620">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

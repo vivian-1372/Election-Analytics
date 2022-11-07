@@ -1,0 +1,133 @@
+---
+title: Final Prediction
+author: Vivian Nguyen
+date: '2022-11-07'
+slug: []
+categories: []
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>This is blog post #8 (the final one!) in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.</p>
+<hr />
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>Welcome to the final election forecasting update of this election cycle! It’s been a long journey, but alas, we are one day out from Election Day. In today’s blog post, I’m going to present my final predictions in detail, which will involve model formulas, model descriptions, model cofficients, model interpretations, model validation, prediction confidence intervals, and visualizations.</p>
+</div>
+<div id="national-model" class="section level1">
+<h1>National Model</h1>
+<p>Starting in <a href="https://vivian-1372.github.io/Election-Analytics/post/2022-09-19-local-and-national-economy/">week 2</a>, I wanted to build out a good national model with a mix of fundamental variables to predict the national two-party vote shares of the parties.</p>
+<div id="model-details" class="section level2">
+<h2>Model Details</h2>
+<div class="figure">
+<img src="nat_VS_formula.png" alt="" />
+<p class="caption">National Democratic Two-Party Vote Share Regression Formula.</p>
+</div>
+<div class="figure">
+<img src="nat_S_formula.png" alt="" />
+<p class="caption">National Democratic Party Seats Regression Formula.</p>
+</div>
+</div>
+<div id="national-predictions" class="section level2">
+<h2>National Predictions</h2>
+</div>
+</div>
+<div id="district-models" class="section level1">
+<h1>District Models</h1>
+<div id="model-details-1" class="section level2">
+<h2>Model Details</h2>
+</div>
+<div id="district-predictions" class="section level2">
+<h2>District Predictions</h2>
+<pre class="r"><code># 
+# historical_results %&gt;%
+#   group_by(year) %&gt;%
+#   summarize(count = n())
+# 
+# expert_ratings %&gt;%
+#   group_by(year) %&gt;%
+#   summarize(count = n()) </code></pre>
+<pre class="r"><code># expert_ratings$district &lt;- as.numeric(expert_ratings$district)
+# df$district_num &lt;- as.numeric(df$district_num)
+# df &lt;- df %&gt;%
+#   rename(district = district_num)
+# 
+# district_data &lt;- expert_ratings %&gt;% 
+#   filter(year != 2022) 
+# 
+# newdf &lt;- left_join(df, expert_ratings, by = c(&quot;year&quot;, &quot;state&quot;, &quot;district&quot;))
+# newdf &lt;- drop_na(newdf)
+# 
+# sds = unique(historical_results$district_id)
+# models &lt;- list()
+# models2 &lt;- list()
+# r2 &lt;- c()
+# r22 &lt;- c()
+# preds &lt;- c()
+# for (sd in sds){
+#   temp &lt;- historical_results %&gt;%
+#     filter(district_id == sd)
+#   
+#   if (nrow(temp) &gt; 0)
+#   {
+#     m &lt;- glm(demWin ~ incumbent, data = temp, family = binomial(link = logit))
+#     models[[length(models)+1]] &lt;- m
+#   
+#     r2 &lt;- c(r2, mcf_r_squared = map_dbl(m, ~with(summary(m), 1 - deviance/null.deviance)))
+#   }
+#   #Make a 2022 prediction and append to list
+#   # preds &lt;- c(preds, predict(m2, 2022data))
+# }
+# 
+# summary(glm(demWin))
+# mean(r2, na.rm = TRUE)
+# hist(r2)
+# median(r2)</code></pre>
+<pre class="r"><code># expert_ratings$district &lt;- as.numeric(expert_ratings$district)
+# historical_results$district &lt;- as.numeric(df$district_num)
+# df &lt;- df %&gt;%
+#   rename(district = district_num)
+# 
+# district_data &lt;- expert_ratings %&gt;% 
+#   filter(year != 2022) 
+# 
+# newdf &lt;- left_join(historical_results, expert_ratings, by = c(&quot;year&quot;, &quot;state&quot;, &quot;district&quot;))
+# newdf &lt;- drop_na(newdf)
+# 
+# sds = unique(historical_results$district_id)
+# models &lt;- list()
+# models2 &lt;- list()
+# r2 &lt;- c()
+# r22 &lt;- c()
+# preds &lt;- c()
+# for (sd in sds){
+#   temp &lt;- newdf %&gt;%
+#     filter(district_id == sd)
+#   
+#   if (nrow(temp) &gt; 0)
+#   {
+#     m &lt;- lm(dem_votes_major_percent ~ incumbent + avg_rating, data = temp)
+#     models[[length(models)+1]] &lt;- m
+#   
+#     r2 &lt;- c(r2, summary(m)$r.squared)
+#   }
+#   #Make a 2022 prediction and append to list
+#   # preds &lt;- c(preds, predict(m2, 2022data))
+# }
+# 
+# mean(r2, na.rm = TRUE)</code></pre>
+<pre class="r"><code>#national model... expert prediction? 
+# need data for this
+# nat_model_updated_seats &lt;- lm(seats ~ GDP_growth_pct + DSPIC_change_pct + GDP_growth_qt + 
+#                pp_generic_ballot + midterm_pres_party_inc_party + expert_prediction, data = nat_model_data)</code></pre>
+</div>
+<div id="new-forecast" class="section level2">
+<h2>New Forecast</h2>
+<p>Include confidence intervals for predictions !!</p>
+<hr />
+<p><strong>References</strong></p>
+<p>[1]</p>
+</div>
+</div>
