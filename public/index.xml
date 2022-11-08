@@ -14,7 +14,7 @@
       
       <guid>http://example.org/post/2022-11-07-final-prediction/</guid>
       <description>This is blog post #8 (the final one!) in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
-Overview Welcome to the final election forecasting update of this election cycle! It’s been a long journey, but alas, we are one day out from Election Day. In today’s blog post, I’m going to present my final predictions in detail, which will involve model formulas, model descriptions, model cofficients, model interpretations, model validation, prediction confidence intervals, and visualizations.</description>
+Overview Welcome to the final election forecasting update of this election cycle! It’s been a long journey, but alas, we are one day out from Election Day. In today’s blog post, I am going to present my final predictions in detail, which will involve model formulas, model descriptions, model coefficients, model interpretations, model validation, prediction confidence intervals, and visualizations.</description>
     </item>
     
     <item>
@@ -45,6 +45,16 @@ The Plan This Week Last week, I investigated the impact of television advertisem
       <guid>http://example.org/post/2022-10-10-the-air-war/</guid>
       <description>This is blog post #5 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
 The Plan This Week We are about 4 weeks out from Election Day, and thus far I’ve created a national forecasting model that incorporates national economic conditions (Gross Domestic Product, Real Disposable Income, and unemployment), generic ballot polling (partisan preference), and the midterm-president’s-party effect.</description>
+    </item>
+    
+    <item>
+      <title>Expert Predictions</title>
+      <link>http://example.org/post/2022-10-03-incumbency/</link>
+      <pubDate>Mon, 03 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/post/2022-10-03-incumbency/</guid>
+      <description>This is blog post #4 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
+The Plan This Week Last week, I took a close look at The Economist’s and FiveThirtyEight’s House forecast models and their methodology, and compared them. With these models in mind, I updated my own 2022 midterm forecast and model to include national economic conditions (Gross Domestic Product, Real Disposable Income, and unemployment), generic ballot polls (partisan preference), and the midterm-president’s-party effect.</description>
     </item>
     
     <item>

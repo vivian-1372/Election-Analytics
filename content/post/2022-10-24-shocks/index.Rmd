@@ -5,6 +5,8 @@ date: '2022-10-24'
 slug: []
 categories: []
 tags: []
+output: 
+  fig_caption: yes
 ---
 
 This is blog post #7 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
@@ -51,7 +53,9 @@ Election Day is about two weeks out! So far, I've investigated the fundamentals 
 # Shocks
 In 2016, Achen and Bartels argued that voters are retrospective, but not with adequate levels of nuance. When they perceive downturn or misfortune, they punish incumbents -- regardless of the incumbents' actual ability to prevent or control the hardship. Their argument in Chapter 5 of "Democracy for Realists" features several infamous examples of electoral shocks, such as the shark attacks of 1916 in New Jersey, as well as 20th Century droughts and floods. The latter "seem to rule out the possibility that [voters] were reacting to subpar *handling* of misfortunes rather than to the misfortunes themselves." They go on to argue that this type of "blind retrospection," in which voters punish incumbents for negative shocks, is a bad sign for voter competence, thus, bad for democracy.      
 
-![The Philadelphia Inquirer Reports on the Shark Attacks in Ocean County, NJ.](sharksnj.png)
+```{r echo = FALSE, fig.cap = 'The Philadelphia Inquirer Reports on the Shark Attacks in Ocean County, NJ.'}
+knitr::include_graphics("sharksnj.png")
+```
 In 2018, Harvard Government graduate students Fowler and Hall re-examined the prominent claims made by Achen and Bartels. Interestingly, they find that there is "no systematic evidence that shark attacks affect elections." If there is any such effect, it is essentially negligible. The most important part of their research for me was their commentary on the difficulty of studying of shocks and irrational behavior: "We have no way of knowing how many other irrelevant factors were examined and found to have no effect." In my own attempts to understand the correlation between specific shocks and voter registration rates, or electoral outcomes, I have found myself wondering what marks the difference between my own hypothesis about one shock and the innumerable variations of it, or of other shocks, within the same election cycle. There are so many "shocks" every election cycle that it would be a shock in and of itself to have none. So to study them, and try to determine which one, if any, has been the game-changer moment of an election has turned out to be an incredibly hard task.  
 
 Aviña and Sevi were able to study perhaps the biggest shock of the 2020 race -- COVID-19 -- and found that Trump's vote share decreased because some voters punished him for their exposure to the virus, but "there is no evidence suggested that Joe Biden loses the election when no voter reports exposure to coronavirus cases and deaths." The researchers dub the effect of COVID-19 exposure negligible, stating that "our counterfactual analysis shows that the presidential two-party vote is virtually unchanged when no voter contracts the disease" (2021). Previous studies found voters supported Trump more, comparatively, in areas most negatively affected by the pandemic (McMinn and Stein, 2020), giving credence to the idea that while some shocks may push voters one way, other factors push them or other voters back. In tandem, these forces make the effects of individual shocks hard to isolate, and appear generally negligible.  
@@ -60,6 +64,7 @@ The above has led me to decide to use shocks as an expectation-setter, but not a
 
 # My 2022 Model and Forecast, Updated
 There are many updates to be made to my national and district-level models. I decided to not do any pooled models because I wanted to try an ensembling idea instead - have models for competitive districts (expert predictions + incumbency) and non-competitive ones (just incumbency + perhaps just a few experts' predictions since not all of them predict the less competitive races). 
+
 ## Models
 ```{r competitive district models with incumbency and expert rating, include = FALSE, message = FALSE}
 # preparing districts for joining
@@ -164,6 +169,9 @@ stargazer(nat_model_seats,nat_model_seats2, type = "text",
           dep.var.labels = "House Incumbent Seats",
           covariate.labels = c('RDI Change %', 'GDP Absolute Growth', 'Generic Ballot Average Support', 'President\'s-Party-Midterm', 'Congressional Approval'),
           column.labels = c("Updated Model", "New: -RDI%"), model.numbers = FALSE)
+
+
+
 ```
 ### New National Model
 I have also changed my national models a bit this week. I wanted to congressional approval polling data, as I believe that the electorate's opinion of the current Congress is a good indicator of whether or not members of that class will be supported in the upcoming round of elections. To do this, I used [Gallup's congressional approval polls](https://news.gallup.com/poll/1600/congress-public.aspx) dating back to 1980. Below are my regression results for the old national model I had, a new one with congressional approval, and two final options one, with (finally) one of the GDP variables thrown out, and the other with RDI % also thrown out. 
@@ -179,6 +187,7 @@ cor(nat_model_data$cong_approv[17:31], nat_model_data$pp_generic_ballot[17:31])
 
 ## Forecasts
 See below for my new district-level and national predictions. 
+
 ### New District Forecasts
 The 94 most competitive districts I had election expert ratings for: 
 ```{r 94 district predictions printout, echo = FALSE}

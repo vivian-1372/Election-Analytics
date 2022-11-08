@@ -14,24 +14,94 @@ tags: []
 <hr />
 <div id="overview" class="section level1">
 <h1>Overview</h1>
-<p>Welcome to the final election forecasting update of this election cycle! It’s been a long journey, but alas, we are one day out from Election Day. In today’s blog post, I’m going to present my final predictions in detail, which will involve model formulas, model descriptions, model cofficients, model interpretations, model validation, prediction confidence intervals, and visualizations.</p>
+<p>Welcome to the final election forecasting update of this election cycle! It’s been a long journey, but alas, we are one day out from Election Day. In today’s blog post, I am going to present my final predictions in detail, which will involve model formulas, model descriptions, model coefficients, model interpretations, model validation, prediction confidence intervals, and visualizations.</p>
 </div>
 <div id="national-model" class="section level1">
 <h1>National Model</h1>
-<p>Starting in <a href="https://vivian-1372.github.io/Election-Analytics/post/2022-09-19-local-and-national-economy/">week 2</a>, I wanted to build out a good national model with a mix of fundamental variables to predict the national two-party vote shares of the parties.</p>
+<p>Starting in <a href="https://vivian-1372.github.io/Election-Analytics/post/2022-09-19-local-and-national-economy/">week 2</a>, I wanted to build out a good national model with a mix of fundamental variables to predict the national two-party vote shares of the parties. I ultimately chose to stick with fundamentals because in <a href="https://vivian-1372.github.io/Election-Analytics/post/2022-10-10-the-air-war/">weeks 5</a> and <a href="https://vivian-1372.github.io/Election-Analytics/post/2022-10-19-the-ground-game/">6</a>, I found that campaign activity, whether it be on air or on the ground, didn’t significantly or directly impact electoral outcomes. In <a href="https://vivian-1372.github.io/Election-Analytics/post/2022-10-24-shocks/">week 7</a>, I reached the same conclusion regarding shocks.</p>
+<p>The best iteration of my model is the most recent one, which includes only 4 predictors: absolute GDP growth (Quarter 8, the last of the election cycle), the average generic ballot support of the House incumbent party (weighted by recency of the poll), an indicator for whether or not the House incumbent party is also the president’s party during a midterm year, and the average congressional approval rate. Absolute GDP growth is the economic variable I chose to capture how voters reward and punish the incumbent House party, and it came about after multiple considerations of other economic variables like unemployment rate, GDP growth percentage, and RDI change percentage. Average generic ballot support of the party in control of the House reflects how much the nation wants the currently-leading party to retain that congressional power. The binary indicator for <code>President's-Party-House-Incumbent-Midterm</code> is my attempt to capture the well-known fact that the president’s party consistently performs poorly in midterm elections. The indicator is equal to 1 if the party in control of the House happens to be the president’s party in a midterm year, and to 0 otherwise. Lastly, the average congressional approval rate was included because I believe it gives us a sense of how satisfied voters are with Congress, generally. This is distinct from the generic ballot support metric, with the former telling us how much voters like Congress’s performance, which (perhaps unintuitively) doesn’t necessarily match 1-to-1 with how much voters want the incumbent party in power.</p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-1"></span>
+<img src="CA_GB.png" alt="Disconnect between Congressional Approval and Incumbent Generic Ballot." width="339" />
+<p class="caption">
+Figure 1: Disconnect between Congressional Approval and Incumbent Generic Ballot.
+</p>
+</div>
+<p>As shown above, generic ballot support for the incumbent party in the House doesn’t move with general approval of Congress! This was surprising to me at first, but was a good sign that I wasn’t introducing too much collinearity into my model by including both measures.</p>
 <div id="model-details" class="section level2">
 <h2>Model Details</h2>
-<div class="figure">
-<img src="nat_VS_formula.png" alt="" />
-<p class="caption">National Democratic Two-Party Vote Share Regression Formula.</p>
+<div id="vote-share-formula" class="section level3">
+<h3>Vote Share Formula</h3>
+I wanted to use this model predict both national incumbent two-party vote share and national incumbent seat count, so I came up with two final regression formulas that incorporated the aforementioned fundamental predictors.<br />
+
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-2"></span>
+<img src="nat_VS_formula.png" alt="National Democratic Two-Party Vote Share Regression Formula." width="450" />
+<p class="caption">
+Figure 2: National Democratic Two-Party Vote Share Regression Formula.
+</p>
 </div>
+</div>
+<div id="vote-share-regression" class="section level3">
+<h3>Vote Share Regression</h3>
+<p>In the modeling the incumbent party’s two-party vote, which is the Democrat’s vote share this election, we get some interesting coefficients. See below for this model’s coefficient values, variable significance, and the model’s overall evaluation metrics (like R-squared and adjusted R-squared).</p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-3"></span>
+<img src="nat_VS_reg.png" alt="National Democratic Two-Party Vote Share Regression Output." width="359" />
+<p class="caption">
+Figure 3: National Democratic Two-Party Vote Share Regression Output.
+</p>
+</div>
+<p>The small, but negative, coefficient attached to absolute GDP is rather unintuitive, but my hypothesis is that for GDP, voters respond to levels and relative change differently. Previous weeks’ work has shown that positive percentage change is associated with higher incumbent vote share, as we’d expect, but positive absolute change is negatively correlated with incumbent party vote share perhaps because voters slightly punish incumbents when they deem the absolute change is not “large enough.” For every additional billion dollars of GDP change between the 7th and 8th quarters, the incumbent party loses 0.014 percentage points.</p>
+<p>The generic ballot support variable has a coefficient of 0.472, which makes sense - if voters generally support the incumbent party in polls, the party can expect to do well. For every percentage point higher the generic ballot support is for the incumbent party in polls, the incumbent party earns an additional 0.472 percentage points of vote share.</p>
+<p>The only variable with a larger coefficient than generic ballot support is the president’s-party-incumbent-midterm variable. Midterm years in which the incumbent party is the president’s party see the incumbent party losing 2.788 percentage points of vote share. This is consistent with the decades of poor president’s party performance we’ve observed.</p>
+<p>Lastly, with every 1 percentage point increase in congressional approval, the incumbent party gains one 0.092 percentage points in vote share. Again, this makes sense, as more voter satisfaction with the current Congress should be correlated with higher electoral support for the House incumbent party to remain in power.</p>
+<p>I would like to quickly note my model’s final adjusted R-squared, 0.872, which is a nice improvement from <a href="https://vivian-1372.github.io/Election-Analytics/post/2022-09-19-local-and-national-economy/">week 2’s</a> 0.292.</p>
+</div>
+<div id="vote-share-validation" class="section level3">
+<h3>Vote Share Validation</h3>
 <div class="figure">
-<img src="nat_S_formula.png" alt="" />
-<p class="caption">National Democratic Party Seats Regression Formula.</p>
+<img src="nat_VS_val.png" alt="National Democratic Two-Party Vote Share Regression Output." width="344" />
+<p class="caption">
+(#fig:vote share validation prinout)National Democratic Two-Party Vote Share Regression Output.
+</p>
+</div>
+<p>Above is the histogram of the mean out-of-sample residuals over 1,000 runs of cross-validation for my model. The distribution looks roughly normally distributed, with a mean a little below 0, tiny tails, and most residuals within [-2, 2].</p>
+</div>
+<div id="seat-count-formula" class="section level3">
+<h3>Seat Count Formula</h3>
+Next, I ran the same model again, but this time with incumbent party seat count as the response variable. Below are the regression formula and regression output for this model.
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-4"></span>
+<img src="nat_S_formula.png" alt="National Democratic Party Seat Count Regression Formula." width="469" />
+<p class="caption">
+Figure 4: National Democratic Party Seat Count Regression Formula.
+</p>
+</div>
+</div>
+<div id="seat-count-regression" class="section level3">
+<h3>Seat Count Regression</h3>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-5"></span>
+<img src="nat_S_reg.png" alt="National Democratic Seat Count Regression Output." width="360" />
+<p class="caption">
+Figure 5: National Democratic Seat Count Regression Output.
+</p>
+</div>
+<p>The model coefficients of the seat count model have the same signs as those of the vote share model, but different magnitudes because of the switch from predicting vote share, which can only be in the interval [0, 100], to predicting seat count, which can be [0, 435]. It is really the sign of the coefficients that matter for interpretation, and since those haven’t changed, I will only briefly comment on this regression output.</p>
+<p>It’s helpful to see the relationship between the president’s-party-incumbent-midterm effect and <em>seat count</em> because now, it becomes clear that when the president’s party is trying to defend its House incumbency in midterm years, like this year, it faces a steep uphill battle - when the indicator variable is 1, the incumbent party is predicted to lose around 29 seats.</p>
+</div>
+<div id="seat-count-validation" class="section level3">
+<h3>Seat Count Validation</h3>
+<div class="figure">
+<img src="nat_S_val.png" alt="National Democratic Two-Party Vote Share Regression Output." width="341" />
+<p class="caption">
+(#fig:seat count validation prinout)National Democratic Two-Party Vote Share Regression Output.
+</p>
+</div>
+<p>Above is the histogram of the mean out-of-sample residuals over 1,000 runs of cross-validation for my model again, this time for prediction of incumbent seat count. The distribution looks roughly normally distributed, with a mean at around 0 and most residuals within [-20, 20]. Neither our vote share nor our seat count model seem to perform poorly when tested with out-of-sample data, so we may move forward with prediction now!</p>
 </div>
 </div>
 <div id="national-predictions" class="section level2">
 <h2>National Predictions</h2>
+<p>!!! MENTION WHERE DATA TO MAKE PREDICTION IS FROM
+Using the two models above, I predict that the House incumbent (Democratic Party) two-party vote share will be <strong>48.56%</strong> (47.36, 49.83) and the set count will be <strong>209</strong> (198, 221).
+!!! add visualizations</p>
 </div>
 </div>
 <div id="district-models" class="section level1">
