@@ -198,9 +198,11 @@ export_table(pred_2022, format = "html")
 
 ### New National Forecast
 ![National Regression Formulas.](nat_formulas.png)
-I elect to exclude RDI % as a variable for my national models now, so these predictions are made using the newest GDP, generic ballot, and congressional approval data. 
+
+As shown by the above regression formulas, I elect to exclude RDI % as a variable for my national models now, so these predictions are made using the newest GDP, generic ballot, and congressional approval data. 
 
 House Incumbent (Democratic Party) Two-Party Vote Share: **48.56** (47.36, 49.83) 
+
 House Incumbent (Democratic Party) Seats: **209** (198, 221) 
 ```{r national model prediction, include = FALSE}
 # Prediction

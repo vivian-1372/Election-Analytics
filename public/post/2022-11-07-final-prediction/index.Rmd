@@ -22,6 +22,7 @@ library(rmapshaper)
 library(sf)
 library(insight)
 library(scales)
+library(packcircles)
 
 # 
 # expert_ratings <- read_csv("expert_rating.csv")
@@ -32,22 +33,26 @@ library(scales)
 # inside <- read_csv("inside_elections.csv")
 
 nat_model_data <- read_csv("nat_model_data.csv")
+poll_df <- read_csv("538_generic_ballot_averages_2018-2022.csv")
 ```
 
 # Overview
-Welcome to the final election forecasting update of this election cycle! It's been a long journey, but alas, we are one day out from Election Day. In today's blog post, I am going to present my final predictions in detail, which will involve model formulas, model descriptions, model coefficients, model interpretations, model validation, prediction confidence intervals, and visualizations. 
+Welcome to the final election forecasting update of this election cycle! It's been a long journey of election research and data analysis, but alas, we are one day out from Election Day. In today's blog post, I am going to present my final predictions in detail, which will involve model formulas, model descriptions, model coefficients, model interpretations, model validation, prediction confidence intervals, and visualizations. 
 
+```{r echo = FALSE, out.width = "75%", fig.cap = 'Source: The Economist.'}
+knitr::include_graphics("election.png")
+```
 # National Model
 Starting in [week 2](https://vivian-1372.github.io/Election-Analytics/post/2022-09-19-local-and-national-economy/), I wanted to build out a good national model with a mix of fundamental variables to predict the national two-party vote shares of the parties. I ultimately chose to stick with fundamentals because in [weeks 5](https://vivian-1372.github.io/Election-Analytics/post/2022-10-10-the-air-war/) and [6](https://vivian-1372.github.io/Election-Analytics/post/2022-10-19-the-ground-game/), I found that campaign activity, whether it be on air or on the ground, didn't significantly or directly impact electoral outcomes. In [week 7](https://vivian-1372.github.io/Election-Analytics/post/2022-10-24-shocks/), I reached the same conclusion regarding shocks. 
 
-The best iteration of my model is the most recent one, which includes only 4 predictors: absolute GDP growth (Quarter 8, the last of the election cycle), the average generic ballot support of the House incumbent party (weighted by recency of the poll), an indicator for whether or not the House incumbent party is also the president's party during a midterm year, and the average congressional approval rate. Absolute GDP growth is the economic variable I chose to capture how voters reward and punish the incumbent House party, and it came about after multiple considerations of other economic variables like unemployment rate, GDP growth percentage, and RDI change percentage. Average generic ballot support of the party in control of the House reflects how much the nation wants the currently-leading party to retain that congressional power. The binary indicator for `President's-Party-House-Incumbent-Midterm` is my attempt to capture the well-known fact that the president's party consistently performs poorly in midterm elections. The indicator is equal to 1 if the party in control of the House happens to be the president's party in a midterm year, and to 0 otherwise. Lastly, the average congressional approval rate was included because I believe it gives us a sense of how satisfied voters are with Congress, generally. This is distinct from the generic ballot support metric, with the former telling us how much voters like Congress's performance, which (perhaps unintuitively) doesn't necessarily match 1-to-1 with how much voters want the incumbent party in power.
+The best iteration of my model is the most recent one, which includes only 4 predictors: absolute GDP growth (Quarter 8, the last of the election cycle), the average generic ballot support of the House incumbent party (weighted by recency of the poll), an indicator for whether or not the House incumbent party is also the president's party during a midterm year, and the average congressional approval rate. Absolute GDP growth is the economic variable I chose to capture how voters reward and punish the incumbent House party, and it came about after multiple considerations of other economic variables like unemployment rate, GDP growth percentage, and RDI change percentage. Average generic ballot support of the party in control of the House, introduced in [week 3](https://vivian-1372.github.io/Election-Analytics/post/2022-09-26-polls-and-pollsters/), reflects how much the nation wants the currently-leading party to retain that congressional power. The binary indicator for `President's-Party-House-Incumbent-Midterm` is my attempt to capture the well-known fact that the president's party consistently performs poorly in midterm elections, which I covered in [week 1](https://vivian-1372.github.io/Election-Analytics/post/2022-09-15-analzying-2020-house-vote-shares/). The indicator is equal to 1 if the party in control of the House happens to be the president's party in a midterm year, and to 0 otherwise. Lastly, the average congressional approval rate was included because I believe it gives us a sense of how satisfied voters are with Congress, generally. This is distinct from the generic ballot support metric, with the former telling us how much voters like Congress's performance, which (perhaps unintuitively) doesn't necessarily match 1-to-1 with how much voters want the incumbent party in power.
 
 ```{r congressional approval vs. generic ballot, include = FALSE}
 plot(nat_model_data$year[17:37], nat_model_data$cong_approv[17:37], type = 'l', main = "Congressional Approval and Generic Ballot Support over the Years", xlab = "Year", ylab = "Percentage", col = "orange")
 lines(nat_model_data$year, nat_model_data$pp_generic_ballot, col = "purple")
 legend(1979, 23, legend = c("Congressional Approval", "Generic Ballot"), col = c("orange", "purple"), lty = 1:1)
 ```
-```{r echo = FALSE, fig.cap = 'Disconnect between Congressional Approval and Incumbent Generic Ballot.'}
+```{r echo = FALSE, out.width = "75%", fig.cap = 'Disconnect between Congressional Approval and Incumbent Generic Ballot.'}
 knitr::include_graphics("CA_GB.png")
 ```
 As shown above, generic ballot support for the incumbent party in the House doesn't move with general approval of Congress! This was surprising to me at first, but was a good sign that I wasn't introducing too much collinearity into my model by including both measures.   
@@ -56,14 +61,12 @@ As shown above, generic ballot support for the incumbent party in the House does
 
 ### Vote Share Formula
 I wanted to use this model predict both national incumbent two-party vote share and national incumbent seat count, so I came up with two final regression formulas that incorporated the aforementioned fundamental predictors.  
-```{r echo = FALSE, fig.cap = 'National Democratic Two-Party Vote Share Regression Formula.'}
-knitr::include_graphics("nat_VS_formula.png")
-```
 
+![National Democratic Two-Party Vote Share Regression Formula.](nat_VS_formula.png)
 ### Vote Share Regression
 In the modeling the incumbent party's two-party vote, which is the Democrat's vote share this election, we get some interesting coefficients. See below for this model's coefficient values, variable significance, and the model's overall evaluation metrics (like R-squared and adjusted R-squared).
 
-```{r echo = FALSE, fig.cap = 'National Democratic Two-Party Vote Share Regression Output.'}
+```{r echo = FALSE, out.width= "0.75%", fig.cap = 'National Democratic Two-Party Vote Share Regression Output.'}
 knitr::include_graphics("nat_VS_reg.png")
 ```
 The small, but negative, coefficient attached to absolute GDP is rather unintuitive, but my hypothesis is that for GDP, voters respond to levels and relative change differently. Previous weeks' work has shown that positive percentage change is associated with higher incumbent vote share, as we'd expect, but positive absolute change is negatively correlated with incumbent party vote share perhaps because voters slightly punish incumbents when they deem the absolute change is not "large enough." For every additional billion dollars of GDP change between the 7th and 8th quarters, the incumbent party loses 0.014 percentage points. 
@@ -77,7 +80,7 @@ Lastly, with every 1 percentage point increase in congressional approval, the in
 I would like to quickly note my model's final adjusted R-squared, 0.872, which is a nice improvement from [week 2's](https://vivian-1372.github.io/Election-Analytics/post/2022-09-19-local-and-national-economy/) 0.292. 
 
 ### Vote Share Validation
-```{r vote share validation, include = FALSE}
+```{r vote share validation, out.width= "0.75%", include = FALSE}
 nat_model_data <- nat_model_data %>%
   filter(year >= 1980)
 outsamp_errors <- sapply(1:1000, function(i){
@@ -93,19 +96,16 @@ hist(outsamp_errors, breaks = 20,
      xlab = "",
      main = "Mean Out-of-Sample Residual for\n Vote Share Model (1000 runs of CV)")
 ```
-```{r vote share validation prinout, echo = FALSE, fig.cap = 'National Democratic Two-Party Vote Share Regression Output.'}
+```{r vote share validation prinout, echo = FALSE, fig.cap = 'National Democratic Two-Party Vote Share Model Validation'}
 knitr::include_graphics("nat_VS_val.png")
 ```
 Above is the histogram of the mean out-of-sample residuals over 1,000 runs of cross-validation for my model. The distribution looks roughly normally distributed, with a mean a little below 0, tiny tails, and most residuals within [-2, 2].  
 
 ### Seat Count Formula
 Next, I ran the same model again, but this time with incumbent party seat count as the response variable. Below are the regression formula and regression output for this model.
-```{r echo = FALSE, fig.cap = 'National Democratic Party Seat Count Regression Formula.'}
-knitr::include_graphics("nat_S_formula.png")
-```
-
+![National Democratic Party Seat Count Regression Formula.](nat_S_formula.png)
 ### Seat Count Regression
-```{r echo = FALSE, fig.cap = 'National Democratic Seat Count Regression Output.'}
+```{r echo = FALSE, out.width= "0.75%",  fig.cap = 'National Democratic Seat Count Regression Output.'}
 knitr::include_graphics("nat_S_reg.png")
 ```
 The model coefficients of the seat count model have the same signs as those of the vote share model, but different magnitudes because of the switch from predicting vote share, which can only be in the interval [0, 100], to predicting seat count, which can be [0, 435]. It is really the sign of the coefficients that matter for interpretation, and since those haven't changed, I will only briefly comment on this regression output. 
@@ -129,35 +129,89 @@ hist(outsamp_errors, breaks = 20,
      xlab = "",
      main = "Mean Out-of-Sample Residual for\n Seat Count Model (1000 runs of CV)")
 ```
-```{r seat count validation prinout, echo = FALSE, fig.cap = 'National Democratic Two-Party Vote Share Regression Output.'}
+```{r seat count validation printout, echo = FALSE, out.width= "0.75%", fig.cap = 'National Democratic Party Seat Count Model Validation.'}
 knitr::include_graphics("nat_S_val.png")
 ```
 Above is the histogram of the mean out-of-sample residuals over 1,000 runs of cross-validation for my model again, this time for prediction of incumbent seat count. The distribution looks roughly normally distributed, with a mean at around 0 and most residuals within [-20, 20]. Neither our vote share nor our seat count model seem to perform poorly when tested with out-of-sample data, so we may move forward with prediction now!  
 
 ## National Predictions
+Using the two models above, and the newest data for the 2022 midterms, I predict that the House incumbent (Democratic Party) two-party vote share will be **48.56%** (47.36, 49.83) and the set count will be **209** (198, 221).
 
-!!! MENTION WHERE DATA TO MAKE PREDICTION IS FROM
-Using the two models above, I predict that the House incumbent (Democratic Party) two-party vote share will be **48.56%** (47.36, 49.83) and the set count will be **209** (198, 221). 
-!!! add visualizations
+The GDP data comes from [FRED](https://fred.stlouisfed.org/series/GDPC1), the generic ballot data comes from [FiveThirtyEight](https://projects.fivethirtyeight.com/polls/generic-ballot/), and the congressional approval numbers come from [Gallup](https://news.gallup.com/poll/1600/congress-public.aspx).
+```{r visualization, echo = FALSE, fig.cap= '435 Seats Up For Grabs.'}
 
-# District Models
+# Create data
+data <- data.frame(group=seq(1,209,1), value = 100.1)
+data2 <- data.frame(group=seq(1,226,1), value = 100)
 
-## Model Details
+data <- bind_rows(data, data2)
+rows <- sample(nrow(data))
+data <- data[rows, ]
 
-## District Predictions
+packing <- circleProgressiveLayout(data$value, sizetype='area')
+data <- cbind(data, packing)
+ 
+dat.gg <- circleLayoutVertices(packing, npoints=25)
+dat.gg$value <- rep(data$value, each=26)
+ 
+ggplot() + 
+  geom_polygon(data = dat.gg, aes(x, y, group = id, fill = factor(value)), colour = "black", alpha = 0.6) +
+  scale_fill_manual(values = c("#0000FF", "#FF0000")) +
+  theme_void()  + 
+  theme(legend.position="none") + 
+  coord_equal()
+```
+```{r, include = FALSE}
+# Create data
+data <- data.frame(group=paste("Group", letters[1:20]), value=sample(seq(1,100),20)) 
+ 
+# Generate the layout. This function return a dataframe with one line per bubble. 
+# It gives its center (x and y) and its radius, proportional of the value
+packing <- circleProgressiveLayout(data$value, sizetype='area')
+ 
+# We can add these packing information to the initial data frame
+data <- cbind(data, packing)
+ 
+# Check that radius is proportional to value. We don't want a linear relationship, since it is the AREA that must be proportionnal to the value
+# plot(data$radius, data$value)
+ 
+# The next step is to go from one center + a radius to the coordinates of a circle that
+# is drawn by a multitude of straight lines.
+dat.gg <- circleLayoutVertices(packing, npoints=50)
+dat.gg$value <- rep(data$value, each=51)
+ 
+# Plot
+ggplot() + 
+  
+  # Make the bubbles
+  geom_polygon(data = dat.gg, aes(x, y, group = id, fill=value), colour = "black", alpha = 0.6) +
+  scale_fill_distiller(palette = "BuPu", direction = 1 ) +
+ 
+  # Add text in the center of each bubble + control its size
+  geom_text(data = data, aes(x, y, size=value, label = group)) +
+  scale_size_continuous(range = c(1,4)) +
+ 
+  # General theme:
+  theme_void()  + 
+  theme(legend.position="none") + 
+  coord_equal()
 
-```{r}
-# 
-# historical_results %>%
-#   group_by(year) %>%
-#   summarize(count = n())
-# 
-# expert_ratings %>%
-#   group_by(year) %>%
-#   summarize(count = n()) 
 ```
 
-```{r}
+# District Models
+Since [week 4](https://vivian-1372.github.io/Election-Analytics/post/2022-10-03-incumbency/), I have been slowly working towards building 435 models for the 435 district races. After much consideration, I decided to build two types of models: (1) the competitive type, which involves the average of many expert predictions and incumbency, and (2) the non-competitive type, which involves using only a few expert predictions and incumbency.
+
+Most expert ratings were pulled from Wikipedia's election ratings pages for each election (see this year's page [here](https://en.wikipedia.org/wiki/2022_United_States_House_of_Representatives_election_ratings)), and districts are determined to be competitive if one of the major rating groups considered them not "safe" or "solid". 
+
+## Model Details
+In both types of models for competitive and non-competitive districts, I predicted Democrat two-party vote share using the same two predictors: expert rating and candidate incumbency.
+
+![District Model Formula.](dist_formula.png)
+
+Over the weeks, I realized that good district-level data is hard to come by, and with Election Day drawing near, I felt there was a choice between building out a self-made model and building an actually predictive one to be made. In the end, I decided to go with the latter, mainly relying on expert predictions to do the heavy lifting, and candidate incumbency to fill in the gaps. 
+
+## District Predictions
+```{r, include = FALSE}
 # expert_ratings$district <- as.numeric(expert_ratings$district)
 # df$district_num <- as.numeric(df$district_num)
 # df <- df %>%
@@ -196,8 +250,7 @@ Using the two models above, I predict that the House incumbent (Democratic Party
 # median(r2)
 ```
 
-
-```{r}
+```{r, include = FALSE}
 # expert_ratings$district <- as.numeric(expert_ratings$district)
 # historical_results$district <- as.numeric(df$district_num)
 # df <- df %>%
@@ -345,7 +398,6 @@ Using the two models above, I predict that the House incumbent (Democratic Party
 # d2022
 ```
 
-
 ```{r district models for non-competitive ones; just use incumbent?, include = FALSE}
 
 ## use expert ratings and incumbency for all 435, see if it agrees with my all expert preds + incumb model for the competitive ones. 
@@ -439,19 +491,12 @@ Using the two models above, I predict that the House incumbent (Democratic Party
 # mean(r2, na.rm = TRUE)
 
 ```
-
-
-```{r}
-#national model... expert prediction? 
-# need data for this
-# nat_model_updated_seats <- lm(seats ~ GDP_growth_pct + DSPIC_change_pct + GDP_growth_qt + 
-#                pp_generic_ballot + midterm_pres_party_inc_party + expert_prediction, data = nat_model_data)
-
-```
-## New Forecast
 Include confidence intervals for predictions !! 
+
+
 
 ---
 **References**
 
 [1] 
+

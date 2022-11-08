@@ -288,7 +288,7 @@ models <- train_data %>%
 
 # Extracting TERRIBLE model results
 model_results <- models %>% 
-  mutate(r_squared = map_dbl(model, ~summary(.x)$r.squared))
+  mutate(r_squared = map_dbl(model, ~summary(.x)$r.squared), adj_r_squared = map_dbl(model, ~summary(.x)$adj.r.squared))
 
 # Predicting 2022 with a TERRIBLE model
 pred_2022 <- test_data %>%
@@ -297,7 +297,8 @@ pred_2022 <- test_data %>%
   mutate(pred = map_dbl(.x = model, .y = data, ~predict(object = .x, newdata = as.data.frame(.y)))) %>%
   select(state, district, pred)
 
-hist(model_results$r_squared)
+mean(model_results$r_squared)
+mean(model_results$adj_r_squared, na.rm = TRUE)
 ```
 
 ## My New Forecast
