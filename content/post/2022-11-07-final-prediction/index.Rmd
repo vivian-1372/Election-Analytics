@@ -14,6 +14,7 @@ This is blog post #8 (the final one!) in a series of analytical posts in lieu of
 # # Set up
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(ggplot2)
 library(janitor)
 library(readr)
 library(stargazer)
@@ -25,33 +26,34 @@ library(scales)
 library(packcircles)
 
 # 
-# expert_ratings <- read_csv("expert_rating.csv")
-# historical_results <- read_csv("historical_results.csv")
+expert_ratings <- read_csv("expert_rating.csv")
+historical_results <- read_csv("historical_results.csv")
 # df <- read_csv("econ_mid_genball_results.csv")
-# d2022 <- read_csv("house_cands.csv")
-# cook <- read_csv("cook.csv")
-# inside <- read_csv("inside_elections.csv")
+d2022 <- read_csv("house_cands.csv")
+cook <- read_csv("cook.csv")
+inside <- read_csv("inside_elections.csv")
 
 nat_model_data <- read_csv("nat_model_data.csv")
 poll_df <- read_csv("538_generic_ballot_averages_2018-2022.csv")
 ```
 
 # Overview
-Welcome to the final election forecasting update of this election cycle! It's been a long journey of election research and data analysis, but alas, we are one day out from Election Day. In today's blog post, I am going to present my final predictions in detail, which will involve model formulas, model descriptions, model coefficients, model interpretations, model validation, prediction confidence intervals, and visualizations. 
+Welcome to the final election forecasting update of this election cycle! It's been a long journey of election research and data analysis, but alas, we are one day out from Election Day. In today's blog post, I am going to present my final predictions in detail, which will involve model formulas, model descriptions, model coefficients, model interpretations, model validation, prediction confidence intervals, and visualizations for my national and district-level models. 
 
-```{r echo = FALSE, out.width = "75%", fig.cap = 'Source: The Economist.'}
+```{r echo = FALSE, out.width = "95%", fig.cap = 'Source: The Economist.'}
 knitr::include_graphics("election.png")
 ```
 # National Model
-Starting in [week 2](https://vivian-1372.github.io/Election-Analytics/post/2022-09-19-local-and-national-economy/), I wanted to build out a good national model with a mix of fundamental variables to predict the national two-party vote shares of the parties. I ultimately chose to stick with fundamentals because in [weeks 5](https://vivian-1372.github.io/Election-Analytics/post/2022-10-10-the-air-war/) and [6](https://vivian-1372.github.io/Election-Analytics/post/2022-10-19-the-ground-game/), I found that campaign activity, whether it be on air or on the ground, didn't significantly or directly impact electoral outcomes. In [week 7](https://vivian-1372.github.io/Election-Analytics/post/2022-10-24-shocks/), I reached the same conclusion regarding shocks. 
+Starting in [week 2](https://vivian-1372.github.io/Election-Analytics/post/2022-09-19-local-and-national-economy/), I wanted to build out a good national model with a mix of fundamental variables to predict the national two-party vote shares of the parties. I ultimately chose to stick with fundamentals because in [weeks 5](https://vivian-1372.github.io/Election-Analytics/post/2022-10-10-the-air-war/) and [6](https://vivian-1372.github.io/Election-Analytics/post/2022-10-19-the-ground-game/), I found that campaign activity, whether it be on air or on the ground, didn't significantly or directly impact electoral outcomes. In [week 7](https://vivian-1372.github.io/Election-Analytics/post/2022-10-24-shocks/), I reached the same conclusion regarding shocks during the election cycle. 
 
-The best iteration of my model is the most recent one, which includes only 4 predictors: absolute GDP growth (Quarter 8, the last of the election cycle), the average generic ballot support of the House incumbent party (weighted by recency of the poll), an indicator for whether or not the House incumbent party is also the president's party during a midterm year, and the average congressional approval rate. Absolute GDP growth is the economic variable I chose to capture how voters reward and punish the incumbent House party, and it came about after multiple considerations of other economic variables like unemployment rate, GDP growth percentage, and RDI change percentage. Average generic ballot support of the party in control of the House, introduced in [week 3](https://vivian-1372.github.io/Election-Analytics/post/2022-09-26-polls-and-pollsters/), reflects how much the nation wants the currently-leading party to retain that congressional power. The binary indicator for `President's-Party-House-Incumbent-Midterm` is my attempt to capture the well-known fact that the president's party consistently performs poorly in midterm elections, which I covered in [week 1](https://vivian-1372.github.io/Election-Analytics/post/2022-09-15-analzying-2020-house-vote-shares/). The indicator is equal to 1 if the party in control of the House happens to be the president's party in a midterm year, and to 0 otherwise. Lastly, the average congressional approval rate was included because I believe it gives us a sense of how satisfied voters are with Congress, generally. This is distinct from the generic ballot support metric, with the former telling us how much voters like Congress's performance, which (perhaps unintuitively) doesn't necessarily match 1-to-1 with how much voters want the incumbent party in power.
+The best iteration of my model is the most recent one, which includes only 4 predictors: absolute GDP growth (Quarter 8, the last of the election cycle), the average generic ballot support of the House incumbent party (weighted by recency of the poll), an indicator for whether or not the House incumbent party is also the president's party during a midterm year, and the average congressional approval rate. Absolute GDP growth is the economic variable I chose to capture how voters reward and punish the incumbent House party, and it came about after multiple considerations of other economic variables like unemployment rate, GDP growth percentage, and RDI change percentage. Average generic ballot support of the party in control of the House, introduced in [week 3](https://vivian-1372.github.io/Election-Analytics/post/2022-09-26-polls-and-pollsters/), reflects how much the nation wants the currently-leading party to retain that congressional power. The binary indicator for `President's-Party-House-Incumbent-Midterm` is my attempt to capture the well-known fact that the president's party consistently performs poorly in midterm elections, which I covered in [week 1](https://vivian-1372.github.io/Election-Analytics/post/2022-09-15-analzying-2020-house-vote-shares/). The indicator is equal to 1 if the party in control of the House happens to be the president's party in a midterm year, and to 0 otherwise. Lastly, the average congressional approval rate was included because I believe it gives us a sense of how satisfied voters are with Congress, generally. This is distinct from the generic ballot support metric, with the former telling us how much voters like Congress's performance, which (perhaps unintuitively) doesn't match 1-to-1 with how much voters want the incumbent party to stay in power.
 
 ```{r congressional approval vs. generic ballot, include = FALSE}
 plot(nat_model_data$year[17:37], nat_model_data$cong_approv[17:37], type = 'l', main = "Congressional Approval and Generic Ballot Support over the Years", xlab = "Year", ylab = "Percentage", col = "orange")
 lines(nat_model_data$year, nat_model_data$pp_generic_ballot, col = "purple")
 legend(1979, 23, legend = c("Congressional Approval", "Generic Ballot"), col = c("orange", "purple"), lty = 1:1)
 ```
+
 ```{r echo = FALSE, out.width = "75%", fig.cap = 'Disconnect between Congressional Approval and Incumbent Generic Ballot.'}
 knitr::include_graphics("CA_GB.png")
 ```
@@ -60,27 +62,29 @@ As shown above, generic ballot support for the incumbent party in the House does
 ## Model Details
 
 ### Vote Share Formula
-I wanted to use this model predict both national incumbent two-party vote share and national incumbent seat count, so I came up with two final regression formulas that incorporated the aforementioned fundamental predictors.  
+I wanted to use this model to predict both national incumbent two-party vote share and national incumbent seat count, so I came up with two final regression formulas that incorporated the aforementioned fundamental predictors.  
 
 ![National Democratic Two-Party Vote Share Regression Formula.](nat_VS_formula.png)
-### Vote Share Regression
-In the modeling the incumbent party's two-party vote, which is the Democrat's vote share this election, we get some interesting coefficients. See below for this model's coefficient values, variable significance, and the model's overall evaluation metrics (like R-squared and adjusted R-squared).
 
-```{r echo = FALSE, out.width= "0.75%", fig.cap = 'National Democratic Two-Party Vote Share Regression Output.'}
+### Vote Share Regression
+In modeling the incumbent party's two-party vote share, which is the Democrat's vote share this election, we get some interesting coefficients. See below for this model's coefficient values, variable significance, and the model's overall evaluation metrics (like R-squared and adjusted R-squared).
+
+```{r echo = FALSE, out.width= "75%", fig.cap = 'National Democratic Two-Party Vote Share Regression Output.'}
 knitr::include_graphics("nat_VS_reg.png")
 ```
+
 The small, but negative, coefficient attached to absolute GDP is rather unintuitive, but my hypothesis is that for GDP, voters respond to levels and relative change differently. Previous weeks' work has shown that positive percentage change is associated with higher incumbent vote share, as we'd expect, but positive absolute change is negatively correlated with incumbent party vote share perhaps because voters slightly punish incumbents when they deem the absolute change is not "large enough." For every additional billion dollars of GDP change between the 7th and 8th quarters, the incumbent party loses 0.014 percentage points. 
 
-The generic ballot support variable has a coefficient of 0.472, which makes sense - if voters generally support the incumbent party in polls, the party can expect to do well. For every percentage point higher the generic ballot support is for the incumbent party in polls, the incumbent party earns an additional 0.472 percentage points of vote share. 
+The generic ballot support variable has a coefficient of 0.472, which makes sense - if voters generally support the incumbent party in polls, the party can expect to do well on Election Day. For every percentage point higher the generic ballot support is for the incumbent party in polls, the incumbent party earns an additional 0.472 percentage point of vote share. 
 
-The only variable with a larger coefficient than generic ballot support is the president's-party-incumbent-midterm variable. Midterm years in which the incumbent party is the president's party see the incumbent party losing 2.788 percentage points of vote share. This is consistent with the decades of poor president's party performance we've observed. 
+The only variable with a larger coefficient than generic ballot support is the president's-party-incumbent-midterm variable. Midterm years in which the incumbent party is the president's party see the incumbent party losing 2.788 percentage points of vote share. This is consistent with the decades of poor president's party House performance we've observed. 
 
-Lastly, with every 1 percentage point increase in congressional approval, the incumbent party gains one 0.092 percentage points in vote share. Again, this makes sense, as more voter satisfaction with the current Congress should be correlated with higher electoral support for the House incumbent party to remain in power. 
+Lastly, with every 1 percentage point increase in congressional approval, the incumbent party gains 0.092 percentage points in vote share. Again, this makes sense, as more voter satisfaction with the current Congress should be correlated with higher electoral support for the House incumbent party to remain in power. 
 
-I would like to quickly note my model's final adjusted R-squared, 0.872, which is a nice improvement from [week 2's](https://vivian-1372.github.io/Election-Analytics/post/2022-09-19-local-and-national-economy/) 0.292. 
+I would like to quickly note my model's final adjusted R-squared, 0.872, which is a nice improvement from [week 2's](https://vivian-1372.github.io/Election-Analytics/post/2022-09-19-local-and-national-economy/) 0.292. This value indicates that the model, with its 4 predictors, can explain about 87.2% of the variance in incumbent party vote share. 
 
 ### Vote Share Validation
-```{r vote share validation, out.width= "0.75%", include = FALSE}
+```{r vote share validation, include = FALSE}
 nat_model_data <- nat_model_data %>%
   filter(year >= 1980)
 outsamp_errors <- sapply(1:1000, function(i){
@@ -96,21 +100,25 @@ hist(outsamp_errors, breaks = 20,
      xlab = "",
      main = "Mean Out-of-Sample Residual for\n Vote Share Model (1000 runs of CV)")
 ```
-```{r vote share validation prinout, echo = FALSE, fig.cap = 'National Democratic Two-Party Vote Share Model Validation'}
+
+```{r vote share validation printout, echo = FALSE, fig.cap = 'National Democratic Two-Party Vote Share Model Validation.'}
 knitr::include_graphics("nat_VS_val.png")
 ```
+
 Above is the histogram of the mean out-of-sample residuals over 1,000 runs of cross-validation for my model. The distribution looks roughly normally distributed, with a mean a little below 0, tiny tails, and most residuals within [-2, 2].  
 
 ### Seat Count Formula
 Next, I ran the same model again, but this time with incumbent party seat count as the response variable. Below are the regression formula and regression output for this model.
 ![National Democratic Party Seat Count Regression Formula.](nat_S_formula.png)
+
 ### Seat Count Regression
-```{r echo = FALSE, out.width= "0.75%",  fig.cap = 'National Democratic Seat Count Regression Output.'}
+```{r echo = FALSE, out.width= "75%",  fig.cap = 'National Democratic Seat Count Regression Output.'}
 knitr::include_graphics("nat_S_reg.png")
 ```
+
 The model coefficients of the seat count model have the same signs as those of the vote share model, but different magnitudes because of the switch from predicting vote share, which can only be in the interval [0, 100], to predicting seat count, which can be [0, 435]. It is really the sign of the coefficients that matter for interpretation, and since those haven't changed, I will only briefly comment on this regression output. 
 
-It's helpful to see the relationship between the president's-party-incumbent-midterm effect and *seat count* because now, it becomes clear that when the president's party is trying to defend its House incumbency in midterm years, like this year, it faces a steep uphill battle - when the indicator variable is 1, the incumbent party is predicted to lose around 29 seats. 
+It's helpful to see the relationship between the president's-party-incumbent-midterm effect and *seat count* because now, it becomes clear that when the president's party is trying to defend its House incumbency in midterm years, like this year, it faces a steep uphill battle - when the indicator variable is 1, and everything else is held constant, the incumbent party is predicted to lose around 29 seats. 
 
 ### Seat Count Validation
 ```{r seat count validation, include = FALSE}
@@ -129,229 +137,212 @@ hist(outsamp_errors, breaks = 20,
      xlab = "",
      main = "Mean Out-of-Sample Residual for\n Seat Count Model (1000 runs of CV)")
 ```
-```{r seat count validation printout, echo = FALSE, out.width= "0.75%", fig.cap = 'National Democratic Party Seat Count Model Validation.'}
+
+```{r seat count validation printout, echo = FALSE, out.width= "75%", fig.cap = 'National Democratic Party Seat Count Model Validation.'}
 knitr::include_graphics("nat_S_val.png")
 ```
+
 Above is the histogram of the mean out-of-sample residuals over 1,000 runs of cross-validation for my model again, this time for prediction of incumbent seat count. The distribution looks roughly normally distributed, with a mean at around 0 and most residuals within [-20, 20]. Neither our vote share nor our seat count model seem to perform poorly when tested with out-of-sample data, so we may move forward with prediction now!  
 
 ## National Predictions
-Using the two models above, and the newest data for the 2022 midterms, I predict that the House incumbent (Democratic Party) two-party vote share will be **48.56%** (47.36, 49.83) and the set count will be **209** (198, 221).
+Using the two models above, and the newest data for the 2022 midterms, I predict that the House incumbent (Democratic Party) two-party vote share will be **48.56%** (47.36, 49.83) and the seat count will be **209** (198, 221).
 
 The GDP data comes from [FRED](https://fred.stlouisfed.org/series/GDPC1), the generic ballot data comes from [FiveThirtyEight](https://projects.fivethirtyeight.com/polls/generic-ballot/), and the congressional approval numbers come from [Gallup](https://news.gallup.com/poll/1600/congress-public.aspx).
 ```{r visualization, echo = FALSE, fig.cap= '435 Seats Up For Grabs.'}
-
-# Create data
-data <- data.frame(group=seq(1,209,1), value = 100.1)
-data2 <- data.frame(group=seq(1,226,1), value = 100)
-
-data <- bind_rows(data, data2)
-rows <- sample(nrow(data))
-data <- data[rows, ]
-
-packing <- circleProgressiveLayout(data$value, sizetype='area')
-data <- cbind(data, packing)
- 
-dat.gg <- circleLayoutVertices(packing, npoints=25)
-dat.gg$value <- rep(data$value, each=26)
- 
-ggplot() + 
-  geom_polygon(data = dat.gg, aes(x, y, group = id, fill = factor(value)), colour = "black", alpha = 0.6) +
-  scale_fill_manual(values = c("#0000FF", "#FF0000")) +
-  theme_void()  + 
-  theme(legend.position="none") + 
-  coord_equal()
-```
-```{r, include = FALSE}
-# Create data
-data <- data.frame(group=paste("Group", letters[1:20]), value=sample(seq(1,100),20)) 
- 
-# Generate the layout. This function return a dataframe with one line per bubble. 
-# It gives its center (x and y) and its radius, proportional of the value
-packing <- circleProgressiveLayout(data$value, sizetype='area')
- 
-# We can add these packing information to the initial data frame
-data <- cbind(data, packing)
- 
-# Check that radius is proportional to value. We don't want a linear relationship, since it is the AREA that must be proportionnal to the value
-# plot(data$radius, data$value)
- 
-# The next step is to go from one center + a radius to the coordinates of a circle that
-# is drawn by a multitude of straight lines.
-dat.gg <- circleLayoutVertices(packing, npoints=50)
-dat.gg$value <- rep(data$value, each=51)
- 
-# Plot
-ggplot() + 
-  
-  # Make the bubbles
-  geom_polygon(data = dat.gg, aes(x, y, group = id, fill=value), colour = "black", alpha = 0.6) +
-  scale_fill_distiller(palette = "BuPu", direction = 1 ) +
- 
-  # Add text in the center of each bubble + control its size
-  geom_text(data = data, aes(x, y, size=value, label = group)) +
-  scale_size_continuous(range = c(1,4)) +
- 
-  # General theme:
-  theme_void()  + 
-  theme(legend.position="none") + 
-  coord_equal()
-
+knitr::include_graphics("nat_model_viz.png")
 ```
 
 # District Models
-Since [week 4](https://vivian-1372.github.io/Election-Analytics/post/2022-10-03-incumbency/), I have been slowly working towards building 435 models for the 435 district races. After much consideration, I decided to build two types of models: (1) the competitive type, which involves the average of many expert predictions and incumbency, and (2) the non-competitive type, which involves using only a few expert predictions and incumbency.
+Since [week 4](https://vivian-1372.github.io/Election-Analytics/post/2022-10-03-incumbency/), I have been slowly working towards building 435 models for the 435 district races. After much consideration, I decided to build two types of models: (1) the competitive type, which involves the average of many expert predictions and incumbency, and (2) the non-competitive type, which involves past election results and incumbency.
 
 Most expert ratings were pulled from Wikipedia's election ratings pages for each election (see this year's page [here](https://en.wikipedia.org/wiki/2022_United_States_House_of_Representatives_election_ratings)), and districts are determined to be competitive if one of the major rating groups considered them not "safe" or "solid". 
 
 ## Model Details
-In both types of models for competitive and non-competitive districts, I predicted Democrat two-party vote share using the same two predictors: expert rating and candidate incumbency.
+```{r competitive district models with incumbency and expert rating, include = FALSE, message = FALSE}
+expert_ratings$district <- as.numeric(expert_ratings$district)
+historical_results$district <- as.numeric(historical_results$district)
 
-![District Model Formula.](dist_formula.png)
+avg_ratings <- expert_ratings %>% 
+  select(year, state, district, avg_rating)
 
-Over the weeks, I realized that good district-level data is hard to come by, and with Election Day drawing near, I felt there was a choice between building out a self-made model and building an actually predictive one to be made. In the end, I decided to go with the latter, mainly relying on expert predictions to do the heavy lifting, and candidate incumbency to fill in the gaps. 
+historical_results <- historical_results %>% 
+  mutate(incumbent = case_when(DemStatus == "Incumbent" ~ 1, T ~ 0), demWin = case_when(WinnerParty == "D" ~ 1, T ~ 0), open = case_when((DemStatus == "Challenger" & RepStatus == "Challenger") ~ 1, T ~ 0))
 
-## District Predictions
-```{r, include = FALSE}
-# expert_ratings$district <- as.numeric(expert_ratings$district)
-# df$district_num <- as.numeric(df$district_num)
-# df <- df %>%
-#   rename(district = district_num)
-# 
-# district_data <- expert_ratings %>% 
-#   filter(year != 2022) 
-# 
-# newdf <- left_join(df, expert_ratings, by = c("year", "state", "district"))
-# newdf <- drop_na(newdf)
-# 
-# sds = unique(historical_results$district_id)
-# models <- list()
-# models2 <- list()
-# r2 <- c()
-# r22 <- c()
-# preds <- c()
-# for (sd in sds){
-#   temp <- historical_results %>%
-#     filter(district_id == sd)
-#   
-#   if (nrow(temp) > 0)
-#   {
-#     m <- glm(demWin ~ incumbent, data = temp, family = binomial(link = logit))
-#     models[[length(models)+1]] <- m
-#   
-#     r2 <- c(r2, mcf_r_squared = map_dbl(m, ~with(summary(m), 1 - deviance/null.deviance)))
-#   }
-#   #Make a 2022 prediction and append to list
-#   # preds <- c(preds, predict(m2, 2022data))
-# }
-# 
-# summary(glm(demWin))
-# mean(r2, na.rm = TRUE)
-# hist(r2)
-# median(r2)
+train_data <- avg_ratings %>% 
+  filter(year != 2022) %>% 
+  left_join(historical_results, by = c("year", "state", "district"))  %>%
+  group_by(state, district) %>% 
+  filter(n() > 1) %>% 
+  group_nest() %>% 
+  mutate(data = map(data, ~unnest(., cols = c())))
+
+d2022$district <- as.numeric(d2022$district )
+d2022 <- d2022 %>%
+  filter(cand_party == "Democratic") %>%
+  distinct()
+
+test_data <- avg_ratings %>% 
+  left_join(d2022, by = c("state", "district")) %>%
+  filter(year == 2022) %>% 
+  group_by(state, district) %>% 
+  group_nest() %>% 
+  mutate(data = map(data, ~unnest(., cols = c())))
+
+models <- train_data %>% 
+  mutate(model = map(data, ~lm(dem_votes_major_percent ~ avg_rating + incumbent, 
+                                  data = .x))) %>% 
+  select(-data)
+
+model_results <- models %>% 
+  mutate(RS = map_dbl(model, ~summary(.x)$r.squared), ARS = map_dbl(model, ~summary(.x)$adj.r.squared))
+
+pred_C_2022 <- test_data %>%
+  # inner join as there may not be historical models for some districts
+  inner_join(models, by = c("state", "district")) %>% mutate(preds = map(.x = model, .y = data, ~predict(object = .x, newdata = as.data.frame(.y),
+                                                        se.fit = TRUE,
+                                                        type = "response")),
+         lower = map(.x = preds, ~.x$fit - (2 * .x$se.fit)),
+         fitted = map(.x = preds, ~.x$fit),
+         upper = map(.x = preds, ~.x$fit + (2 * .x$se.fit)))
+
+preds_C_2022 <- pred_C_2022 %>%
+  unnest(cols = c(fitted, lower, upper)) %>%
+  distinct() %>%
+  mutate(winner = case_when(fitted >= 50 ~ "Democrat", T ~ "Republican")) %>%
+  select(state, district, fitted, lower, upper, winner)
+
+hist(model_results$RS)
+mean(model_results$RS, na.rm = TRUE)
+mean(model_results$ARS, na.rm = TRUE)
+length(model_results)
+```
+```{r non-competitive district models with incumbency and past results, include = FALSE, message = FALSE}
+HR <- historical_results %>%
+  filter(!is.infinite(vote_margin)) %>%
+  mutate(incumbent = case_when(DemStatus == "Incumbent" ~ 1, T ~ 0), demWin = case_when(WinnerParty == "D" ~ 1, T ~ 0), open = case_when((DemStatus == "Challenger" & RepStatus == "Challenger") ~ 1, T ~ 0)) %>%
+  group_by(district_id) %>%
+  mutate(wm = dem_votes_major_percent - rep_votes_major_percent) %>%
+  summarize(dem_votes_major_percent = dem_votes_major_percent, vote_margin = vote_margin, year = year, state = state, district = district, incumbent = incumbent, wm = wm) %>%
+  mutate(last_dem_VS = lead(dem_votes_major_percent), last_VM = lead(vote_margin), last_WM = lead(wm)) %>%
+  filter(is.na(last_dem_VS) != TRUE, is.na(last_WM)!=TRUE) %>% 
+  ungroup()
+
+expert_ratings$district <- as.numeric(expert_ratings$district)
+historical_results$district <- as.numeric(historical_results$district)
+HR$district <- as.numeric(HR$district)
+d2022$district <- as.numeric(d2022$district)
+
+data2022 <- d2022 %>% filter(cand_party == "Democratic") %>%
+  left_join(HR %>% filter(year == 2020) %>% select(-incumbent, -year), by = c("state", "district")) %>%
+  distinct() %>%
+  group_by(state, district) %>%
+  mutate(last_dem_VS = dem_votes_major_percent, last_VM = vote_margin, last_WM = wm)
+
+data2022$district_id[227] = "MT01"
+data2022$district_id[228] = "MT02" 
+data2022$district_id[83] = "CO08"
+data2022$district_id[114] = "FL28"
+data2022$district_id[292] = "NC14"
+data2022$district_id[318] = "OR06" 
+data2022$district_id[380] = "TX37"
+data2022$district_id[381] ="TX38"
+data2022$district[386] = "0"
+data2022$district[89] = "0"
+data2022$district[6] = "0"
+data2022$district[416] = "0"
+
+sds = unique(data2022$district_id)
+models <- list()
+r2 <- c()
+ar2 <- c()
+fitted <- c()
+lower <- c()
+upper <- c()
+coef_incumb <- c()
+coef_last_dem_VS <- c()
+labs <- c()
+
+for (sd in sds){
+  temp <- HR %>%
+    filter(district_id == sd)
+  new_data <- data2022 %>%
+    filter(district_id == sd) 
+
+  if (nrow(temp) > 0)
+  {
+    m <- lm(dem_votes_major_percent ~ last_dem_VS + incumbent, data = temp)
+    models[[length(models)+1]] <- m
+
+    r2 <- c(r2, summary(m)$r.squared)
+    ar2 <- c(ar2, summary(m)$adj.r.squared)
+    
+    fitted <- c(fitted, as.numeric(predict(m, new_data, interval = 'confidence')[1]))
+    lower <- c(lower, as.numeric(predict(m, new_data, interval = 'confidence')[2]))
+    upper <- c(upper, as.numeric(predict(m, new_data, interval = 'confidence')[3]))
+
+    coef_incumb <- c(coef_incumb, as.numeric(m$coefficients[3]))
+    coef_last_dem_VS <- c(coef_last_dem_VS, as.numeric(m$coefficients[2]))
+    labs <- c(labs, sd)
+  }
+}
+
+mean(ar2, na.rm = TRUE)
+
+state_abb = c()
+state = c()
+district = c()
+
+for (lab in 0:length(labs)){
+  state_abb <- c(state_abb, substr(labs[lab], 0, 2))
+  district <- c(district, as.numeric(substr(labs[lab], 3, 4)))
+}
+
+for (state_ab in 1:length(state_abb)){
+  state <- c(state, state.name[grep(state_abb[state_ab], state.abb)])
+}
+
+preds_NC_2022 <- data.frame(cbind(state, district, fitted, lower, upper))
+preds_NC_2022 <- preds_NC_2022 %>%
+  mutate(winner = case_when(fitted >= 50 ~ "Democrat", T~"Republican"))
 ```
 
-```{r, include = FALSE}
-# expert_ratings$district <- as.numeric(expert_ratings$district)
-# historical_results$district <- as.numeric(df$district_num)
-# df <- df %>%
-#   rename(district = district_num)
+```{r non-competitive models remove, include = FALSE}
+# # 4 = Currently Safe/Solid D, 3 = D Favored/Likely D, 2 = Lean D, 1 = Toss-up/Tilt D, 0 = Pure Toss-Up, 
+# # -4 = Currently Safe/Solid R, -3 = R Favored/Likely R, -2 = Lean R, -1 = Toss-up/Tilt R 
+# # comp_states <- pred_2022 %>%
+# #   select(state, district)
+# # 
+# all <- left_join(cook, inside %>% select(-c(...1, inc_party, is_open, geoid)) %>% rename('IE' = 'code'), by = c("year", "state", "district")) %>%
+#   select(year, state, district, inc_party, geoid, code, IE) %>%
+#   rename(cook = code) %>%
+#   mutate(avg_rating = (cook + IE) / 2)
 # 
-# district_data <- expert_ratings %>% 
-#   filter(year != 2022) 
+# historical_results <- historical_results %>%
+#   mutate(incumbent = case_when(DemStatus == "Incumbent" ~ 1, T ~ 0), open = case_when(DemStatus == "Challenger" & RepStatus == "Challenger" ~ 1, T ~ 0))
 # 
-# newdf <- left_join(historical_results, expert_ratings, by = c("year", "state", "district"))
-# newdf <- drop_na(newdf)
-# 
-# sds = unique(historical_results$district_id)
-# models <- list()
-# models2 <- list()
-# r2 <- c()
-# r22 <- c()
-# preds <- c()
-# for (sd in sds){
-#   temp <- newdf %>%
-#     filter(district_id == sd)
-#   
-#   if (nrow(temp) > 0)
-#   {
-#     m <- lm(dem_votes_major_percent ~ incumbent + avg_rating, data = temp)
-#     models[[length(models)+1]] <- m
-#   
-#     r2 <- c(r2, summary(m)$r.squared)
-#   }
-#   #Make a 2022 prediction and append to list
-#   # preds <- c(preds, predict(m2, 2022data))
+# all$state_new = ""
+# for (thing in 1:nrow(all))
+# {
+#   all$state_new[thing] = state.name[grep(all$state[thing], state.abb)]
 # }
 # 
-# mean(r2, na.rm = TRUE)
-```
-
-```{r YAO district models for competitive ones, include = FALSE}
-# Selecting columns
+# all <- all %>%
+#   select(-state) %>%
+#   rename(state = state_new)
+# 
+# all$district <- as.numeric(all$district)
+# historical_results$district <- as.numeric(historical_results$district)
 # 
 # 
-# avg_ratings <- expert_ratings %>% 
-#   select(year, state, district, avg_rating)
-# 
-# historical_results <- historical_results %>% 
-#   mutate(incumbent = case_when(DemStatus == "Incumbent" ~ 1, T ~ 0), demWin = case_when(WinnerParty == "D" ~ 1, T ~ 0), open = case_when((DemStatus == "Challenger" & RepStatus == "Challenger") ~ 1, T ~ 0))
-#   
-# 
-# hist_data <- historical_results %>% 
-#   filter(year != 2022) %>% 
-#   # left join as there aren't ratings for every district
-#   group_by(state, district) %>% 
-#   filter(n() > 1) %>% # Filtering out single data rows
-#   group_nest() %>% 
-#   mutate(data = map(data, ~unnest(., cols = c())))
-# 
-# hist_test_data <- house_cands_22 %>% 
-#   group_by(state, district) %>% 
-#   group_nest() %>% 
-#   mutate(data = map(data, ~unnest(., cols = c())))
-# 
-# models <- hist_data %>% 
-#   mutate(model = map(data, ~lm(dem_vote_major_percent ~ incumbent, 
-#                                   data = .x))) %>% 
-#   select(-data)
-# 
-# model_results <- models %>% 
-#   mutate(RS = map_dbl(model, ~summary(.x)$r.squared), ARS = map_dbl(model, ~summary(.x)$adj.r.squared))
-# 
-# pred_2022 <- hist_test_data %>%
-#   # inner join as there may not be historical models for some districts
-#   inner_join(models, by = c("state", "district")) %>% 
-#   mutate(pred = map_dbl(.x = model, .y = data, ~predict(object = .x, newdata = as.data.frame(.y)))) %>%
-#   select(state, district, pred)
-# 
-# hist(model_results$RS)
-# mean(model_results$RS, na.rm = TRUE)
-# mean(model_results$ARS, na.rm = TRUE)
-# 
-# #^^ those should be near 1, no???? 
-# 
-# testt <- historical_results %>%
-#   mutate(wrong = case_when((demWin == 1 & incumbent == 1) ~ 1, T ~ 0), win = case_when((demWin == 1 & incumbent == 0) ~ 1, T ~ 0), rw = case_when((demWin == 0 & incumbent == 1) ~ 1, T ~ 0)) %>%
-#   summarize(count = n(wrong))
-# 
-# sum(testt$wrong)
-# sum(testt$win)
-# sum(testt$rw)
-# sum(testt$incumbent)
-# 
-# testt %>%
-#   group_by(demWin, incumbent, open) %>%
-#   summarize(count =n())
-
-#--------------
-# Joining the data and nesting by state and district
-# train_data <- avg_ratings %>% 
-#   filter(year != 2022) %>% 
+# train_data <- all %>%
+#   filter(year != 2022) %>%
 #   # left join as there aren't ratings for every district
 #   left_join(historical_results, by = c("year", "state", "district"))  %>%
-#   group_by(state, district) %>% 
+#   group_by(state, district) %>%
+#     drop_na(dem_votes_major_percent, IE) %>%
 #   filter(n() > 1) %>% # Filtering out single data rows
-#   group_nest() %>% 
+#   group_nest() %>%
+# 
 #   mutate(data = map(data, ~unnest(., cols = c())))
 # 
 # d2022$district <- as.numeric(d2022$district )
@@ -359,144 +350,259 @@ Over the weeks, I realized that good district-level data is hard to come by, and
 #   filter(cand_party == "Democratic") %>%
 #   distinct()
 # 
-# test_data <- avg_ratings %>% 
+# test_data <- all %>%
 #   left_join(d2022, by = c("state", "district")) %>%
-#   filter(year == 2022) %>% 
-#   group_by(state, district) %>% 
-#   group_nest() %>% 
+#   filter(year == 2022) %>%
+#   group_by(state, district) %>%
+#   group_nest() %>%
 #   mutate(data = map(data, ~unnest(., cols = c())))
 # 
+# 
+# train_data %>%
+#   unnest()
 # # Building TERRIBLE models
-# models <- train_data %>% 
-#   mutate(model = map(data, ~lm(dem_votes_major_percent ~ avg_rating + incumbent, 
-#                                   data = .x))) %>% 
+# models <- train_data %>%
+#   mutate(model = map(data, ~lm(vote_margin ~ incumbent + avg_rating,
+#                                   data = .x))) %>%
 #   select(-data)
 # 
 # # Extracting TERRIBLE model results
-# model_results <- models %>% 
+# model_results <- models %>%
 #   mutate(RS = map_dbl(model, ~summary(.x)$r.squared), ARS = map_dbl(model, ~summary(.x)$adj.r.squared))
 # 
-# # Predicting 2022 with a TERRIBLE model
+# # # Predicting 2022 with a TERRIBLE model
+# # pred_2022 <- test_data %>%
+# #   # inner join as there may not be historical models for some districts
+# #   inner_join(models, by = c("state", "district")) %>%
+# #   mutate(pred = map(.x = model, .y = data, ~predict(object = .x, newdata = as.data.frame(.y), interval = 'confidence'))) %>%
+# #   select(state, district, pred)
+# 
 # pred_2022 <- test_data %>%
 #   # inner join as there may not be historical models for some districts
-#   inner_join(models, by = c("state", "district")) %>% 
-#   mutate(pred = map(.x = model, .y = data, ~predict(object = .x, newdata = as.data.frame(.y), interval = 'confidence'))) %>%
-#   select(state, district, pred)
+#   inner_join(models, by = c("state", "district")) %>% mutate(preds = map(.x = model, .y = data, ~predict(object = .x, newdata = as.data.frame(.y),
+#                                                         se.fit = TRUE,
+#                                                         type = "response")),
+#          lower = map(.x = preds, ~.x$fit - (2 * .x$se.fit)),
+#          fitted = map(.x = preds, ~.x$fit),
+#          upper = map(.x = preds, ~.x$fit + (2 * .x$se.fit)))
 # 
-# hist(model_results$RS)
-# mean(model_results$RS, na.rm = TRUE)
-# mean(model_results$ARS, na.rm = TRUE)
-# length(model_results)
 # 
-# pred_2022 %>%
-#   unnest_wider(col = pred) %>%
+# 
+# 
+# # join above with just all the states and their sd_fips; then loop through the remaining 341 to make their predictions using incumbency + rating; if open seat, then rating only?
+# 
+# historical_results %>%
+#   filter(state == "AK")
+# 
+# train_data %>%
+#   unnest(cols = c(data)) %>%
+#   group_by(is.na(dem_votes_major_percent)) %>%
+#   summarize(c = n())
+# 
+# preds2 <- pred_2022 %>%
+#   unnest(cols = c(fitted, lower, upper)) %>%
 #   distinct() %>%
-#   mutate(winner = case_when(...1 >= 50 ~ "Democrat", T ~ "Republican")) %>%
-#   select(state, district, ...1, ...3, ...5, winner) %>%
-#   rename("prediction" = ...1, "lower" = ...3, "upper" = ...5)
+#     mutate(winner = case_when(fitted >= 0 ~ "Republican", T ~ "Democrat")) 
+#   mutate(winner = case_when(fitted >= 50 ~ "Democrat", T ~ "Republican")) %>%
+#   select(state, district, fitted, lower, upper, winner)
 # 
-# d2022
+# preds
+# preds2
+# 
+```
+The main difference in variable selection between the competitive and non-competitive models boils down to the fact that naturally, there is a lot more coverage of the competitive ones, meaning more expert rating availability. Because of this, the competitive district models feature an average of about 7 expert ratings, whereas the non-competitive ones feature none. 
+
+For the competitive districts, I used the following regression formula:
+![Competitive District Model Formula.](dist_formula.png)
+These models ended up with an average R-squared of 0.88 and average adjusted R-squared of 0.49. 
+
+Developing models for the non-competitive models was a journey - over the weeks, I realized that good district-level data is hard to come by, and with Election Day drawing near, I felt there was a choice between building out a self-made model and building a highly predictive one to be made. In the end, I decided to go with the former, in the name of learning. The models then are fundamentals-based than the competitive ones, using the major vote share of the last Democrat candidate in addition to the incumbency of the current candidate.  
+
+![Non-competitive District Model Formula.](dist_NC_formula.png)
+
+I chose to use these variables because House elections have historically favored incumbent candidates, and I believe that how the Democrat performed in each district in previous years can tell us a lot about how the Democratic candidate will perform this year.
+
+![Coefficients for Incumbent Variable.](dist_incumb_coef.png)
+The histogram above illustrates the coefficient values for the incumbent variable over the many non-competitive districts. The average coefficient value is a little under 16, and it indicates that on average, when a Democratic candidate is an incumbent, their vote share is expected to be about 16 points higher than had they not been an incumbent. This definitely tracks with what we know about the incumbency advantage for House members.
+
+![Coefficients for Last Democrat Vote Share Variable.](dist_VS_coef.png)
+This histogram shows the coefficient values for the last Democrat's vote share (in the previous election), and the mean is value is 0.36. The numerical interpretation of this one is a little confusing, but the main takeaway is that the vast majority of these coefficients are positive, indicating that the higher the last Democrat's vote share, the higher we can expect this year's Democratic vote share to be. 
+
+These models have an average R-squared of 0.50 and average adjusted R-squared of 0.45. 
+
+## District Predictions
+Below are my predictions for the 94 most competitive districts, using expert ratings and incumbency:
+```{r, echo = FALSE}
+
+export_table(preds_C_2022, format = 'html')
+
 ```
 
-```{r district models for non-competitive ones; just use incumbent?, include = FALSE}
+And the non-competitive district predictions, using past election results and incumbency:
+```{r district model viz, fig.cap = 'Note: Visualization of District-Level Predictions; Several Districts Mapped Imperfectly.'}
+knitr::include_graphics('dist_viz.png')
+```
+Both my national and district-level work has indicated that the Republicans are likely to win the House back once the votes have all been counted. We will see soon if these predictions are correct, and precisely how correct or incorrect they were. Below you can find the rest of the district predictions, complete with 95% confidence intervals. 
 
-## use expert ratings and incumbency for all 435, see if it agrees with my all expert preds + incumb model for the competitive ones. 
+It's been a great 8 weeks, see you on the other side of the 2022 midterms!
+```{r, echo = FALSE}
+
+export_table(preds_NC_2022, format = 'html')
+
+```
+
+```{r district models for non-competitive ones bad ; just use incumbent?, include = FALSE}
+
+# ## use expert ratings and incumbency for all 435, see if it agrees with my all expert preds + incumb model for the competitive ones. 
+# # 
+# #### THis is broken rn, with 0.08 r-squared, but it DOES incorporate "all" data so that we acn pull expert predictions... so something to consider fixing. or just stick with model up there, which is fine already
 # 
-# cook
-# cook %>%
-#   group_by(year) %>%
-#   summarize(count = n())
+# HR <- historical_results %>%
+#   filter(!is.infinite(vote_margin)) %>%
+#   mutate(incumbent = case_when(DemStatus == "Incumbent" ~ 1, T ~ 0), demWin = case_when(WinnerParty == "D" ~ 1, T ~ 0), open = case_when((DemStatus == "Challenger" & RepStatus == "Challenger") ~ 1, T ~ 0)) %>%
+#   group_by(district_id) %>%
+#   summarize(dem_votes_major_percent = dem_votes_major_percent, vote_margin = vote_margin, year = year, state = state, district = district, incumbent = incumbent) %>%
+#   mutate(last_dem_VS = lead(dem_votes_major_percent), last_VM = lead(vote_margin)) %>%
+#   drop_na(district_id) %>%
+#   filter(is.na(last_dem_VS) != TRUE) %>% 
+#   ungroup()
+# 
+# expert_ratings$district <- as.numeric(expert_ratings$district)
+# historical_results$district <- as.numeric(historical_results$district)
+# HR$district <- as.numeric(HR$district)
+# d2022$district <- as.numeric(d2022$district)
+# all$district <- as.numeric(all$district)
+# 
+# 
+# newdf <- left_join(all, HR, by = c("year", "state", "district"))
+# 
+# # data2022 <- all %>%
+# #   filter(year == 2022) %>%
+# #   left_join(d2022 %>% filter(cand_party == "Democratic"), by = c("state", "district")) %>%
+# #   left_join(HR %>% filter(year == 2020) %>% select(-incumbent, -year), by = c("state", "district")) %>%
+# #   distinct() %>%
+# #   group_by(state, district) %>%
+# #   mutate(last_dem_VS = dem_votes_major_percent, last_VM = vote_margin)
+# 
+# 
+# data2022 <- d2022 %>% filter(cand_party == "Democratic") %>%
+#   left_join(HR %>% filter(year == 2020) %>% select(-incumbent, -year), by = c("state", "district")) %>%
+#   distinct() %>%
+#   group_by(state, district) %>%
+#   mutate(last_dem_VS = dem_votes_major_percent, last_VM = vote_margin)
+# 
+# data2022$district_id[227] = "MT01"
+# data2022$district_id[228] = "MT02" 
+# data2022$district_id[83] = "CO08"
+# data2022$district_id[114] = "FL28"
+# data2022$district_id[292] = "NC14"
+# data2022$district_id[318] = "OR06" 
+# data2022$district_id[380] = "TX37"
+# data2022$district_id[381] ="TX38"
 # 
 # 
 # 
-# newdf <- left_join(historical_results, expert_ratings, by = c("year", "state", "district"))
-# newdf <- drop_na(newdf)
+# sds = unique(data2022$district_id)
+# unique(newdf$district_id)
 # 
-# sds = unique(historical_results$district_id)
 # models <- list()
-# models2 <- list()
 # r2 <- c()
-# r22 <- c()
+# ar2 <- c()
 # preds <- c()
+# labs <- c()
 # for (sd in sds){
 #   temp <- newdf %>%
 #     filter(district_id == sd)
-#   
+#   new_data <- data2022 %>%
+#     filter(district_id == sd) 
+# 
 #   if (nrow(temp) > 0)
 #   {
-#     m <- lm(dem_votes_major_percent ~ incumbent, data = temp)
+#     m <- lm(dem_votes_major_percent ~ incumbent + last_dem_VS + last_VM, data = temp)
 #     models[[length(models)+1]] <- m
-#   
+# 
 #     r2 <- c(r2, summary(m)$r.squared)
-#   }
-#   #Make a 2022 prediction and append to list
-#   # preds <- c(preds, predict(m2, 2022data))
-# }
-# 
-# hist(r2)
-# mean(r2, na.rm = TRUE)
-
-```
-
-```{r district models with ALL districts + expert preds - turnout, include = FALSE}
-# expert_ratings$district <- as.numeric(expert_ratings$district)
-# # df$district_num <- as.numeric(df$district_num)
-# # df <- df %>%
-# #   rename(district = district_num)
-# 
-# district_data <- expert_ratings %>% 
-#   filter(year != 2022) 
-# 
-# newdf <- left_join(df, expert_ratings, by = c("year", "state", "district"))
-# 
-# newdff <- df %>% 
-#     full_join(expert_ratings %>% filter(year < 2022 & year > 2010), by = c("year", "state", "district")) #%>%
-#     #mutate_if(is.numeric, function(x) replace_na(x, 3.5))
-# 
-# sum(is.na(newdff$avg_rating))
-# 
-# newdff$avg_rating[is.na(newdff$avg_rating)] <- mean(newdff$avg_rating, na.rm = TRUE)
-# 
-# newdf <- drop_na(newdf)
-# 
-# sds = unique(house_cands_22$st_cd_fips)
-# models <- list()
-# r2 <- c()
-# preds <- c()
-# for (sd in sds){
-#   # Filter for dataframe with just district sd
-#   temp <- newdff %>%
-#     filter(st_cd_fips == sd)
-#   
-#   # Fit linear model for dem two-party vote-share
-#   if (nrow(temp) > 0)
-#   {
-#     m <- lm(DemVotesMajorPercent ~ average_support + incumb + avg_rating, data = temp)
-#     models[[length(models)+1]] <- m
-#   
-#   # Find r^2 and add to list of r^squareds
-#     r2 <- c(r2, summary(m)$adj.r.squared)
-#   }
-# 
+#     ar2 <- c(ar2, summary(m)$adj.r.squared)
 #     
-#   
-#   # Make a 2022 prediction and append to list
-#   # new_data <- turnout22 %>%
-#   #   filter(st_cd_fips == sd) %>%
-#   #   rename(turnout = historical_turnout_by_district)
-#   # preds <- c(preds, predict(m, new_data))
+#     preds <- c(preds, as.numeric(predict(m, new_data)[1]))
+#     labs <- c(labs, sd)
+#   }
 # }
 # 
-# hist(r2, breaks = 50)
-# mean(r2, na.rm = TRUE)
+# hist(ar2)
+# mean(ar2, na.rm = TRUE)
+# 
+# cbind(sds, preds)
 
 ```
-Include confidence intervals for predictions !! 
 
+
+```{r district model visualization, include = FALSE, results='hide',fig.keep='all', message=FALSE}
+
+# 
+# cd114 <- st_read("districts114.shp")
+# # =======
+# # cd114 <- get_congress_map(114)
+# # >>>>>>> 1b982eea6f0ad653c5f59e4ecc0201948c3d7c00
+# # 
+# # vote data
+# h <- preds_NC_2022 %>%
+#   rename(district_id = labs)
+# 
+# preds_viz <- HR %>%
+#   group_by(district_id, state, district) %>%
+#   summarize(state = state, district= district) %>%
+#   distinct() %>%
+#   inner_join(h, by = "district_id")
+# 
+# R_2014 <- preds_viz %>%  
+#   select(state, district, fitted) %>%
+#   # summarize party vote share by district
+#   group_by(state, district) %>%
+#   summarise(Dem_votes_pct = as.numeric(fitted)) %>%
+#   # rename district variable name to match shapefile
+#   rename(DISTRICT = district, STATENAME = state) %>% drop_na()
+# 
+# cd114$DISTRICT
+# cd114$STATENAME
+# # merge
+# cd114$DISTRICT <- as.numeric(cd114$DISTRICT)
+# R_2014$DISTRICT <- as.numeric(R_2014$DISTRICT)
+# cd114 <- cd114 %>% left_join(R_2014, by=c("DISTRICT", "STATENAME"))
+# head(cd114$Dem_votes_pct)
+# 
+# # plot with simplify
+# districts_simp <- rmapshaper::ms_simplify(cd114, keep = 0.01)
+# 
+# ggplot() + 
+#   geom_sf(data=districts_simp,aes(fill=Dem_votes_pct),
+#           inherit.aes=FALSE,alpha=0.9) + 
+#   scale_fill_gradient2(low = "red", high = "blue", midpoint = 50, limits=c(0,100), name = "Democrat Major Vote Share") +
+#   coord_sf(xlim = c(-172.27, -66.57), ylim = c(18.55, 71.23), expand = FALSE) +  
+#   theme_void() +
+#   theme(axis.title.x=element_blank(),
+#         axis.text.x=element_blank(),
+#         axis.ticks.x=element_blank(),
+#         axis.title.y=element_blank(),
+#         axis.text.y=element_blank(),
+#         axis.ticks.y=element_blank()) + ggtitle("2022 Midterm Predictions") 
+# 
+# pred_NC_2022 <- h %>%
+#  # rename(district_id = "labs") %>%
+#   full_join(HR, by = "district_id") %>%
+#   group_by(district_id) %>%
+#   select(district_id, state, district, fitted, lower, upper) %>%
+#   summarize(state = state)
+
+```
 
 
 ---
 **References**
 
-[1] 
+[1] U.S. Bureau of Economic Analysis, Real Gross Domestic Product [GDPC1], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/GDPC1.
+
+[2] FiveThirtyEight, Generic Ballot. https://projects.fivethirtyeight.com/polls/generic-ballot/
+
+[3] Gallup, Congress and the Public. https://news.gallup.com/poll/1600/congress-public.aspx
 

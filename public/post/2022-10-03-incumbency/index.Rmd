@@ -54,7 +54,7 @@ compare_df_cols(incumb_dist_1948_2022, historical_results)
 # Final district results dataframe
 district_results_48_22 <- full_join(historical_results, incumb_dist_1948_2022) 
 
-write.csv(historical_results, "historical_results.csv")
+# write.csv(historical_results, "historical_results.csv")
 ```
 
 ```{r joining results with avg_ratings, include = FALSE}

@@ -179,7 +179,7 @@ I have also changed my national models a bit this week. I wanted to congressiona
 ![House Incumbent Vote Share Models.](voteshare_reg.png)
 As shown by the difference in adjusted R-squared between the first and second models, adding the congressional approval polls considerably improves the performance of my national model. Though I initially thought that congressional approval was a very similar metric to the generic ballot, it turns out their correlation is only about 0.08, and they separately account for variation in House incumbent vote share. Lastly, I was able to eliminate one of the two GDP variables, which had previously been confusing to interpret. Now, absolute GDP change remains, and its coefficient is negative. My hypothesis is that for GDP, voters respond to levels rather than relative change, so they slightly punish incumbents when growth is not "large enough." Lastly, I now get to decide whether or not to keep the RDI% change variable, considering its exclusion from the model left the model large the same.
 
-![House Set Models.](seats_reg.png)
+![House Seat Models.](seats_reg.png)
 The seats model is largely the same as the vote share one, and here, it is more apparent that excluding the RDI % variable is a good decision, decreasing the complexity of the regression whilst keeping its performance high.
 ```{r correlation, include = FALSE}
 cor(nat_model_data$cong_approv[17:31], nat_model_data$pp_generic_ballot[17:31])
