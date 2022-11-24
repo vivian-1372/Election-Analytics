@@ -7,7 +7,7 @@ categories: []
 tags: []
 ---
 
-This is blog post #4 in a series of analytical posts in lieu of the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the department of Government.
+This is blog post #4 in a series of analytical posts about the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the Government department.
 
 ---
 

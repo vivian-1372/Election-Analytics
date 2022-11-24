@@ -1,0 +1,61 @@
+---
+title: Post-Election Reflection
+author: Vivian Nguyen
+date: '2022-11-22'
+slug: []
+categories: []
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>This is blog post #9 (post-election) in a series of analytical posts about the 2022 midterms. This post is affiliated with Gov 1347: Election Analytics, a course at Harvard University in the Government department.</p>
+<hr />
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>This week, I am revisiting my final models and predictions from <a href="https://vivian-1372.github.io/Election-Analytics/post/2022-11-07-final-prediction/">week 8</a> and reflecting on how they performed, and speculating about why, now that we’re about 2 weeks post-Election Day now.</p>
+</div>
+<div id="my-final-model-and-predictions" class="section level1">
+<h1>My Final Model and Predictions</h1>
+<div id="national-model" class="section level2">
+<h2>National Model</h2>
+<p>My national modeling addressed two main goals: predicting the 2022 House incumbent party two-party vote share and predicting the 2022 House incumbent party seat count. My main model consisted of a linear regression built off of 4 predictors (GDP absolute growth, generic ballot support for the House incumbent party, whether or not it was a midterm year for the incumbent/President’s party, and the congressional approval rate). To achieve the two goals, I swapped out the response variable as needed.</p>
+<p>Ultimately, I predicted that the House imcumbent party (Democrats this year) would earn 48.56% (47.36, 49.83) of the national two-party vote share and 209 (198, 221) seats.
+## District-Level Models
+My district-level modeling also consisted of two main goals: predict the vote share of the Democratic candidate in competitive districts and predict the vote share of the Democratic candidate in “non-competitive” districts. My approach was to build competitive linear regression models using average expert ratings of those races in addition to candidate incumbency status, and to build non-competitive ones using the last Democratic canddiate’s vote share as well as the current candidate’s incumbency.</p>
+</div>
+<div id="accuracy" class="section level2">
+<h2>Accuracy</h2>
+<p>A description of the accuracy of the model(s), including any apparent patterns in the accuracy. Graphics should be used here.</p>
+</div>
+<div id="sources-of-inaccuracy" class="section level2">
+<h2>Sources of Inaccuracy</h2>
+<p>Proposed hypotheses for why the model(s) were inaccurate in the estimates or locations where it was inaccurate. These reasons should not simply be statements of about the quality of the components of the model, e.g., “the polls were not good” or “economic growth was not a good predictor” but should instead be grounded hypotheses on why components of the model may not have been predictive or may not have been predictive in certain cases.</p>
+</div>
+<div id="testing-these-hypotheses" class="section level2">
+<h2>Testing these Hypotheses</h2>
+<p>Proposed quantitative tests that could test these hypotheses, e.g., what data, if available, could allow you to test whether the reason proposed really did cause the inaccuracy in your model. If there is no plausible test of the hypothesis, explain why. You do not need to perform these tests or explain them in great detail (e.g., there is no need to write down an equation showing your exact test), just propose them.</p>
+</div>
+</div>
+<div id="looking-forward" class="section level1">
+<h1>Looking Forward</h1>
+<p>Separate national seat share /vote share models</p>
+<p>Variables:
+### District Level Data
+A description of how you might change your model if you were to do it again.<br />
+More district level data, dating much farther back</p>
+<div id="economic-variables" class="section level3">
+<h3>Economic Variables</h3>
+<p>Probably a better economic variable than GDP absolute, which was a weird variable to be honest</p>
+</div>
+<div id="expert-ratings" class="section level3">
+<h3>Expert Ratings</h3>
+<p>Expert predictions ?</p>
+</div>
+<div id="turnout" class="section level3">
+<h3>Turnout</h3>
+<p>Turnout variable ! Youth, or indicator for competitive Senate race in that state as proxy for turnout</p>
+<p>This blog post may be longer than a typical blog post (remember it accounts for 17.5% of your total grade).</p>
+</div>
+</div>
