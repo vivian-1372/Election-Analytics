@@ -23,19 +23,106 @@ library(rmapshaper)
 library(sf)
 library(insight)
 library(scales)
-library(packcircles)
+library(Metrics)
 
-# 
-# expert_ratings <- read_csv("expert_rating.csv")
-# historical_results <- read_csv("historical_results.csv")
-# # df <- read_csv("econ_mid_genball_results.csv")
-# d2022 <- read_csv("house_cands.csv")
-# cook <- read_csv("cook.csv")
-# inside <- read_csv("inside_elections.csv")
-# 
-# nat_model_data <- read_csv("nat_model_data.csv")
-# poll_df <- read_csv("538_generic_ballot_averages_2018-2022.csv")
+state_fips <- read_csv("state_fips.csv") %>%
+  rename(state_fips = state_fip)
+
+results <- read_csv("results.csv") %>%
+  janitor::clean_names() %>%
+  select(state_fips, fips, cd, total_vote, rankd, rankr, democratic, republican, ca_democratic, ca_republican) %>%
+  mutate(state_fips = as.numeric(state_fips), fips = as.numeric(fips), democratic = as.numeric(democratic), republican = as.numeric(republican), rankd = as.numeric(rankd), rankr = as.numeric(rankr), ca_democratic = as.numeric(ca_democratic), ca_republican = as.numeric(ca_republican), total_vote = as.numeric(total_vote), geoid = as.numeric(paste0(state_fips, cd)) )
+
+# Imputing vote data for FL, DE, MA, ME, MS from NTYTimes, Politico, and Economist
+results$democratic[results$fips == 12905] = 0; results$republican[results$fips == 12905] = 1; results$total_vote[results$fips == 12905] = results$democratic[results$fips == 12905][2] + results$republican[results$fips == 12905][2]
+results$democratic[results$fips == 10901] = 176494; results$republican[results$fips == 10901] = 78397; results$total_vote[results$fips == 10901] = results$democratic[results$fips == 10901][2] + results$republican[results$fips == 10901][2] + 12590
+results$democratic[results$fips == 50901] = 178416; results$republican[results$fips == 50901] = 138201; results$total_vote[results$fips == 50901] = results$democratic[results$fips == 50901][2] + results$republican[results$fips == 50901][2]
+results$democratic[results$fips == 25901] = 153402; results$republican[results$fips == 25901] = 96499; results$total_vote[results$fips == 25901] = results$democratic[results$fips == 25901][2] + results$republican[results$fips == 25901][2]
+results$democratic[results$fips == 25902] = 178472; results$republican[results$fips == 25902] = 91100; results$total_vote[results$fips == 25902] = results$democratic[results$fips == 25902][2] + results$republican[results$fips == 25902][2]
+results$democratic[results$fips == 25903] = 145507; results$republican[results$fips == 25903] = 82628; results$total_vote[results$fips == 25903] = results$democratic[results$fips == 25903][2] + results$republican[results$fips == 25903][2]
+results$democratic[results$fips == 25904] = 184346; results$republican[results$fips == 25904] = 0; results$total_vote[results$fips == 25904] = results$democratic[results$fips == 25904][2] + results$republican[results$fips == 25904][2]
+results$democratic[results$fips == 25905] = 198617; results$republican[results$fips == 25905] = 70694; results$total_vote[results$fips == 25905] = results$democratic[results$fips == 25905][2] + results$republican[results$fips == 25905][2]
+results$democratic[results$fips == 25906] = 190062; results$republican[results$fips == 25906] = 107496; results$total_vote[results$fips == 25906] = results$democratic[results$fips == 25906][2] + results$republican[results$fips == 25906][2]
+results$democratic[results$fips == 25907] = 144902; results$republican[results$fips == 25907] = 26481; results$total_vote[results$fips == 25907] = results$democratic[results$fips == 25907][2] + results$republican[results$fips == 25907][2]
+results$democratic[results$fips == 25908] = 184084; results$republican[results$fips == 25908] = 80961; results$total_vote[results$fips == 25908] = results$democratic[results$fips == 25908][2] + results$republican[results$fips == 25908][2]
+results$democratic[results$fips == 25909] = 193426; results$republican[results$fips == 25909] = 131936; results$total_vote[results$fips == 25909] = results$democratic[results$fips == 25909][2] + results$republican[results$fips == 25909][2]
+results$democratic[results$fips == 23901] = 218630; results$republican[results$fips == 23901] = 128996; results$total_vote[results$fips == 23901] = results$democratic[results$fips == 23901][2] + results$republican[results$fips == 23901][2]
+results$democratic[results$fips == 23902] = 151440; results$republican[results$fips == 23902] = 140895; results$total_vote[results$fips == 23902] = results$democratic[results$fips == 23902][2] + results$republican[results$fips == 23902][2]
+results$democratic[results$fips == 28901] = 45222; results$republican[results$fips == 28901] = 122122; results$total_vote[results$fips == 28901] = results$democratic[results$fips == 28901][2] + results$republican[results$fips == 28901][2]
+results$democratic[results$fips == 28902] = 107071; results$republican[results$fips == 28902] = 71380; results$total_vote[results$fips == 28902] = results$democratic[results$fips == 28902][2] + results$republican[results$fips == 28902][2]
+results$democratic[results$fips == 28903] = 54422; results$republican[results$fips == 28903] = 132269; results$total_vote[results$fips == 28903] = results$democratic[results$fips == 28903][2] + results$republican[results$fips == 28903][2]
+results$democratic[results$fips == 28904] = 42876; results$republican[results$fips == 28904] = 127813; results$total_vote[results$fips == 28904] = results$democratic[results$fips == 28904][2] + results$republican[results$fips == 28904][2]
+results$democratic[results$fips == 22904] = 0; results$republican[results$fips == 22904] = 0; results$total_vote[results$fips == 22904] = results$democratic[results$fips == 22904][2] + results$republican[results$fips == 22904][2]
+results$democratic[results$fips == 28904] = 0; results$republican[results$fips == 12905] = 0; results$total_vote[results$fips == 28904] = results$democratic[results$fips == 28904][2] + results$republican[results$fips == 28904][2]
+results$democratic[results$fips == 49903] = 82865; results$republican[results$fips == 49903] = 0; results$total_vote[results$fips == 49903] = results$democratic[results$fips == 49903][2] + results$republican[results$fips == 49903][2]
+results$democratic[results$fips == 49903] = 82865; results$republican[results$fips == 49903] = 0; results$total_vote[results$fips == 49903] = results$democratic[results$fips == 49903][2] + results$republican[results$fips == 49903][2]
+
+results <- results %>%  
+  left_join(state_fips, by = "state_fips") %>%
+  mutate(cd = as.numeric(cd)) %>%
+  rename(district = cd) %>%
+  select(fips, state, district, total_vote, rankd, rankr, democratic, republican, ca_democratic, ca_republican, geoid) %>%
+  mutate(actual_dem_vote = (democratic + ca_democratic) * 100 / total_vote, actual_rep_vote = (republican + ca_republican) * 100 / total_vote, actual_winner = case_when(actual_dem_vote > actual_rep_vote ~ "Democrat", actual_rep_vote > actual_dem_vote ~ "Republican"))
+
+preds_C <- read_csv("preds_C.csv")
+preds_C[preds_C$state == "Alaska", 'district'] = 1
+preds_C[preds_C$state == "Wyoming", 'district'] = 1
+preds_C <- preds_C %>%
+  left_join(results, by = c("state", "district")) %>%
+  select(state, district, lower, upper, fitted, actual_dem_vote, winner,  actual_winner, geoid) %>%
+  mutate(correct = case_when(actual_winner == winner ~ 1, T ~ 0), margin = fitted - actual_dem_vote)
+
+comp_d <- paste0(preds_C$state, preds_C$district)
+
+preds_NC <- read_csv("preds_NC.csv") %>%
+  mutate(squish = paste0(state, district))
+preds_NC <- subset(preds_NC, !(squish %in% comp_d))
+preds_NC[preds_NC$state == "Alaska", 'district'] = 1
+preds_NC[preds_NC$state == "Wyoming", 'district'] = 1
+preds_NC[preds_NC$state == "Delaware", 'district'] = 1
+preds_NC[preds_NC$state == "Vermont", 'district'] = 1
+preds_NC <- preds_NC %>%
+  left_join(results, by = c("state", "district")) %>%
+  select(state, district, lower, upper, fitted, actual_dem_vote, winner,  actual_winner, geoid) %>%
+  mutate(correct = case_when(actual_winner == winner ~ 1, T ~ 0), margin = fitted - actual_dem_vote) %>%
+  drop_na()
+
+missed_NC <- subset(preds_NC, correct == 0) %>%
+  select(correct, state, district, actual_winner, winner, margin)
+correct_NC <- subset(preds_NC, correct == 1) %>%
+  select(state, district, actual_winner, margin)
+
+missed_C <- subset(preds_C, correct == 0)  %>%
+  select(correct, state, district, actual_winner, fitted, actual_dem_vote, margin)
+correct_C <- subset(preds_C, correct == 1) %>%
+  select(state, district, actual_winner, margin)
+
+mean(abs(correct_NC$margin), na.rm = TRUE)
+mean(abs(missed_NC$margin), na.rm = TRUE)
+
+mean(abs(correct_C$margin))
+mean(abs(missed_C$margin))
+
+all_preds <- rbind(preds_C, preds_NC)
 ```
+
+```{r, include = FALSE}
+
+paste0("Number of miscalled non-competitive districts: ", length(preds_NC$district[preds_NC$correct == 0]))
+paste0("Number of miscalled competitive districts: ", length(preds_C$district[preds_C$correct == 0]))
+
+paste0("Avg. margin, NC: ", mean(abs(preds_NC$margin)))
+paste0("Avg. margin, C: ", mean(abs(preds_C$margin)))
+
+paste0("Avg. margin, correct NC: ", mean(abs(correct_NC$margin), na.rm = TRUE))
+paste0("Avg. margin, incorrect NC: ", mean(abs(missed_NC$margin), na.rm = TRUE))
+
+paste0("Avg. margin, correct C: ", mean(abs(correct_C$margin), na.rm = TRUE))
+paste0("Avg. margin, incorrect C: ", mean(abs(missed_C$margin), na.rm = TRUE))
+
+```
+
+
 
 # Overview
 This week, I am revisiting my final models and predictions from [week 8](https://vivian-1372.github.io/Election-Analytics/post/2022-11-07-final-prediction/) and reflecting on how they performed, and speculating about why, now that we're about 2 weeks post-Election Day now.
@@ -44,24 +131,115 @@ This week, I am revisiting my final models and predictions from [week 8](https:/
 ## National Model
 My national modeling addressed two main goals: predicting the 2022 House incumbent party two-party vote share and predicting the 2022 House incumbent party seat count. My main model consisted of a linear regression built off of 4 predictors (GDP absolute growth, generic ballot support for the House incumbent party, whether or not it was a midterm year for the incumbent/President's party, and the congressional approval rate). To achieve the two goals, I swapped out the response variable as needed. 
 
-Ultimately, I predicted that the House imcumbent party (Democrats this year) would earn 48.56% (47.36, 49.83) of the national two-party vote share and 209 (198, 221) seats. 
+Ultimately, I predicted that the House incumbent party (Democrats this year) would earn 48.56% (47.36, 49.83) of the national two-party vote share and 209 (198, 221) seats.
+
 ## District-Level Models
-My district-level modeling also consisted of two main goals: predict the vote share of the Democratic candidate in competitive districts and predict the vote share of the Democratic candidate in "non-competitive" districts. My approach was to build competitive linear regression models using average expert ratings of those races in addition to  candidate incumbency status, and to build non-competitive ones using the last Democratic canddiate's vote share as well as the current candidate's incumbency.  
-
-
+My district-level modeling also consisted of two main goals: predict the vote share of the democratic candidate in competitive districts and predict the vote share of the democratic candidate in "non-competitive" districts. My approach was to build competitive linear regression models using average expert ratings of those races in addition to  candidate incumbency status, and to build non-competitive ones using the last democratic candidate's vote share as well as the current candidate's incumbency.  
 
 ## Accuracy 
-A description of the accuracy of the model(s), including any apparent patterns in the accuracy.  Graphics should be used here.
+As of November 22, 2022, the Democrats have reportedly captured 48.47% of the two-party vote share and 213 of the 435 seats (Cook Political Report, NYTimes).   
+
+The table below summarizes the accuracy of my national and district-level models, using measures of root mean squared error (RMSE), number of miscalled districts, classification accuracy, and the average margin by which the predicted vote shares were inaccurate. 
+```{r RMSE table, echo = FALSE}
+
+# National Vote Share comes from Cook Political Report's National Two Party Vote Share
+RMSE_df = data.frame( c("(D) National Two-Party Vote Share", "(D) TP Vote Share, Non-Competitive Districts", "(D) TP Vote Share, Competitive Districts"), c(rmse(48.56, 48.47005476), rmse(preds_NC$fitted, preds_NC$actual_dem_vote), rmse(preds_C$fitted, preds_C$actual_dem_vote)), c("-", "26/307", "46/94"), c("-", "0.92", "0.51"), c("-", round(mean(abs(preds_NC$margin)), 2), round(mean(abs(preds_C$margin)), 2)))
+
+colnames(RMSE_df) = c("Model", "RMSE", "Miscalled Districts", "Classification Accuracy", "Avg. Inaccuracy Margin")
+
+export_table(RMSE_df, format = 'html')
+
+```
+
+My national vote-share prediction was considerably close, with a somewhat tight confidence interval of (47.36, 49.83) and center of 48.56%. As shown above, the RMSE of my national prediction is very small. That said, it was the simpler half of my modeling, with no purview into how each district-level race would play out.  
+
+The performance of my district-level models was a little less impressive, with RMSEs of 13.99 and 12.03 for the non-competitive and competitive models respectively. Though the non-competitive models had higher RMSE and average inaccuracy margin (which I define as the average difference between the true Democratic candidate vote share and my prediction), they have a much higher classification accuracy than the competitive models. This was initially counterintuitive, but ultimately makes sense considering that the competitive models have a much harder classification task, with each race being close - even a very small swings in vote share can alter each district's outcome and classification. In contrast, the non-competitive models can afford to be less accurate in vote-share prediction so long as they correctly call the outcome. Indeed, over 90% of incumbents win re-election, so the inclusion of incumbency was expected to help call the non-competitive races accurately (OpenSecrets). Though, in retrospect, the incumbency variable wasn't informative enough to accurately predict *vote share* with high accuracy. 
+
+```{r viz code, include = FALSE}
+# load geographic data
+get_congress_map = function() {
+  tmp_file = tempfile()
+  tmp_dir = tempdir()
+  download.file("https://cdmaps.polisci.ucla.edu/shp/districts114.zip", tmp_file)
+  unzip(zipfile=tmp_file, exdir=tmp_dir)
+  fpath = paste(tmp_dir, "districtShapes/districts114.shp", sep="/")
+  st_read(fpath)
+}
+# Get the district map
+districts = get_congress_map()
+districts$DISTRICT = as.numeric(districts$DISTRICT)
+
+fips = select(read_csv("incumb_dist_1948-2022.csv", show_col_types = FALSE), st_cd_fips, state, district_num) %>% 
+  unique() %>% 
+  mutate(geoid = as.numeric(st_cd_fips)) %>%
+  rename(district = district_num)
+fips$district = as.numeric(fips$district)
+districts = left_join(districts, fips, c("STATENAME" = "state", "DISTRICT" = "district"))
+districts_simp = ms_simplify(inner_join(districts, all_preds, "geoid"), keep = 0.01)
+```
+
+
+
+Below are maps of the congressional districts I made predictions for, the first being colored according to how close (or far) my two-party vote share predictions were, and the second being colored by correct-call or miscall status. 
+
+```{r margin vizz, echo = FALSE}
+
+ggplot() +
+  geom_sf(data=districts_simp, aes(fill=margin),
+          inherit.aes=FALSE, alpha=0.9) +
+  scale_fill_gradient2(low="red", mid="white", high="blue", name="Inaccuracy Margin") +
+  coord_sf(xlim=c(-124.8, -66.9), ylim=c(24.5, 49.4), expand=FALSE) +
+  theme_void() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) + 
+  ggtitle(label = "Inaccuracy Margins of Predicted (D) TP Vote Share", subtitle = "Red indicates overprediction of (R) vote share; blue, an overprediction of (D) vote share") 
+
+```
+
+Overall, it seems I overpredict the Democratic candidate's vote share, especially in the South. However, my single largest inaccuracy was in Utah, where I severely underpredicted the (D) vote share and overpredicted the (R) vote share. 
+
+```{r classification viz, echo = FALSE}
+ggplot() +
+  geom_sf(data=districts_simp, aes(fill=correct),
+          inherit.aes=FALSE, alpha=0.9) +
+  scale_fill_gradient2(mid="red",  high="green", name="Correct") +
+  coord_sf(xlim=c(-124.8, -66.9), ylim=c(24.5, 49.4), expand=FALSE) +
+  theme_void() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) + 
+  ggtitle(label = "Classification Accuracy", subtitle = "Green indicates correct call; red indicates miscall") 
+
+```
+My models had the most trouble predicting the outcomes and vote shares of districts in the Southwest and West, located in California, Nevada, Arizona, and New Mexico. There are also pockets of inaccuracy across the Great Lakes areas, but ...
+
+[finish: A description of the accuracy of the model(s), including any apparent patterns in the accuracy. 
+-table of which districts were predicted wrong; stats about # of districts wrongly predicted]
 
 ## Sources of Inaccuracy
+There are many ways to explain the inaccuracy of my district-level models. 
 Proposed hypotheses for why the model(s) were inaccurate in the estimates or locations where it was inaccurate.  These reasons should not simply be statements of about the quality of the components of the model, e.g., “the polls were not good” or “economic growth was not a good predictor” but should instead be grounded hypotheses on why components of the model may not have been predictive or may not have been predictive in certain cases.
+- Redistricting !!! 
+- Lack of data dating farther back
+- Youth turnout
+- I also spent considerably more time tuning the national model because it made a lot of sense and was less data-intensive. 
 
 ## Testing these Hypotheses
 Proposed quantitative tests that could test these hypotheses, e.g., what data, if available, could allow you to test whether the reason proposed really did cause the inaccuracy in your model.  If there is no plausible test of the hypothesis, explain why.  You do not need to perform these tests or explain them in great detail (e.g., there is no need to write down an equation showing your exact test), just propose them.  
+- Redistricting conversions
+- Obtain better data and see if my results are still skewed for the states and districts I miss-predicted
+- 
 
 # Looking Forward
 
-Separate national seat share /vote share models
+Separate national seat share / vote share models
 
 Variables:
 ### District Level Data
@@ -77,5 +255,11 @@ Expert predictions ?
 ### Turnout
 Turnout variable ! Youth, or indicator for competitive Senate race in that state as proxy for turnout
 
-This blog post may be longer than a typical blog post (remember it accounts for 17.5% of your total grade).  
+---
+**References**
 
+[1] New York Times House Elections Results. https://www.nytimes.com/interactive/2022/11/08/us/elections/results-house.html
+
+[2] Cook Political Report National House Vote Tracker. https://www.cookpolitical.com/charts/house-charts/national-house-vote-tracker/2022
+
+[3] OpenSecrets Reelection Rates. https://www.opensecrets.org/elections-overview/reelection-rates

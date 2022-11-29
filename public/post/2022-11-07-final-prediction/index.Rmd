@@ -101,6 +101,8 @@ hist(outsamp_errors, breaks = 20,
      main = "Mean Out-of-Sample Residual for\n Vote Share Model (1000 runs of CV)")
 ```
 
+
+
 ```{r vote share validation printout, echo = FALSE, fig.cap = 'National Democratic Two-Party Vote Share Model Validation.'}
 knitr::include_graphics("nat_VS_val.png")
 ```
@@ -435,11 +437,13 @@ Below are my predictions for the 94 most competitive districts, using expert rat
 ```{r, echo = FALSE}
 
 export_table(preds_C_2022, format = 'html')
+# write_csv(preds_C_2022, "preds_C.csv")
+# write_csv(preds_NC_2022, "preds_NC.csv")
 
 ```
 
 And the non-competitive district predictions, using past election results and incumbency:
-```{r district model viz, fig.cap = 'Note: Visualization of District-Level Predictions; Several Districts Mapped Imperfectly.'}
+```{r district model viz, echo = FALSE, fig.cap = 'Note: Visualization of District-Level Predictions; Several Districts Mapped Imperfectly.'}
 knitr::include_graphics('dist_viz.png')
 ```
 Both my national and district-level work has indicated that the Republicans are likely to win the House back once the votes have all been counted. We will see soon if these predictions are correct, and precisely how correct or incorrect they were. Below you can find the rest of the district predictions, complete with 95% confidence intervals. 
