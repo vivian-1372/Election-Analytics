@@ -218,6 +218,7 @@ mean(model_results$RS, na.rm = TRUE)
 mean(model_results$ARS, na.rm = TRUE)
 length(model_results)
 ```
+
 ```{r non-competitive district models with incumbency and past results, include = FALSE, message = FALSE}
 HR <- historical_results %>%
   filter(!is.infinite(vote_margin)) %>%
