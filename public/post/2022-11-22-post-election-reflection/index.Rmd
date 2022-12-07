@@ -71,26 +71,26 @@ results <- results %>%
   mutate(actual_dem_vote = (democratic + ca_democratic) * 100 / total_vote, actual_rep_vote = (republican + ca_republican) * 100 / total_vote, actual_winner = case_when(actual_dem_vote > actual_rep_vote ~ "Democrat", actual_rep_vote > actual_dem_vote ~ "Republican"))
 
 preds_C <- read_csv("preds_C.csv")
-preds_C[preds_C$state == "Alaska", 'district'] = 1
-preds_C[preds_C$state == "Wyoming", 'district'] = 1
-preds_C <- preds_C %>%
-  left_join(results, by = c("state", "district")) %>%
-  select(state, district, lower, upper, fitted, actual_dem_vote, winner,  actual_winner, geoid) %>%
-  mutate(correct = case_when(actual_winner == winner ~ 1, T ~ 0), margin = fitted - actual_dem_vote)
-
-comp_d <- preds_C$geoid
+# preds_C[preds_C$state == "Alaska", 'district'] = 1
+# preds_C[preds_C$state == "Wyoming", 'district'] = 1
+# preds_C <- preds_C %>%
+#   left_join(results, by = c("state", "district")) %>%
+#   select(state, district, lower, upper, fitted, actual_dem_vote, winner,  actual_winner, geoid) %>%
+#   mutate(correct = case_when(actual_winner == winner ~ 1, T ~ 0), margin = fitted - actual_dem_vote)
+# 
+# comp_d <- preds_C$geoid
 
 preds_NC <- read_csv("preds_NC.csv") #%>%
-preds_NC[preds_NC$state == "Alaska", 'district'] = 1
-preds_NC[preds_NC$state == "Wyoming", 'district'] = 1
-preds_NC[preds_NC$state == "Delaware", 'district'] = 1
-preds_NC[preds_NC$state == "Vermont", 'district'] = 1
-preds_NC <- preds_NC %>%
-  left_join(results, by = c("state", "district")) %>%
-  select(state, district, lower, upper, fitted, actual_dem_vote, winner,  actual_winner, geoid) %>%
-  mutate(correct = case_when(actual_winner == winner ~ 1, T ~ 0), margin = fitted - actual_dem_vote) %>%
-  drop_na()
-preds_NC <- subset(preds_NC, !(geoid %in% comp_d))
+# preds_NC[preds_NC$state == "Alaska", 'district'] = 1
+# preds_NC[preds_NC$state == "Wyoming", 'district'] = 1
+# preds_NC[preds_NC$state == "Delaware", 'district'] = 1
+# preds_NC[preds_NC$state == "Vermont", 'district'] = 1
+# preds_NC <- preds_NC %>%
+#   left_join(results, by = c("state", "district")) %>%
+#   select(state, district, lower, upper, fitted, actual_dem_vote, winner,  actual_winner, geoid) %>%
+#   mutate(correct = case_when(actual_winner == winner ~ 1, T ~ 0), margin = fitted - actual_dem_vote) %>%
+#   drop_na()
+# preds_NC <- subset(preds_NC, !(geoid %in% comp_d))
 
 missed_NC <- subset(preds_NC, correct == 0) %>%
   select(correct, state, district, actual_winner, winner, margin)
@@ -110,6 +110,10 @@ mean(abs(missed_C$margin))
 
 all_preds <- rbind(preds_C, preds_NC) %>%
   left_join(historical_results %>% select(geoid, count), by = c("geoid", "state") )
+
+# write.csv(preds_C, "preds_C.csv")
+# write.csv(preds_NC, "preds_NC.csv")
+# write.csv(all_preds, "all_preds.csv")
 ```
 
 ```{r, include = FALSE}

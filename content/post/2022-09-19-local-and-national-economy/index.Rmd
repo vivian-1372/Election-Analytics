@@ -239,10 +239,10 @@ https://muse.jhu.edu/book/64646
 
 [4] Rakich, N., & Mejia, E. (2022, March 31). The house map's Republican bias will plummet in 2022 - because of gerrymandering. FiveThirtyEight.  https://fivethirtyeight.com/features/the-house-maps-republican-bias-will-plummet-in-2022-because-of-gerrymandering/ 
 
-[5] https://www.bea.gov/data/gdp/gross-domestic-product
+[5] BEA. Gross Domestic Product. https://www.bea.gov/data/gdp/gross-domestic-product
 
-[6] https://www.bea.gov/news/2022/gross-domestic-product-second-quarter-2022-advance-estimate
+[6] BEA. Gross Domestic Product Second Quarter 2022. https://www.bea.gov/news/2022/gross-domestic-product-second-quarter-2022-advance-estimate
 
-[7] https://fred.stlouisfed.org/series/GDPC1
+[7] FRED. GDPC1. https://fred.stlouisfed.org/series/GDPC1
 
-[8] https://tradingeconomics.com/united-states/unemployment-rate
+[8] Trading Economics. Unemployment Rate. https://tradingeconomics.com/united-states/unemployment-rate

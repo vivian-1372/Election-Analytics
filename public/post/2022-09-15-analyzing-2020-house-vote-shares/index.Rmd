@@ -146,7 +146,7 @@ plot_usmap(data = rfinal_20, regions = "state", values = "swing") +
   labs(title = "Democratic House Vote Share Swings between 2020 and 2018", subtitle = "Most state House elections saw declines in Democratic Party vote share in the 2020 election") +
   theme(panel.background = element_rect(color = "black", fill = "lightblue1"))
 
-rfinal_20
+# rfinal_20
 ```
 Unlike the previous swing comparison, the 2020-2018 comparison reveals that most states saw a decline in (D) party vote share in the House elections of 2020. Florida, Georgia, North Carolina, Rhode Island, and Maine were the only states to not see a decline in (D) House vote share. Georgia was an anomaly, and huge victory for the Democrats, in the 2020 elections, where less than 13,000 popular votes (Politico) determined Biden's victory in the electoral college and one House seat was flipped by the Democrats in district 7. Other than these 5 states, the Democrats lost vote share in nearly every state House election the Democrats but clinched the presidency by a decent margin (about 4 percentage points, Cook Political Report).
 

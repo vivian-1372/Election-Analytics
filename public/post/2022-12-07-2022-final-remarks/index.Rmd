@@ -1,0 +1,26 @@
+---
+title: 2022 Final Remarks
+author: Vivian Nguyen
+date: '2022-12-07'
+slug: []
+categories: []
+tags: []
+---
+
+A few final remarks.
+
+---
+
+# The Plan Today
+The 2022 midterm forecasting journey...
+
+```{r echo = FALSE, out.width = "95%", fig.cap = 'Source: New York Times'}
+knitr::include_graphics("election_analytics_2022.png")
+```
+
+# Final Remarks
+## Lessons Learned 
+
+## Thank Yous
+
+## Onto the Next! 

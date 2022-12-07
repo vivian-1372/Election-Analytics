@@ -178,6 +178,6 @@ As for the national model, I was able to come up with new predictions using the 
 
 [5] Darr, & Levendusky, M. S. (2014). Relying on the Ground Game. American Politics Research, 42(3), 529–548. https://doi.org/10.1177/1532673X13500520
 
-[6] https://projects.fivethirtyeight.com/polls/generic-ballot/
+[6] FiveThirtyEight. Generic Ballot. https://projects.fivethirtyeight.com/polls/generic-ballot/
 
-[7] https://fred.stlouisfed.org/series/GDPC1
+[7] FRED. GDPC1. https://fred.stlouisfed.org/series/GDPC1

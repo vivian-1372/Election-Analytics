@@ -304,7 +304,7 @@ mean(model_results$adj_r_squared, na.rm = TRUE)
 ## My New Forecast
 Below are my models' predictions for the major vote share taken by Democrats for the 94 congressional districts where the expert ratings were available.
 
-```{r forecast printout, include = TRUE}
+```{r forecast printout, echo = FALSE}
 
 export_table(pred_2022, format = "html")
 
