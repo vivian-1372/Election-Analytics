@@ -14,7 +14,7 @@ This is blog post #10.1 in a series of analytical posts about the 2022 midterms.
 # The Plan Today
 I couldn't end this series without saying a few final remarks, so here we are! It's been a long and rewarding journey of learning and adapting, so I wanted to summarize a few of the top lessons learned, give thanks, and look forward. 
 
-```{r echo = FALSE, out.width = "95%", fig.cap = 'Source: The Economist and [Lucy Ding](https://dinglucy.github.io/election-analytics/))'}
+```{r echo = FALSE, out.width = "95%", fig.cap = 'Source: The Economist and [Lucy Ding](https://dinglucy.github.io/election-analytics/)'}
 knitr::include_graphics("election_analytics_2022.png")
 ```
 
